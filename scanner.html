@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Scanner - OnePrint</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+</head>
+<body class="bg-gray-900 text-white flex flex-col items-center p-5">
+    <h1 class="text-xl font-bold mb-4">OnePrint Remote Scanner</h1>
+    
+    <div id="reader" class="w-full rounded-lg overflow-hidden mb-4"></div>
+    
+    <div id="status" class="p-3 bg-gray-800 rounded w-full text-center text-sm">
+        Menghubungkan ke Laptop...
+    </div>
+
+    <script>
+        const peer = new Peer();
+        let connection;
+
+        // Hubungkan ke ID Laptop tadi
+        peer.on('open', () => {
+            connection = peer.connect('oneprint-pos-server');
+            
+            connection.on('open', () => {
+                document.getElementById('status').innerText = "Terhubung ke Laptop Server";
+                document.getElementById('status').classList.replace('bg-gray-800', 'bg-green-600');
+                startScanner();
+            });
+        });
+
+        function startScanner() {
+            const html5QrCode = new Html5Qrcode("reader");
+            html5QrCode.start(
+                { facingMode: "environment" }, 
+                { fps: 15, qrbox: { width: 250, height: 150 } },
+                (decodedText) => {
+                    // Kirim data ke laptop
+                    if (connection && connection.open) {
+                        connection.send(decodedText);
+                        vibratePhone();
+                    }
+                }
+            );
+        }
+
+        function vibratePhone() {
+            if (navigator.vibrate) navigator.vibrate(100);
+        }
+    </script>
+</body>
+</html>
