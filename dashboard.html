@@ -14,14 +14,28 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        /* CSS Cetak A5 tetap dipertahankan dari file asli */
+        /* CSS KHUSUS CETAK A5 */
         @media print {
-            #app-ui, #qr-modal { display: none !important; }
+            #app-ui, #reader { display: none !important; }
             body { background-color: white; margin: 0; padding: 0; }
             @page { size: A5 portrait; margin: 0.1in 0.15in; }
-            #print-container { display: block !important; width: 100%; font-family: Arial, sans-serif; }
+            #print-container { display: block !important; width: 100%; font-family: Arial, sans-serif; color: black; }
             .invoice-page { width: 148mm; height: 210mm; box-sizing: border-box; margin: 0 auto; position: relative; }
-            /* ... (styling header & table sama seperti sebelumnya) ... */
+            .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 10px; }
+            .logo-image { width: 55px; height: 55px; margin-right: 12px; object-fit: contain; }
+            .company-name { font-size: 18px; font-weight: bold; text-transform: uppercase; }
+            .tagline, .address-info { font-size: 9px; margin: 0; line-height: 1.2; }
+            .header-right { text-align: right; border: 1px dashed #000; padding: 5px; min-width: 110px; }
+            .invoice-title { font-size: 16px; font-weight: 900; }
+            .client-data { display: grid; grid-template-columns: 1fr 1.5fr 1fr 1.5fr; gap: 4px 8px; font-size: 10px; margin-bottom: 10px; border: 1px solid #ddd; padding: 6px; }
+            .display-data { border-bottom: 1px dotted #aaa; font-weight: 600; text-transform: uppercase; }
+            .service-table { width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 10px; }
+            .service-table th, .service-table td { border: 1px solid #000; padding: 4px; }
+            .service-table th { background-color: #f0f0f0 !important; }
+            .signature-section { display: flex; justify-content: space-between; margin-top: 20px; font-size: 10px; }
+            .signature-box { text-align: center; width: 40%; }
+            .signature-line { display: block; margin-top: 35px; border-bottom: 1px solid #000; font-weight: bold; }
+            .note-box { border: 1px solid #000; padding: 5px; font-size: 8px; width: 65%; margin-top: 15px; }
         }
     </style>
 </head>
@@ -37,7 +51,7 @@
                     <span id="user-display" class="text-[10px] text-cyan-300 font-mono"></span>
                     <span id="idle-timer" class="text-[9px] text-gray-400 italic">Sesi Aktif</span>
                 </div>
-                <button id="btn-logout" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-xs font-bold flex items-center transition">
+                <button id="btn-logout" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-xs font-bold transition">
                     <i class="fas fa-power-off mr-2"></i> KELUAR
                 </button>
             </div>
@@ -46,24 +60,29 @@
         <main class="p-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div class="lg:col-span-2 space-y-4">
                 <div class="bg-white rounded-xl shadow-sm p-5 border">
+                    <div id="reader" class="hidden mb-4 rounded-lg overflow-hidden border-2 border-blue-500"></div>
                     <div class="flex gap-2">
                         <div class="relative flex-grow">
                             <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                             <input type="text" id="barcode-input" placeholder="Scan atau Ketik SN Pelanggan..." class="w-full pl-10 pr-3 py-2 bg-gray-50 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none">
                         </div>
-                        <button id="btn-scan" class="bg-slate-700 text-white px-4 rounded-lg"><i class="fas fa-camera"></i></button>
+                        <button id="btn-scan" class="bg-slate-700 text-white px-4 rounded-lg hover:bg-slate-800 transition">
+                            <i class="fas fa-camera"></i>
+                        </button>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-xl shadow-sm p-5 border">
                     <div class="flex border-b mb-4 text-sm font-bold">
-                        <button onclick="setTab('jasa')" id="tab-jasa" class="px-6 py-2 border-b-2 border-blue-600 text-blue-600">Jasa Servis</button>
-                        <button onclick="setTab('sparepart')" id="tab-sparepart" class="px-6 py-2 text-gray-400">Sparepart</button>
+                        <button id="tab-jasa" onclick="setTab('jasa')" class="px-6 py-2 border-b-2 border-blue-600 text-blue-600">Jasa Servis</button>
+                        <button id="tab-sparepart" onclick="setTab('sparepart')" class="px-6 py-2 text-gray-400">Sparepart</button>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
-                        <input type="text" id="input-item-nama" placeholder="Keterangan..." class="sm:col-span-8 p-2 border rounded bg-gray-50">
-                        <input type="number" id="input-item-harga" placeholder="Harga" class="sm:col-span-3 p-2 border rounded bg-gray-50">
-                        <button id="btn-tambah-item" class="sm:col-span-1 bg-blue-600 text-white rounded"><i class="fas fa-plus"></i></button>
+                        <input type="text" id="input-item-nama" placeholder="Keterangan..." class="sm:col-span-8 p-2 border rounded bg-gray-50 outline-none">
+                        <input type="number" id="input-item-harga" placeholder="Harga" class="sm:col-span-3 p-2 border rounded bg-gray-50 outline-none">
+                        <button id="btn-tambah-item" class="sm:col-span-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                            <i class="fas fa-plus"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -74,23 +93,23 @@
                     <i class="fas fa-user-circle text-blue-500"></i>
                 </h2>
                 <div class="space-y-2 mb-4">
-                    <input type="text" id="input-nama" placeholder="Nama Lengkap" class="w-full p-2 text-sm border rounded outline-none focus:bg-blue-50">
-                    <input type="text" id="input-telp" placeholder="WhatsApp" class="w-full p-2 text-sm border rounded">
-                    <input type="text" id="input-merk" placeholder="Merk & Seri Unit" class="w-full p-2 text-sm border rounded">
-                    <input type="text" id="input-kelengkapan" placeholder="Kelengkapan" class="w-full p-2 text-sm border rounded">
-                    <textarea id="input-keluhan" placeholder="Keluhan" class="w-full p-2 text-sm border rounded h-20"></textarea>
+                    <input type="text" id="input-nama" placeholder="Nama Lengkap" class="w-full p-2 text-sm border rounded focus:bg-blue-50 outline-none">
+                    <input type="text" id="input-telp" placeholder="WhatsApp" class="w-full p-2 text-sm border rounded focus:bg-blue-50 outline-none">
+                    <input type="text" id="input-merk" placeholder="Merk & Seri Unit" class="w-full p-2 text-sm border rounded focus:bg-blue-50 outline-none">
+                    <input type="text" id="input-kelengkapan" placeholder="Kelengkapan" class="w-full p-2 text-sm border rounded focus:bg-blue-50 outline-none">
+                    <textarea id="input-keluhan" placeholder="Keluhan / Kerusakan" class="w-full p-2 text-sm border rounded h-20 focus:bg-blue-50 outline-none"></textarea>
                 </div>
 
                 <div id="list-transaksi" class="border rounded p-2 bg-gray-50 text-[10px] min-h-[100px] mb-4 overflow-y-auto max-h-[180px]"></div>
 
                 <div class="flex justify-between font-bold text-lg text-blue-800 mb-4 px-1">
-                    <span class="text-sm self-end">TOTAL :</span>
+                    <span class="text-xs self-end">TOTAL :</span>
                     <span id="text-total">Rp 0</span>
                 </div>
 
                 <div class="grid grid-cols-1 gap-2">
-                    <button onclick="cetakDokumen('tanda-terima')" class="bg-amber-500 text-white font-bold py-2 rounded-lg text-sm">TANDA TERIMA</button>
-                    <button onclick="cetakDokumen('nota')" class="bg-emerald-600 text-white font-bold py-3 rounded-lg text-sm shadow-md">CETAK NOTA A5</button>
+                    <button id="btn-tt" onclick="cetakDokumen('tanda-terima')" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 rounded-lg text-sm transition">TANDA TERIMA</button>
+                    <button id="btn-nota" onclick="cetakDokumen('nota')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg text-sm shadow-md transition">CETAK NOTA A5</button>
                 </div>
             </div>
         </main>
@@ -99,6 +118,7 @@
     <div id="print-container" style="display: none;"></div>
 
     <script>
+        // === KONFIGURASI FIREBASE ===
         const firebaseConfig = {
             apiKey: "AIzaSyBcyS36JnJNGZPdSxd_g9UmCq4BJRiG2rA",
             authDomain: "oneprintservice-db.firebaseapp.com",
@@ -113,13 +133,11 @@
         const auth = firebase.auth();
         const db = firebase.database();
 
-        // 1. SESSION PROTECTION (Cek Status Login)
+        // 1. SESSION & PROTEKSI
         auth.onAuthStateChanged(user => {
             if (!user) {
-                // Jika tidak ada user, lempar ke login.html
                 window.location.href = 'login.html';
             } else {
-                // Jika login sukses, tampilkan dashboard
                 document.getElementById('app-ui').classList.remove('opacity-0');
                 document.getElementById('user-display').innerText = user.email;
             }
@@ -140,14 +158,171 @@
         window.onclick = resetTimer;
         window.onkeypress = resetTimer;
 
-        // 3. LOGOUT ACTION
         function logoutAction() {
             auth.signOut().then(() => { window.location.href = 'login.html'; });
         }
         document.getElementById('btn-logout').addEventListener('click', logoutAction);
 
-        // [LOGIKA SINKRONISASI DATABASE & PRINT SAMA SEPERTI SEBELUMNYA]
-        // ... (Fungsi simpanKeCloud, ambilDariCloud, updateList, cetakDokumen) ...
+        // 3. DATABASE LOGIC
+        function simpanKeCloud() {
+            const sn = document.getElementById('barcode-input').value.trim();
+            if (!sn) return;
+            db.ref('pelanggan/' + sn.replace(/[.#$[\]]/g, "_")).set({
+                nama: document.getElementById('input-nama').value,
+                telp: document.getElementById('input-telp').value,
+                merk: document.getElementById('input-merk').value,
+                kelengkapan: document.getElementById('input-kelengkapan').value,
+                lastUpdate: firebase.database.ServerValue.TIMESTAMP
+            });
+        }
+
+        function ambilDariCloud(sn) {
+            if (!sn) return;
+            db.ref('pelanggan/' + sn.trim().replace(/[.#$[\]]/g, "_")).once('value').then(snap => {
+                if (snap.exists()) {
+                    const d = snap.val();
+                    document.getElementById('input-nama').value = d.nama || '';
+                    document.getElementById('input-telp').value = d.telp || '';
+                    document.getElementById('input-merk').value = d.merk || '';
+                    document.getElementById('input-kelengkapan').value = d.kelengkapan || '';
+                    new Audio('https://www.soundjay.com/button/beep-07.mp3').play();
+                }
+            });
+        }
+
+        document.getElementById('barcode-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') ambilDariCloud(e.target.value);
+        });
+
+        // 4. SCANNER CAMERA
+        let html5QrCode;
+        document.getElementById('btn-scan').addEventListener('click', () => {
+            const readerDiv = document.getElementById('reader');
+            if (readerDiv.classList.contains('hidden')) {
+                readerDiv.classList.remove('hidden');
+                html5QrCode = new Html5Qrcode("reader");
+                html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, 
+                (txt) => {
+                    document.getElementById('barcode-input').value = txt;
+                    ambilDariCloud(txt);
+                    stopScan();
+                }).catch(err => alert("Kamera tidak ditemukan / Izin ditolak"));
+            } else {
+                stopScan();
+            }
+        });
+
+        function stopScan() {
+            if(html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    document.getElementById('reader').classList.add('hidden');
+                });
+            }
+        }
+
+        // 5. TRANSAKSI LOGIC
+        let currentTab = 'jasa';
+        let daftarTransaksi = { jasa: [], sparepart: [] };
+
+        function setTab(tab) {
+            currentTab = tab;
+            document.getElementById('tab-jasa').className = tab === 'jasa' ? "px-6 py-2 border-b-2 border-blue-600 text-blue-600 font-bold" : "px-6 py-2 text-gray-400 font-bold";
+            document.getElementById('tab-sparepart').className = tab === 'sparepart' ? "px-6 py-2 border-b-2 border-blue-600 text-blue-600 font-bold" : "px-6 py-2 text-gray-400 font-bold";
+        }
+
+        document.getElementById('btn-tambah-item').addEventListener('click', () => {
+            const nama = document.getElementById('input-item-nama').value;
+            const harga = parseInt(document.getElementById('input-item-harga').value) || 0;
+            if(!nama || harga <= 0) return;
+            daftarTransaksi[currentTab].push({ nama, harga });
+            document.getElementById('input-item-nama').value = '';
+            document.getElementById('input-item-harga').value = '';
+            updateList();
+        });
+
+        function updateList() {
+            const list = document.getElementById('list-transaksi');
+            list.innerHTML = ''; let total = 0;
+            ['jasa', 'sparepart'].forEach(cat => {
+                if(daftarTransaksi[cat].length > 0) {
+                    list.innerHTML += `<div class="font-bold text-blue-800 mb-1 mt-2 uppercase text-[9px] border-l-2 border-blue-500 pl-1">${cat}</div>`;
+                    daftarTransaksi[cat].forEach((item, idx) => {
+                        list.innerHTML += `<div class="flex justify-between py-1 border-b text-gray-600 italic">
+                            <span>${item.nama}</span>
+                            <span>Rp ${item.harga.toLocaleString()} <i onclick="hapus(${idx},'${cat}')" class="fas fa-times-circle text-red-300 ml-1 cursor-pointer"></i></span>
+                        </div>`;
+                        total += item.harga;
+                    });
+                }
+            });
+            document.getElementById('text-total').innerText = 'Rp ' + total.toLocaleString();
+            return total;
+        }
+
+        window.hapus = function(idx, cat) { daftarTransaksi[cat].splice(idx,1); updateList(); };
+
+        // 6. CETAK ENGINE
+        function cetakDokumen(tipe) {
+            simpanKeCloud();
+            const data = {
+                nama: document.getElementById('input-nama').value || '-',
+                telp: document.getElementById('input-telp').value || '-',
+                merk: document.getElementById('input-merk').value || '-',
+                kelengkapan: document.getElementById('input-kelengkapan').value || '-',
+                keluhan: document.getElementById('input-keluhan').value || '-',
+                sn: document.getElementById('barcode-input').value || '-',
+                total: updateList(),
+                tgl: new Date().toLocaleDateString('id-ID'),
+                no: Date.now().toString().slice(-6)
+            };
+
+            let content = `<div class="invoice-page">
+                <div class="header">
+                    <div class="flex">
+                        <img src="logos.png" class="logo-image" onerror="this.outerHTML='<div style=\\'width:55px;height:55px;border:1px solid #000;margin-right:12px;display:flex;align-items:center;justify-content:center;font-size:10px;\\'>LOGO</div>'">
+                        <div>
+                            <div class="company-name">OnePrint Service</div>
+                            <p class="tagline italic">Repair Center Ponorogo</p>
+                            <p class="address-info italic">Jl. Jula-Juli No.71 Tambakbayan</p>
+                            <p class="address-info font-bold">WA: 082-337-557-178</p>
+                        </div>
+                    </div>
+                    <div class="header-right">
+                        <div class="invoice-title uppercase">${tipe==='nota'?'Invoice':'Tanda Terima'}</div>
+                        <span style="font-size:10px;">No: ${tipe==='nota'?'INV':'TT'}-${data.no}</span>
+                    </div>
+                </div>
+                <div class="client-data">
+                    <label>Nama Pelanggan <span>:</span></label><span class="display-data">${data.nama}</span>
+                    <label>Tanggal <span>:</span></label><span class="display-data">${data.tgl}</span>
+                    <label>Merk/Seri Unit <span>:</span></label><span class="display-data">${data.merk}</span>
+                    <label>Serial Number <span>:</span></label><span class="display-data">${data.sn}</span>
+                </div>`;
+
+            if(tipe === 'nota') {
+                let itemsHtml = '';
+                ['jasa','sparepart'].forEach(c => {
+                    daftarTransaksi[c].forEach((it, i) => {
+                        itemsHtml += `<tr><td align="center">${i+1}</td><td>${it.nama.toUpperCase()}</td><td align="right">Rp ${it.harga.toLocaleString()}</td></tr>`;
+                    });
+                });
+                content += `<table class="service-table"><thead><tr><th>No</th><th>Keterangan Biaya</th><th>Total</th></tr></thead><tbody>${itemsHtml}</tbody>
+                <tfoot><tr class="font-bold"><td colspan="2" align="right">TOTAL AKHIR:</td><td align="right">Rp ${data.total.toLocaleString()}</td></tr></tfoot></table>`;
+            } else {
+                content += `<div style="border:1px solid #000; padding:8px; min-height:150px; font-size:10px;">
+                    <b>KELUHAN:</b><br><div class="uppercase">${data.keluhan.replace(/\n/g, '<br>')}</div><br>
+                    <b>KELENGKAPAN:</b><br><div class="uppercase">${data.kelengkapan}</div>
+                </div>`;
+            }
+
+            content += `<div class="signature-section">
+                <div class="signature-box"><span>Admin OnePrint,</span><span class="signature-line"></span></div>
+                <div class="signature-box"><span>Hormat Kami,</span><span class="signature-line">(${data.nama})</span></div>
+            </div></div>`;
+
+            document.getElementById('print-container').innerHTML = content;
+            window.print();
+        }
     </script>
 </body>
 </html>
