@@ -8,50 +8,67 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     
     <script src="https://unpkg.com/html5-qrcode"></script>
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        /* CSS KHUSUS CETAK A5 (Tetap sesuai standar INVOICE-SERVIS.html) */
+        /* Style Cetak A5 sesuai file INVOICE-SERVIS.html */
         @media print {
-            #app-ui, #qr-modal { display: none !important; }
+            #app-ui, #login-screen, #qr-modal { display: none !important; }
             body { background-color: white; margin: 0; padding: 0; }
             @page { size: A5 portrait; margin: 0.1in 0.15in; }
             #print-container { display: block !important; width: 100%; font-family: Arial, sans-serif; color: black; }
             .invoice-page { width: 148mm; height: 210mm; box-sizing: border-box; margin: 0 auto; position: relative; }
             .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 10px; }
             .logo-image { width: 60px; height: 60px; margin-right: 12px; object-fit: contain; }
-            .company-name { font-size: 20px; font-weight: bold; margin-bottom: 2px; text-transform: uppercase; }
+            .company-name { font-size: 18px; font-weight: bold; text-transform: uppercase; }
             .tagline, .address-info { font-size: 9px; margin: 0; line-height: 1.2; }
-            .header-right { text-align: right; border: 1px dashed #000; padding: 5px; min-width: 120px; }
-            .invoice-title { font-size: 18px; font-weight: 900; color: #444; }
+            .header-right { text-align: right; border: 1px dashed #000; padding: 5px; min-width: 110px; }
+            .invoice-title { font-size: 16px; font-weight: 900; }
             .client-data { display: grid; grid-template-columns: 1fr 1.5fr 1fr 1.5fr; gap: 4px 8px; font-size: 10px; margin-bottom: 12px; border: 1px solid #ddd; padding: 6px; }
-            .client-data label { font-weight: bold; display: flex; justify-content: space-between; }
-            .display-data { border-bottom: 1px dotted #aaa; font-size: 10px; min-height: 16px; font-weight: 500; }
-            .service-table { width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 10px; }
+            .display-data { border-bottom: 1px dotted #aaa; font-weight: 500; }
+            .service-table { width: 100%; border-collapse: collapse; font-size: 10px; }
             .service-table th, .service-table td { border: 1px solid #000; padding: 4px; }
-            .service-table th { background-color: #f0f0f0 !important; text-align: center; }
-            .category-header { background-color: #e0e0e0 !important; font-weight: bold; }
             .signature-section { display: flex; justify-content: space-between; margin-top: 20px; font-size: 10px; }
             .signature-box { text-align: center; width: 40%; }
             .signature-line { display: block; margin-top: 35px; border-bottom: 1px solid #000; font-weight: bold; }
             .note-box { border: 1px solid #000; padding: 5px; font-size: 8px; width: 60%; margin-top: 15px; }
-            .note-title { font-weight: bold; text-decoration: underline; display: block; margin-bottom: 2px; }
         }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
 
-    <div id="app-ui">
-        <header class="bg-blue-900 text-white p-4 flex justify-between items-center shadow-lg">
-            <div class="font-bold text-xl flex items-center">
-                <i class="fas fa-cloud mr-3 text-cyan-400"></i> OnePrint <span class="text-blue-200 ml-1">Cloud Service</span>
+    <div id="login-screen" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-[100]">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+            <div class="text-center mb-6">
+                <i class="fas fa-cloud-upload-alt text-5xl text-blue-600 mb-2"></i>
+                <h2 class="text-2xl font-bold text-gray-800 tracking-tight">OnePrint Cloud</h2>
+                <p class="text-gray-400 text-xs">Akses Database Servis Terpusat</p>
             </div>
-            <div id="status-cloud" class="text-[10px] bg-blue-800 px-2 py-1 rounded border border-blue-400 text-cyan-300">
-                <i class="fas fa-check-circle mr-1"></i> Terkoneksi Firebase
+            <div class="space-y-4">
+                <input type="email" id="login-email" placeholder="Email Admin" class="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="password" id="login-pass" placeholder="Password" class="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+                <button id="btn-login" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow-lg">MASUK DASHBOARD</button>
+                <div id="login-error" class="text-red-500 text-xs text-center hidden font-bold">Autentikasi Gagal! Periksa kembali.</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-ui" class="hidden">
+        <header class="bg-slate-800 text-white p-4 flex justify-between items-center shadow-md">
+            <div class="font-bold text-lg flex items-center">
+                <i class="fas fa-print mr-3 text-cyan-400"></i> OnePrint <span class="text-blue-300 ml-1 font-light italic">Cloud</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="hidden sm:flex flex-col text-right">
+                    <span id="user-display" class="text-[10px] text-cyan-300 font-mono"></span>
+                    <span id="idle-timer" class="text-[9px] text-gray-400 tracking-tighter italic">Sesi Aktif</span>
+                </div>
+                <button id="btn-logout" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-xs font-bold flex items-center transition">
+                    <i class="fas fa-power-off mr-2"></i> KELUAR
+                </button>
             </div>
         </header>
 
@@ -60,10 +77,10 @@
                 <div class="bg-white rounded-xl shadow-sm p-5 border">
                     <div class="flex gap-2">
                         <div class="relative flex-grow">
-                            <i class="fas fa-barcode absolute left-3 top-3 text-gray-400"></i>
-                            <input type="text" id="barcode-input" placeholder="Scan SN / Barcode..." class="w-full pl-10 pr-3 py-2 bg-gray-50 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                            <input type="text" id="barcode-input" placeholder="Scan atau Ketik SN Pelanggan..." class="w-full pl-10 pr-3 py-2 bg-gray-50 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none">
                         </div>
-                        <button id="btn-scan" class="bg-slate-700 text-white px-4 rounded-lg"><i class="fas fa-camera"></i></button>
+                        <button id="btn-scan" class="bg-slate-700 text-white px-4 rounded-lg hover:bg-slate-800"><i class="fas fa-camera"></i></button>
                     </div>
                 </div>
 
@@ -73,33 +90,40 @@
                         <button onclick="setTab('sparepart')" id="tab-sparepart" class="px-6 py-2 text-gray-500">Sparepart / Tinta</button>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
-                        <input type="text" id="input-item-nama" placeholder="Keterangan..." class="sm:col-span-8 p-2 border rounded bg-gray-50 outline-none">
+                        <input type="text" id="input-item-nama" placeholder="Misal: Ganti LCD / Tinta 664..." class="sm:col-span-8 p-2 border rounded bg-gray-50 outline-none">
                         <input type="number" id="input-item-harga" placeholder="Harga" class="sm:col-span-3 p-2 border rounded bg-gray-50 outline-none">
-                        <button id="btn-tambah-item" class="sm:col-span-1 bg-blue-600 text-white rounded"><i class="fas fa-plus"></i></button>
+                        <button id="btn-tambah-item" class="sm:col-span-1 bg-blue-600 text-white rounded hover:bg-blue-700"><i class="fas fa-plus"></i></button>
                     </div>
                 </div>
             </div>
 
             <div class="bg-white rounded-xl shadow-sm p-5 border flex flex-col h-fit">
-                <h2 class="font-bold text-gray-800 mb-4 border-b pb-2 uppercase text-sm tracking-widest">Customer Data</h2>
+                <h2 class="font-bold text-gray-700 mb-4 border-b pb-2 text-xs uppercase tracking-widest flex justify-between">
+                    <span>Data Pelanggan</span>
+                    <i class="fas fa-user-circle text-blue-500"></i>
+                </h2>
                 <div class="space-y-2 mb-4">
-                    <input type="text" id="input-nama" placeholder="Nama Pelanggan" class="w-full p-2 text-sm border rounded outline-none focus:bg-blue-50">
-                    <input type="text" id="input-telp" placeholder="No. HP / WA" class="w-full p-2 text-sm border rounded outline-none focus:bg-blue-50">
-                    <input type="text" id="input-merk" placeholder="Merk / Model" class="w-full p-2 text-sm border rounded outline-none focus:bg-blue-50">
-                    <input type="text" id="input-kelengkapan" placeholder="Kelengkapan" class="w-full p-2 text-sm border rounded outline-none focus:bg-blue-50">
-                    <textarea id="input-keluhan" placeholder="Keluhan / Kerusakan" class="w-full p-2 text-sm border rounded outline-none focus:bg-blue-50 h-20"></textarea>
+                    <input type="text" id="input-nama" placeholder="Nama Lengkap" class="w-full p-2 text-sm border rounded outline-none focus:bg-blue-50">
+                    <input type="text" id="input-telp" placeholder="WhatsApp / No HP" class="w-full p-2 text-sm border rounded outline-none focus:bg-blue-50">
+                    <input type="text" id="input-merk" placeholder="Merk & Seri Perangkat" class="w-full p-2 text-sm border rounded outline-none focus:bg-blue-50">
+                    <input type="text" id="input-kelengkapan" placeholder="Kelengkapan (Tas, Adaptor, dll)" class="w-full p-2 text-sm border rounded outline-none focus:bg-blue-50">
+                    <textarea id="input-keluhan" placeholder="Keluhan / Masalah" class="w-full p-2 text-sm border rounded outline-none focus:bg-blue-50 h-20"></textarea>
                 </div>
 
-                <div id="list-transaksi" class="border rounded p-2 bg-gray-50 text-xs min-h-[100px] mb-4 overflow-y-auto max-h-[200px]"></div>
+                <div id="list-transaksi" class="border rounded p-2 bg-gray-50 text-[10px] min-h-[100px] mb-4 overflow-y-auto max-h-[180px]"></div>
 
-                <div class="flex justify-between font-bold text-lg text-blue-700 mb-4 px-1">
-                    <span>Total</span>
+                <div class="flex justify-between font-bold text-lg text-blue-800 mb-4 px-1">
+                    <span class="text-sm self-end">TOTAL :</span>
                     <span id="text-total">Rp 0</span>
                 </div>
 
                 <div class="grid grid-cols-1 gap-2">
-                    <button onclick="cetakDokumen('tanda-terima')" class="bg-amber-500 text-white font-bold py-2 rounded-lg text-sm">CETAK TANDA TERIMA</button>
-                    <button onclick="cetakDokumen('nota')" class="bg-emerald-600 text-white font-bold py-3 rounded-lg text-sm">CETAK NOTA A5</button>
+                    <button onclick="cetakDokumen('tanda-terima')" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 rounded-lg text-sm transition">
+                        <i class="fas fa-file-invoice mr-2"></i> TANDA TERIMA
+                    </button>
+                    <button onclick="cetakDokumen('nota')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg text-sm transition shadow-md">
+                        <i class="fas fa-print mr-2"></i> CETAK NOTA A5
+                    </button>
                 </div>
             </div>
         </main>
@@ -109,7 +133,6 @@
 
     <script>
         // === 1. KONFIGURASI FIREBASE ===
-        // PASTE KODE firebaseConfig ANDA DI SINI
         const firebaseConfig = {
             apiKey: "AIzaSyBcyS36JnJNGZPdSxd_g9UmCq4BJRiG2rA",
             authDomain: "oneprintservice-db.firebaseapp.com",
@@ -120,61 +143,108 @@
             appId: "1:330853999249:web:4503ed115d2694d9cb5530"
         };
 
-        // Inisialisasi Firebase
         firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
         const db = firebase.database();
 
-        // === 2. FUNGSI CLOUD SYNC ===
+        // === 2. FITUR AUTO LOGOUT (30 MENIT) ===
+        let idleTime = 0;
+        const maxIdleTime = 30; // 30 Menit
+
+        function resetTimer() {
+            idleTime = 0;
+            document.getElementById('idle-timer').innerText = "Sesi Aktif";
+        }
+
+        // Jalankan timer setiap 1 menit
+        setInterval(function() {
+            if (auth.currentUser) {
+                idleTime++;
+                document.getElementById('idle-timer').innerText = `Idle: ${idleTime}/${maxIdleTime} mnt`;
+                if (idleTime >= maxIdleTime) {
+                    alert("Sesi berakhir karena tidak ada aktivitas selama 30 menit.");
+                    logoutAction();
+                }
+            }
+        }, 60000); 
+
+        // Deteksi aktivitas user
+        window.onload = resetTimer;
+        window.onmousemove = resetTimer;
+        window.onmousedown = resetTimer; 
+        window.ontouchstart = resetTimer;
+        window.onclick = resetTimer;
+        window.onkeypress = resetTimer;
+
+        // === 3. AUTH LOGIC ===
+        const loginScreen = document.getElementById('login-screen');
+        const appUi = document.getElementById('app-ui');
+
+        document.getElementById('btn-login').addEventListener('click', () => {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            auth.signInWithEmailAndPassword(email, pass).catch(err => {
+                document.getElementById('login-error').classList.remove('hidden');
+            });
+        });
+
+        function logoutAction() {
+            auth.signOut().then(() => location.reload());
+        }
+
+        document.getElementById('btn-logout').addEventListener('click', logoutAction);
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                loginScreen.classList.add('hidden');
+                appUi.classList.remove('hidden');
+                document.getElementById('user-display').innerText = user.email;
+                resetTimer();
+            } else {
+                loginScreen.classList.remove('hidden');
+                appUi.classList.add('hidden');
+            }
+        });
+
+        // === 4. DATABASE & TRANSAKSI ===
         function simpanKeCloud() {
             const sn = document.getElementById('barcode-input').value.trim();
             if (!sn) return;
-
-            // Simpan data pelanggan ke path 'pelanggan/[SN]'
             db.ref('pelanggan/' + sn.replace(/[.#$[\]]/g, "_")).set({
                 nama: document.getElementById('input-nama').value,
                 telp: document.getElementById('input-telp').value,
                 merk: document.getElementById('input-merk').value,
                 kelengkapan: document.getElementById('input-kelengkapan').value,
-                lastUpdate: Date.now()
+                lastUpdate: firebase.database.ServerValue.TIMESTAMP
             });
         }
 
         function ambilDariCloud(sn) {
             if (!sn) return;
-            const path = sn.trim().replace(/[.#$[\]]/g, "_");
-            
-            db.ref('pelanggan/' + path).once('value').then((snapshot) => {
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    document.getElementById('input-nama').value = data.nama || '';
-                    document.getElementById('input-telp').value = data.telp || '';
-                    document.getElementById('input-merk').value = data.merk || '';
-                    document.getElementById('input-kelengkapan').value = data.kelengkapan || '';
-                    document.getElementById('input-keluhan').value = ''; 
+            db.ref('pelanggan/' + sn.trim().replace(/[.#$[\]]/g, "_")).once('value').then(snap => {
+                if (snap.exists()) {
+                    const d = snap.val();
+                    document.getElementById('input-nama').value = d.nama || '';
+                    document.getElementById('input-telp').value = d.telp || '';
+                    document.getElementById('input-merk').value = d.merk || '';
+                    document.getElementById('input-kelengkapan').value = d.kelengkapan || '';
+                    document.getElementById('input-keluhan').value = '';
                     new Audio('https://www.soundjay.com/button/beep-07.mp3').play();
-                } else {
-                    // Reset form jika data tidak ditemukan
-                    ['input-nama','input-telp','input-merk','input-kelengkapan','input-keluhan'].forEach(id => {
-                        document.getElementById(id).value = '';
-                    });
                 }
             });
         }
 
-        // === 3. EVENT HANDLERS ===
-        const barcodeInput = document.getElementById('barcode-input');
-        barcodeInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') ambilDariCloud(barcodeInput.value);
+        document.getElementById('barcode-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') ambilDariCloud(e.target.value);
         });
 
-        // Tab & Transaksi Logika
         let currentTab = 'jasa';
         let daftarTransaksi = { jasa: [], sparepart: [] };
 
         function setTab(tab) {
             currentTab = tab;
-            document.getElementById('tab-jasa').className = tab === 'jasa' ? "px-6 py-2 border-b-2 border-blue-600 text-blue-600 font-bold" : "px-6 py-2 text-gray-500 font-bold";
-            document.getElementById('tab-sparepart').className = tab === 'sparepart' ? "px-6 py-2 border-b-2 border-blue-600 text-blue-600 font-bold" : "px-6 py-2 text-gray-500 font-bold";
+            document.getElementById('tab-jasa').className = tab === 'jasa' ? "px-6 py-2 border-b-2 border-blue-600 text-blue-600" : "px-6 py-2 text-gray-400";
+            document.getElementById('tab-sparepart').className = tab === 'sparepart' ? "px-6 py-2 border-b-2 border-blue-600 text-blue-600" : "px-6 py-2 text-gray-400";
         }
 
         document.getElementById('btn-tambah-item').addEventListener('click', () => {
@@ -189,16 +259,12 @@
 
         function updateList() {
             const list = document.getElementById('list-transaksi');
-            list.innerHTML = '';
-            let total = 0;
+            list.innerHTML = ''; let total = 0;
             ['jasa', 'sparepart'].forEach(cat => {
                 if(daftarTransaksi[cat].length > 0) {
-                    list.innerHTML += `<div class="font-bold text-blue-800 mb-1 mt-2 uppercase text-[9px] border-l-4 border-blue-500 pl-2">${cat}</div>`;
+                    list.innerHTML += `<div class="font-bold text-blue-800 mb-1 mt-2 uppercase text-[9px] border-l-2 border-blue-400 pl-2">${cat}</div>`;
                     daftarTransaksi[cat].forEach((item, idx) => {
-                        list.innerHTML += `<div class="flex justify-between py-1 border-b border-gray-100 italic">
-                            <span>${item.nama}</span>
-                            <span class="font-bold">Rp ${item.harga.toLocaleString()} <i onclick="hapus(${idx},'${cat}')" class="fas fa-times-circle text-red-300 ml-2 cursor-pointer"></i></span>
-                        </div>`;
+                        list.innerHTML += `<div class="flex justify-between py-1 border-b text-gray-600 italic"><span>${item.nama}</span><span>Rp ${item.harga.toLocaleString()} <i onclick="hapus(${idx},'${cat}')" class="fas fa-times-circle text-red-300 ml-1 cursor-pointer"></i></span></div>`;
                         total += item.harga;
                     });
                 }
@@ -209,10 +275,9 @@
 
         function hapus(idx, cat) { daftarTransaksi[cat].splice(idx,1); updateList(); }
 
-        // === 4. FUNGSI CETAK (Identik dengan INVOICE-SERVIS.html) ===
+        // === 5. PRINT ENGINE ===
         function cetakDokumen(tipe) {
-            simpanKeCloud(); // SINKRONISASI SEBELUM CETAK
-            
+            simpanKeCloud();
             const data = {
                 nama: document.getElementById('input-nama').value || '-',
                 telp: document.getElementById('input-telp').value || '-',
@@ -230,68 +295,59 @@
                     <div class="header">
                         <div class="header-left">
                             <img src="logos.png" class="logo-image" onerror="this.outerHTML='<div style=\\'width:60px;height:60px;border:1px solid #000;margin-right:12px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:bold;\\'>LOGO</div>'">
-                            <div class="company-info">
+                            <div>
                                 <div class="company-name">OnePrint Service</div>
-                                <p class="tagline italic">Melayani Perbaikan Printer, Laptop, dan Komputer</p>
-                                <p class="address-info">Jl. Jula-Juli No.71 Tambakbayan, Ponorogo</p>
-                                <p class="address-info font-bold">HP / WA: 082-337-557-178</p>
+                                <p class="tagline italic">Repair Center Ponorogo</p>
+                                <p class="address-info">Jl. Jula-Juli No.71 Tambakbayan</p>
+                                <p class="address-info font-bold">WA: 082-337-557-178</p>
                             </div>
                         </div>
                         <div class="header-right">
-                            <div class="invoice-title">${tipe === 'nota' ? 'INVOICE' : 'TANDA TERIMA'}</div>
-                            <span class="invoice-number">No: ${tipe === 'nota' ? 'INV' : 'TT'}-${data.no}</span>
-                            <span style="font-size:8px; font-weight:bold;">Lembar Salinan/Pelanggan</span>
+                            <div class="invoice-title">${tipe==='nota'?'INVOICE':'TANDA TERIMA'}</div>
+                            <span style="font-size:9px;">No: ${tipe==='nota'?'INV':'TT'}-${data.no}</span>
                         </div>
                     </div>
                     
                     <div class="client-data">
-                        <label>Nama Pelanggan <span>:</span></label><span class="display-data uppercase font-bold">${data.nama}</span>
+                        <label>Nama <span>:</span></label><span class="display-data uppercase">${data.nama}</span>
                         <label>Tanggal <span>:</span></label><span class="display-data">${data.tgl}</span>
-                        <label>No. Telp/WA <span>:</span></label><span class="display-data">${data.telp}</span>
-                        <label>Merk/Model <span>:</span></label><span class="display-data uppercase">${data.merk}</span>
-                        <label>Serial Number <span>:</span></label><span class="display-data">${data.sn}</span>
-                        <label>Kelengkapan <span>:</span></label><span class="display-data">${data.kelengkapan}</span>
+                        <label>Unit <span>:</span></label><span class="display-data uppercase">${data.merk}</span>
+                        <label>SN <span>:</span></label><span class="display-data">${data.sn}</span>
                     </div>`;
 
             if(tipe === 'nota') {
-                let rows = '';
-                ['jasa', 'sparepart'].forEach(cat => {
-                    rows += `<tr class="category-header"><td style="text-align:center">-</td><td colspan="2">${cat === 'jasa' ? 'A. Jasa Perbaikan' : 'B. Sparepart & Tinta'}</td></tr>`;
-                    if(daftarTransaksi[cat].length === 0) rows += `<tr><td style="text-align:center">-</td><td>-</td><td style="text-align:right">-</td></tr>`;
-                    daftarTransaksi[cat].forEach((item, i) => {
-                        rows += `<tr><td style="text-align:center">${i+1}</td><td class="uppercase">${item.nama}</td><td style="text-align:right">Rp ${item.harga.toLocaleString()}</td></tr>`;
+                let trs = '';
+                ['jasa','sparepart'].forEach(c => {
+                    daftarTransaksi[c].forEach((it,i) => {
+                        trs += `<tr><td align="center">${i+1}</td><td class="uppercase">${it.nama}</td><td align="right">Rp ${it.harga.toLocaleString()}</td></tr>`;
                     });
                 });
                 content += `
                     <table class="service-table">
-                        <thead><tr><th width="5%">No</th><th width="75%">Rincian Biaya</th><th width="20%">Biaya</th></tr></thead>
-                        <tbody>${rows}</tbody>
-                        <tfoot><tr class="font-bold"><td colspan="2" style="text-align:right">TOTAL BIAYA :</td><td style="text-align:right; background:#eee;">Rp ${data.total.toLocaleString()}</td></tr></tfoot>
-                    </table>
+                        <thead><tr><th>No</th><th>Rincian Pekerjaan/Sparepart</th><th>Biaya</th></tr></thead>
+                        <tbody>${trs}</tbody>
+                        <tfoot><tr class="font-bold"><td colspan="2" align="right">TOTAL AKHIR:</td><td align="right" style="background:#f0f0f0">Rp ${data.total.toLocaleString()}</td></tr></tfoot>
+                    </table>`;
+            } else {
+                content += `
+                    <div style="border:1px solid #000; padding:8px; min-height:120px; font-size:10px;">
+                        <div style="font-weight:bold; border-bottom:1px solid #ddd; margin-bottom:5px;">KELUHAN/KENDALA:</div>
+                        <div class="uppercase">${data.keluhan.replace(/\n/g, '<br>')}</div>
+                        <div style="font-weight:bold; margin-top:10px; border-bottom:1px solid #ddd;">KELENGKAPAN:</div>
+                        <div class="uppercase">${data.kelengkapan}</div>
+                    </div>`;
+            }
+
+            content += `
                     <div class="signature-section">
-                        <div class="signature-box"><span>Hormat Kami,</span><span class="signature-line">OnePrint Service</span></div>
+                        <div class="signature-box"><span>Admin OnePrint,</span><span class="signature-line">Admin</span></div>
                         <div class="signature-box"><span>Pelanggan,</span><span class="signature-line">(${data.nama})</span></div>
                     </div>
                     <div class="note-box">
-                        <span class="note-title">PERHATIAN !</span>
-                        1. Simpan nota ini sebagai bukti garansi. 2. Garansi hangus jika segel rusak atau cacat fisik.
-                    </div>`;
-            } else {
-                content += `
-                    <div style="border:1px solid #000; padding:8px; min-height:150px; font-size:10px;">
-                        <div style="font-weight:bold; border-bottom:1px solid #ccc; margin-bottom:5px;">KELUHAN / KENDALA PERANGKAT:</div>
-                        <div class="uppercase">${data.keluhan.replace(/\n/g, '<br>')}</div>
+                        <b>CATATAN:</b> 1. Garansi servis sesuai ketentuan nota. 2. Pengambilan unit wajib membawa tanda terima ini.
                     </div>
-                    <div class="signature-section">
-                        <div class="signature-box"><span>Admin (OnePrint),</span><span class="signature-line">Admin Service</span></div>
-                        <div class="signature-box"><span>Pelanggan,</span><span class="signature-line">(${data.nama})</span></div>
-                    </div>
-                    <div class="note-box" style="width:100%;">
-                        <span class="note-title">SYARAT PENGAMBILAN:</span>
-                        Wajib membawa tanda terima ini. Barang tidak diambil >2 bulan di luar tanggung jawab kami.
-                    </div>`;
-            }
-            content += `</div>`;
+                </div>`;
+
             document.getElementById('print-container').innerHTML = content;
             window.print();
         }
