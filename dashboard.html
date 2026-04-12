@@ -189,8 +189,13 @@
         const db = firebase.database();
 
         auth.onAuthStateChanged(user => {
-            if (!user) window.location.href = 'login.html'; 
-            else document.getElementById('user-display').innerText = user.email;
+            if (!user) {
+                window.location.href = 'login.html'; 
+            } else {
+                // Hanya ambil bagian depan sebelum tanda @ untuk ditampilkan
+                const usernameOnly = user.email.split('@')[0];
+                document.getElementById('user-display').innerText = "User: " + usernameOnly.toUpperCase();
+            }
         });
 
         document.getElementById('btn-logout').addEventListener('click', () => {
