@@ -152,6 +152,10 @@
                             <input type="text" id="barcode-input" placeholder="Scan Serial Number (Enter)..." class="w-full pl-10 pr-3 py-2 bg-gray-50 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none uppercase font-mono">
                         </div>
                         <button id="btn-scan" class="bg-slate-700 text-white px-4 rounded-lg hover:bg-slate-800"><i class="fas fa-camera"></i></button>
+
+                        <button id="btn-remote-scan" class="bg-indigo-600 text-white px-4 rounded-lg hover:bg-indigo-700">
+                            <i class="fas fa-mobile-alt"></i>
+                        </button>
                     </div>
                     <div id="reader" class="w-full hidden mt-4 border-2 border-dashed border-gray-300 rounded-lg overflow-hidden"></div>
                 </div>
@@ -404,6 +408,42 @@
 
             window.print();
         }
+        // --- LOGIKA REMOTE SCANNER ---
+        const peer = new Peer('oneprint-pos-server'); // Pastikan ID ini unik
+        const qrModal = document.getElementById('qr-modal');
+        let refreshTimer;
+
+        document.getElementById('btn-remote-scan').addEventListener('click', () => {
+            qrModal.classList.remove('hidden');
+            document.getElementById("qrcode").innerHTML = "";
+            
+            // Membuat URL scanner (otomatis mendeteksi lokasi file scanner.html)
+            const sessionId = 'oneprint-' + Date.now();
+            const scannerUrl = window.location.origin + window.location.pathname.replace('dashboard.html', 'scanner.html') + '?sid=' + sessionId;
+            
+            new QRCode(document.getElementById("qrcode"), { text: scannerUrl, width: 200, height: 200 });
+        });
+
+        document.getElementById('close-modal').addEventListener('click', () => {
+            qrModal.classList.add('hidden');
+        });
+
+        // Menerima data dari HP
+        peer.on('connection', (conn) => {
+            qrModal.classList.add('hidden');
+            alert("HP Terhubung sebagai Scanner!");
+            conn.on('data', (data) => {
+                document.getElementById('barcode-input').value = data;
+                isiDataOtomatis(data); // Memanggil fungsi auto-fill data pelanggan
+            });
+        });
     </script>
+    <div id="qr-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div class="bg-white p-6 rounded-2xl text-center shadow-2xl max-w-xs w-full">
+            <h3 class="font-bold mb-3">Scan via Smartphone</h3>
+            <div id="qrcode" class="flex justify-center mb-6 p-2 bg-white border rounded"></div>
+            <button id="close-modal" class="w-full py-2 text-gray-500 font-semibold hover:text-red-500">Tutup</button>
+        </div>
+    </div>
 </body>
 </html>
