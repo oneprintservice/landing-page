@@ -223,8 +223,9 @@
             if (!user) {
                 window.location.href = 'login.html'; 
             } else {
-                const userLogin = user.email.split('@')[0];
-                document.getElementById('user-display').innerText = "TEKNISI: " + userLogin.toUpperCase();
+                // Hanya ambil bagian depan sebelum tanda @ untuk ditampilkan
+                const usernameOnly = user.email.split('@')[0];
+                document.getElementById('user-display').innerText = "User: " + usernameOnly.toUpperCase();
             }
         });
 
