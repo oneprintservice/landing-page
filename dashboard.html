@@ -386,10 +386,10 @@
                     });
                 });
                 mainContent = `<table class="service-table"><thead><tr><th width="5%">No</th><th width="70%">Rincian</th><th width="25%">Subtotal</th></tr></thead><tbody>${rows}</tbody><tfoot><tr class="font-bold"><td colspan="2" style="text-align:right">TOTAL :</td><td style="text-align:right; background:#eee;">Rp ${total.toLocaleString()}</td></tr></tfoot></table>`;
-                noteContent = `<div class="note-box"><span class="note-title">PERHATIAN:</span><ol><li>Simpan nota sebagai bukti garansi.</li><li>Garansi tidak berlaku jika segel rusak atau cacat fisik.</li></ol></div>`;
+                noteContent = `<div class="note-box"><span class="note-title">PERHATIAN:</span><ol><li>1. Simpan nota / invoice sebagai bukti garansi.</li><li>2. Garansi tidak berlaku jika segel rusak atau cacat fisik karena pemakaian.</li></ol></div>`;
             } else {
                 mainContent = `<div style="border:1px solid #000; padding:10px; min-height:160px; font-size:10px;"><div style="font-weight:bold; border-bottom:1px solid #ccc; margin-bottom:8px;">KELUHAN PERANGKAT:</div><div class="uppercase">${keluhan.replace(/\n/g, '<br>')}</div></div>`;
-                noteContent = `<div class="note-box"><span class="note-title">SYARAT PENGAMBILAN:</span><ol><li>WAJIB bawa tanda terima ini saat ambil.</li><li>Barang tidak diambil >2 bulan bukan tanggung jawab kami.</li></ol></div>`;
+                noteContent = `<div class="note-box"><span class="note-title">SYARAT PENGAMBILAN:</span><ol><li>WAJIB bawa tanda terima ini saat pengambilan.</li><li>Barang tidak diambil >2 bulan setelah konfirmasi bukan tanggung jawab kami.</li></ol></div>`;
             }
 
             document.getElementById('print-container').innerHTML = `
@@ -400,7 +400,7 @@
                     <div class="footer-area">
                         ${noteContent}
                         <div class="signature-wrapper">
-                            <div class="signature-box"><span>Admin OnePrint,</span><span class="signature-line"></span></div>
+                            <div class="signature-box"><span>Hormat Kami,</span><span class="signature-line"></span></div>
                             <div class="signature-box"><span>Pelanggan,</span><span class="signature-line">(${nama})</span></div>
                         </div>
                     </div>
