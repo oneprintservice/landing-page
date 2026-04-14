@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard OnePrint Service - Ponorogo</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+    <style>
+        /* =========================================
+           CSS OPTIMASI CETAK (Mencegah Terpotong)
+           ========================================= */
+        @media print {
+            #app-ui, #qr-modal { display: none !important; }
+            body { background-color: white; margin: 0; padding: 0; }
+            
+            /* Margin 0 di @page untuk menghilangkan header/footer URL dari browser */
+            @page { 
+                size: A5 portrait; 
+                margin: 0; 
+            }
+
+            #print-container { 
+                display: block !important; 
+                width: 100%;
+                background: white;
+            }
+
+            .invoice-page {
+                /* REVISI KESEMPURNAAN: Lebar 132mm menyisakan margin 8mm di Kanan & Kiri */
+                width: 132mm; 
+                /* Jarak Atas 10mm (1cm) agar aman dari potongan atas printer */
+                margin: 10mm auto 5mm auto; 
+                padding: 0;
+                box-sizing: border-box;
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                font-family: 'Arial', sans-serif;
+                color: black;
+                min-height: 190mm; /* Menjaga agar konten terdorong dengan baik ke bawah */
+                overflow: hidden; /* Memastikan tidak ada garis yang melebar keluar batas */
+            }
+
+            /* Header Kop */
+            .header { 
+                display: flex; 
+                justify-content: space-between; 
+                align-items: flex-start; 
+                border-bottom: 2px solid #000; 
+                padding-bottom: 5px; 
+                margin-bottom: 10px; 
+                width: 100%; /* Kunci agar batasnya jelas */
+            }
+            .header-left { display: flex; align-items: flex-start; width: 60%; }
+            .logo-image { width: 55px; height: 55px; margin-right: 12px; object-fit: contain; flex-shrink: 0; }
+            .company-info { flex-grow: 1; }
+            .company-name { font-size: 18px; font-weight: bold; margin-bottom: 1px; text-transform: uppercase; }
+            .tagline, .address-info { font-size: 8.5px; margin: 0; line-height: 1.1; }
+            
+            /* Header Kanan */
+            .header-right { text-align: right; border: 1px dashed #000; padding: 4px 8px; width: 35%; }
+            .invoice-title { font-size: 16px; font-weight: 900; color: #333; }
+            .invoice-number { font-size: 14px; font-weight: bold; display: block; margin-top: 2px; font-family: 'Courier New', Courier, monospace; }
+
+            /* Grid Data Pelanggan */
+            .client-data { 
+                display: grid; 
+                grid-template-columns: 1fr 1.5fr 1fr 1.5fr; 
+                gap: 3px 8px; 
+                font-size: 9.5px; 
+                margin-bottom: 10px; 
+                border: 1px solid #ccc; 
+                padding: 5px; 
+                width: 100%;
+                box-sizing: border-box;
+            }
+            .client-data label { font-weight: bold; }
+            .display-data { border-bottom: 1px dotted #999; font-size: 9.5px; min-height: 14px; font-weight: 500; text-transform: uppercase; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+            /* Tabel Rincian */
+            .service-table { width: 100%; border-collapse: collapse; font-size: 9.5px; margin-bottom: 10px; table-layout: fixed; }
+            .service-table th, .service-table td { border: 1px solid #000; padding: 3px 5px; word-wrap: break-word; }
+            .service-table th { background-color: #f0f0f0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .category-header { background-color: #e5e5e5 !important; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+            /* Area Footer Gabungan */
+            .footer-area {
+                display: flex; 
+                justify-content: space-between; 
+                align-items: flex-end;
+                margin-top: auto; 
+                padding-top: 10px;
+                width: 100%;
+            }
+
+            /* Kotak Perhatian / Syarat Sesuai Permintaan (4cm) */
+            .note-box { 
+                width: 4.5cm; /* Sedikit dilebarkan agar teks tidak terlalu sesak */
+                background-color: #f5f5f5 !important; 
+                border: 1px solid #999; 
+                padding: 5px; 
+                font-size: 7.5px; 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+            }
+            .note-title { font-weight: bold; text-decoration: underline; display: block; margin-bottom: 3px; font-size: 8px; }
+            .note-box ol { margin: 0; padding-left: 12px; }
+            .note-box li { margin-bottom: 2px; line-height: 1.1; }
+
+            /* Tanda Tangan */
+            .signature-wrapper { display: flex; gap: 15px; font-size: 9.5px; justify-content: flex-end; }
+            .signature-box { text-align: center; width: 3.5cm; }
+            .signature-line { display: block; margin-top: 35px; border-bottom: 1px solid #000; font-weight: bold; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <div id="app-ui">
+        <header class="bg-slate-800 text-white p-4 flex justify-between items-center shadow-lg">
+            <div class="font-bold text-xl flex items-center italic">
+                <i class="fas fa-tools mr-3 text-yellow-400"></i> OnePrint <span class="text-blue-400 ml-1">Cloud</span>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <div class="hidden sm:flex flex-col text-right">
+                    <span id="user-display" class="text-[10px] text-cyan-300 font-mono"></span>
+                    <span id="idle-timer" class="text-[9px] text-gray-400 italic">Sesi Aktif</span>
+                </div>
+                <button id="btn-logout" class="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center">
+                    <i class="fas fa-power-off mr-2"></i> LOGOUT
+                </button>
+            </div>
+        </header>
+
+        <main class="p-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="lg:col-span-2 space-y-4">
+                <div class="bg-white rounded-xl shadow-sm p-5 border">
+                    <div class="flex gap-2">
+                        <div class="relative flex-grow">
+                            <i class="fas fa-barcode absolute left-3 top-3 text-gray-400"></i>
+                            <input type="text" id="barcode-input" placeholder="Scan Serial Number..." class="w-full pl-10 pr-3 py-2 bg-gray-50 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none uppercase font-mono">
+                        </div>
+                        <button id="btn-scan" class="bg-slate-700 text-white px-4 rounded-lg hover:bg-slate-800"><i class="fas fa-camera"></i></button>
+                    </div>
+                    <div id="reader" class="w-full hidden mt-4 border-2 border-dashed border-gray-300 rounded-lg"></div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm p-5 border">
+                    <h3 class="font-bold text-gray-700 mb-3 text-sm uppercase"><i class="fas fa-list-ul mr-2"></i> Item Biaya</h3>
+                    <div class="flex border-b mb-4 text-xs font-bold">
+                        <button onclick="setTab('jasa')" id="tab-jasa" class="px-4 py-2 border-b-2 border-blue-600 text-blue-600">JASA SERVIS</button>
+                        <button onclick="setTab('sparepart')" id="tab-sparepart" class="px-4 py-2 text-gray-500">SPAREPART / TINTA</button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                        <input type="text" id="input-item-nama" placeholder="Deskripsi..." class="sm:col-span-8 p-2 border rounded bg-gray-50 text-sm">
+                        <input type="number" id="input-item-harga" placeholder="Harga" class="sm:col-span-3 p-2 border rounded bg-gray-50 text-sm">
+                        <button id="btn-tambah-item" class="sm:col-span-1 bg-blue-600 text-white rounded"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-5 border flex flex-col h-fit">
+                <h2 class="font-bold text-gray-800 mb-4 border-b pb-2 text-sm">DATA WORK ORDER</h2>
+                <div class="space-y-2 mb-4">
+                    <input type="text" id="input-nama" placeholder="Nama Pelanggan" class="w-full p-2 text-sm border rounded uppercase">
+                    <input type="text" id="input-telp" placeholder="No. HP" class="w-full p-2 text-sm border rounded">
+                    <input type="text" id="input-merk" placeholder="Merk/Model Perangkat" class="w-full p-2 text-sm border rounded uppercase">
+                    <input type="text" id="input-kelengkapan" placeholder="Kelengkapan" class="w-full p-2 text-sm border rounded uppercase">
+                    <textarea id="input-keluhan" placeholder="Keluhan Kerusakan" class="w-full p-2 text-sm border rounded h-16 uppercase"></textarea>
+                </div>
+
+                <div id="list-transaksi" class="border rounded p-2 bg-gray-50 text-[10px] min-h-[100px] mb-4">
+                    <div class="text-center text-gray-400 mt-5 italic">Belum ada item biaya.</div>
+                </div>
+
+                <div class="flex justify-between font-bold text-blue-700 mb-4 px-1">
+                    <span>TOTAL</span>
+                    <span id="text-total">Rp 0</span>
+                </div>
+
+                <div class="grid grid-cols-1 gap-2">
+                    <button onclick="cetakDokumen('tanda-terima')" class="bg-amber-500 text-white font-bold py-2 rounded-lg text-xs hover:bg-amber-600">
+                        <i class="fas fa-file-invoice mr-2"></i> CETAK TANDA TERIMA
+                    </button>
+                    <button onclick="cetakDokumen('nota')" class="bg-emerald-600 text-white font-bold py-2.5 rounded-lg text-xs hover:bg-emerald-700">
+                        <i class="fas fa-print mr-2"></i> CETAK NOTA A5 (INVOICE)
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="print-container" style="display: none;"></div>
+
+    <script>
+        // === 1. KONFIGURASI FIREBASE ===
+        const firebaseConfig = {
+            apiKey: "PASTE_API_KEY",
+            authDomain: "PASTE_AUTH_DOMAIN",
+            databaseURL: "PASTE_DATABASE_URL",
+            projectId: "PASTE_PROJECT_ID",
+            storageBucket: "PASTE_STORAGE_BUCKET",
+            messagingSenderId: "PASTE_MESSAGING_ID",
+            appId: "PASTE_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        // Login Check (Username only)
+        auth.onAuthStateChanged(user => {
+            if (!user) {
+                window.location.href = 'login.html'; 
+            } else {
+                const userLogin = user.email.split('@')[0];
+                document.getElementById('user-display').innerText = "TEKNISI: " + userLogin.toUpperCase();
+            }
+        });
+
+        document.getElementById('btn-logout').addEventListener('click', () => {
+            auth.signOut().then(() => window.location.href = 'login.html');
+        });
+
+        // === 2. AUTO LOGOUT 30 MINS ===
+        let idleTime = 0;
+        setInterval(() => {
+            if (auth.currentUser) {
+                idleTime++;
+                document.getElementById('idle-timer').innerText = `Idle: ${idleTime}/30 mnt`;
+                if (idleTime >= 30) {
+                    auth.signOut().then(() => window.location.href = 'login.html');
+                }
+            }
+        }, 60000); 
+
+        function resetTimer() { idleTime = 0; }
+        window.onmousemove = resetTimer;
+        window.onclick = resetTimer;
+        window.onkeypress = resetTimer;
+
+        // === 3. FIREBASE DATABASE OPS ===
+        function simpanDataKeDatabase() {
+            const sn = document.getElementById('barcode-input').value.trim();
+            if (!sn || sn === '-') return; 
+            const safeSn = sn.replace(/[.#$[\]]/g, "_"); 
+            db.ref('pelanggan/' + safeSn).update({
+                nama: document.getElementById('input-nama').value,
+                telp: document.getElementById('input-telp').value,
+                merk: document.getElementById('input-merk').value,
+                kelengkapan: document.getElementById('input-kelengkapan').value
+            });
+        }
+
+        const barcodeInput = document.getElementById('barcode-input');
+        function isiDataOtomatis(sn) {
+            if(!sn) return;
+            const safeSn = sn.trim().replace(/[.#$[\]]/g, "_");
+            db.ref('pelanggan/' + safeSn).once('value').then(snapshot => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    document.getElementById('input-nama').value = data.nama || '';
+                    document.getElementById('input-telp').value = data.telp || '';
+                    document.getElementById('input-merk').value = data.merk || '';
+                    document.getElementById('input-kelengkapan').value = data.kelengkapan || '';
+                    try { new Audio('https://www.soundjay.com/button/beep-07.mp3').play(); } catch(e){}
+                }
+            });
+        }
+
+        barcodeInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') isiDataOtomatis(e.target.value); });
+
+        // === 4. TRANSAKSI MANAGEMENT ===
+        let currentTab = 'jasa';
+        let daftarTransaksi = { jasa: [], sparepart: [] };
+
+        function setTab(tab) {
+            currentTab = tab;
+            document.getElementById('tab-jasa').className = tab === 'jasa' ? "px-4 py-2 border-b-2 border-blue-600 text-blue-600" : "px-4 py-2 text-gray-500";
+            document.getElementById('tab-sparepart').className = tab === 'sparepart' ? "px-4 py-2 border-b-2 border-blue-600 text-blue-600" : "px-4 py-2 text-gray-500";
+        }
+
+        document.getElementById('btn-tambah-item').addEventListener('click', () => {
+            const nama = document.getElementById('input-item-nama').value;
+            const harga = parseInt(document.getElementById('input-item-harga').value) || 0;
+            if(!nama || harga <= 0) return;
+            daftarTransaksi[currentTab].push({ nama, harga });
+            document.getElementById('input-item-nama').value = '';
+            document.getElementById('input-item-harga').value = '';
+            updateList();
+        });
+
+        function updateList() {
+            const list = document.getElementById('list-transaksi');
+            list.innerHTML = '';
+            let total = 0;
+            ['jasa', 'sparepart'].forEach(cat => {
+                if(daftarTransaksi[cat].length > 0) {
+                    list.innerHTML += `<div class="font-bold text-blue-800 mb-1 mt-1 uppercase text-[8px]">${cat}</div>`;
+                    daftarTransaksi[cat].forEach((item, idx) => {
+                        list.innerHTML += `<div class="flex justify-between py-1 border-b border-gray-200">
+                            <span class="uppercase">${item.nama}</span>
+                            <span>Rp ${item.harga.toLocaleString()} <i onclick="hapus(${idx},'${cat}')" class="fas fa-times-circle text-red-400 ml-1 cursor-pointer"></i></span>
+                        </div>`;
+                        total += item.harga;
+                    });
+                }
+            });
+            document.getElementById('text-total').innerText = 'Rp ' + total.toLocaleString();
+            return total;
+        }
+
+        function hapus(idx, cat) { daftarTransaksi[cat].splice(idx,1); updateList(); }
+
+        // === 5. FUNGSI CETAK OPTIMASI ===
+        function cetakDokumen(tipe) {
+            simpanDataKeDatabase();
+
+            const nama = document.getElementById('input-nama').value || '-';
+            const telp = document.getElementById('input-telp').value || '-';
+            const merk = document.getElementById('input-merk').value || '-';
+            const kelengkapan = document.getElementById('input-kelengkapan').value || '-';
+            const keluhan = document.getElementById('input-keluhan').value || '-';
+            const sn = document.getElementById('barcode-input').value || '-';
+            const total = updateList();
+            const tgl = new Date().toLocaleDateString('id-ID');
+            
+            const now = new Date();
+            const noNota = `${String(now.getFullYear()).slice(-2)}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
+
+            const kopHeader = `
+                <div class="header">
+                    <div class="header-left">
+                        <img src="logos.png" class="logo-image" onerror="this.outerHTML='<div style=\\'width:55px;height:55px;border:1px solid #000;margin-right:12px;\\'></div>'">
+                        <div class="company-info">
+                            <div class="company-name">OnePrint Service</div>
+                            <p class="tagline italic">Melayani Perbaikan Printer, Laptop, dan Komputer</p>
+                            <p class="address-info">Jl. Jula-Juli No.71 Tambakbayan, Ponorogo</p>
+                            <p class="address-info font-bold">HP / WA: 082-337-557-178</p>
+                        </div>
+                    </div>
+                    <div class="header-right">
+                        <div class="invoice-title">${tipe === 'nota' ? 'INVOICE' : 'TANDA TERIMA'}</div>
+                        <span class="invoice-number"># ${tipe === 'nota' ? 'INV' : 'TT'}-${noNota}</span>
+                    </div>
+                </div>`;
+
+            const clientGrid = `
+                <div class="client-data">
+                    <label>Pelanggan <span>:</span></label><span class="display-data">${nama}</span>
+                    <label>Tanggal <span>:</span></label><span class="display-data">${tgl}</span>
+                    <label>Telepon <span>:</span></label><span class="display-data">${telp}</span>
+                    <label>Merk/Tipe <span>:</span></label><span class="display-data">${merk}</span>
+                    <label>Serial No. <span>:</span></label><span class="display-data">${sn}</span>
+                    <label>Kelengkapan <span>:</span></label><span class="display-data">${kelengkapan}</span>
+                </div>`;
+
+            let mainContent = '';
+            let noteContent = '';
+
+            if(tipe === 'nota') {
+                let rows = '';
+                ['jasa', 'sparepart'].forEach(cat => {
+                    rows += `<tr class="category-header"><td style="text-align:center">-</td><td colspan="2">${cat === 'jasa' ? 'JASA SERVIS' : 'SPAREPART / TINTA'}</td></tr>`;
+                    daftarTransaksi[cat].forEach((item, i) => {
+                        rows += `<tr><td style="text-align:center">${i+1}</td><td class="uppercase">${item.nama}</td><td style="text-align:right">Rp ${item.harga.toLocaleString()}</td></tr>`;
+                    });
+                });
+                mainContent = `<table class="service-table"><thead><tr><th width="5%">No</th><th width="70%">Rincian</th><th width="25%">Subtotal</th></tr></thead><tbody>${rows}</tbody><tfoot><tr class="font-bold"><td colspan="2" style="text-align:right">TOTAL :</td><td style="text-align:right; background:#eee;">Rp ${total.toLocaleString()}</td></tr></tfoot></table>`;
+                noteContent = `<div class="note-box"><span class="note-title">PERHATIAN:</span><ol><li>Simpan nota sebagai bukti garansi.</li><li>Garansi tidak berlaku jika segel rusak atau cacat fisik.</li></ol></div>`;
+            } else {
+                mainContent = `<div style="border:1px solid #000; padding:10px; min-height:160px; font-size:10px;"><div style="font-weight:bold; border-bottom:1px solid #ccc; margin-bottom:8px;">KELUHAN PERANGKAT:</div><div class="uppercase">${keluhan.replace(/\n/g, '<br>')}</div></div>`;
+                noteContent = `<div class="note-box"><span class="note-title">SYARAT PENGAMBILAN:</span><ol><li>WAJIB bawa tanda terima ini saat ambil.</li><li>Barang tidak diambil >2 bulan bukan tanggung jawab kami.</li></ol></div>`;
+            }
+
+            document.getElementById('print-container').innerHTML = `
+                <div class="invoice-page">
+                    ${kopHeader}
+                    ${clientGrid}
+                    ${mainContent}
+                    <div class="footer-area">
+                        ${noteContent}
+                        <div class="signature-wrapper">
+                            <div class="signature-box"><span>Admin OnePrint,</span><span class="signature-line"></span></div>
+                            <div class="signature-box"><span>Pelanggan,</span><span class="signature-line">(${nama})</span></div>
+                        </div>
+                    </div>
+                </div>`;
+
+            window.print();
+        }
+    </script>
+</body>
+</html>
