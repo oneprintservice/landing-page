@@ -408,34 +408,71 @@
 
             window.print();
         }
-        // --- LOGIKA REMOTE SCANNER ---
-        const peer = new Peer('oneprint-pos-server'); // Pastikan ID ini unik
+        // --- PERBAIKAN LOGIKA REMOTE SCANNER ---
+        const peer = new Peer('oneprint-pos-server'); 
         const qrModal = document.getElementById('qr-modal');
         let refreshTimer;
 
         document.getElementById('btn-remote-scan').addEventListener('click', () => {
             qrModal.classList.remove('hidden');
-            document.getElementById("qrcode").innerHTML = "";
+            const qrContainer = document.getElementById("qrcode");
+            qrContainer.innerHTML = ""; // Bersihkan QR sebelumnya
             
-            // Membuat URL scanner (otomatis mendeteksi lokasi file scanner.html)
+            // PERBAIKAN: Cara mengambil path folder yang lebih aman tanpa tergantung nama file dashboard
+            const currentPath = window.location.pathname;
+            const folderPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
             const sessionId = 'oneprint-' + Date.now();
-            const scannerUrl = window.location.origin + window.location.pathname.replace('dashboard.html', 'scanner.html') + '?sid=' + sessionId;
             
-            new QRCode(document.getElementById("qrcode"), { text: scannerUrl, width: 200, height: 200 });
+            // Membuat URL yang benar ke file scanner.html
+            const scannerUrl = window.location.origin + folderPath + '/scanner.html?sid=' + sessionId;
+            
+            // Membuat QR Code
+            try {
+                new QRCode(qrContainer, {
+                    text: scannerUrl,
+                    width: 200,
+                    height: 200,
+                    colorDark : "#000000",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+                console.log("QR Code berhasil dibuat untuk: " + scannerUrl);
+            } catch (err) {
+                console.error("Gagal membuat QR Code:", err);
+            }
+
+            // Refresh QR setiap 30 detik agar session tetap segar
+            if (refreshTimer) clearInterval(refreshTimer);
+            refreshTimer = setInterval(() => {
+                qrContainer.innerHTML = "";
+                new QRCode(qrContainer, { text: scannerUrl, width: 200, height: 200 });
+            }, 30000);
         });
 
         document.getElementById('close-modal').addEventListener('click', () => {
+            if (refreshTimer) clearInterval(refreshTimer);
             qrModal.classList.add('hidden');
         });
 
         // Menerima data dari HP
         peer.on('connection', (conn) => {
+            if (refreshTimer) clearInterval(refreshTimer);
             qrModal.classList.add('hidden');
-            alert("HP Terhubung sebagai Scanner!");
+            
+            // Bunyi notifikasi saat HP terhubung
+            try { new Audio('https://www.soundjay.com/buttons/beep-01a.mp3').play(); } catch(e){}
+            alert("HP Terhubung sebagai Scanner OnePrint!");
+            
             conn.on('data', (data) => {
-                document.getElementById('barcode-input').value = data;
-                isiDataOtomatis(data); // Memanggil fungsi auto-fill data pelanggan
+                tanganiScanSukses(data);
             });
+        });
+
+        // Menangani error PeerJS jika ID sudah dipakai
+        peer.on('error', (err) => {
+            if (err.type === 'unavailable-id') {
+                console.warn("ID Server sudah digunakan. Mencoba menghubungkan ulang...");
+            }
         });
     </script>
     <div id="qr-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
