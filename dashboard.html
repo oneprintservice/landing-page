@@ -214,18 +214,50 @@
         }
         barcodeInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') isiDataOtomatis(e.target.value); });
 
+        // --- OPTIMASI SCANNER BARCODE ---
         let html5QrcodeScanner;
+        
         document.getElementById('btn-scan').addEventListener('click', () => {
             const readerDiv = document.getElementById('reader');
             readerDiv.classList.toggle('hidden');
+            
             if (!html5QrcodeScanner) {
-                html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: {width: 250, height: 120} });
-                html5QrcodeScanner.render((text) => {
-                    barcodeInput.value = text;
-                    isiDataOtomatis(text);
-                    html5QrcodeScanner.clear();
-                    readerDiv.classList.add('hidden');
+                // Konfigurasi agar lebih responsif dan akurat
+                const config = { 
+                    fps: 25, // Meningkatkan kelancaran gambar
+                    qrbox: { width: 280, height: 150 }, // Area pindaian lebih lebar (cocok untuk S/N)
+                    aspectRatio: 1.777778, // Rasio 16:9 agar jangkauan kamera lebih luas
+                    experimentalFeatures: {
+                        useBarCodeDetectorIfSupported: true // Gunakan engine native browser (Sangat Cepat & Akurat)
+                    },
+                    // Hanya fokus pada format yang sering ada di printer/laptop
+                    formatsToSupport: [ 
+                        Html5QrcodeSupportedFormats.CODE_128, 
+                        Html5QrcodeSupportedFormats.CODE_39, 
+                        Html5QrcodeSupportedFormats.EAN_13, 
+                        Html5QrcodeSupportedFormats.QR_CODE 
+                    ]
+                };
+        
+                html5QrcodeScanner = new Html5QrcodeScanner("reader", config, /* verbose= */ false);
+                
+                html5QrcodeScanner.render((decodedText) => {
+                    // Jika scan sukses
+                    barcodeInput.value = decodedText;
+                    isiDataOtomatis(decodedText);
+                    
+                    // Tutup scanner otomatis setelah berhasil
+                    html5QrcodeScanner.clear().then(() => {
+                        readerDiv.classList.add('hidden');
+                    }).catch(error => console.error("Gagal menghentikan scanner:", error));
+                    
+                }, (errorMessage) => {
+                    // Abaikan error saat proses mencari (untuk menjaga performa)
                 });
+            } else {
+                // Jika scanner sudah ada, tinggal stop atau bersihkan
+                html5QrcodeScanner.clear();
+                html5QrcodeScanner = null;
             }
         });
 
