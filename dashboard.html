@@ -176,6 +176,25 @@
 
             <div class="bg-white rounded-xl shadow-sm p-5 border flex flex-col h-fit">
                 <h2 class="font-bold text-gray-800 mb-4 border-b pb-2 text-sm">DATA WORK ORDER</h2>
+                <div class="mb-3 flex gap-2">
+                
+                    <input
+                        type="text"
+                        id="cari-servis"
+                        placeholder="Cari No TT / Invoice / Barcode"
+                        class="flex-1 p-2 border rounded text-sm">
+                
+                    <button
+                        onclick="cariServis()"
+                        class="bg-blue-600 text-white px-3 rounded text-sm font-bold">
+                        CARI
+                    </button>
+                
+                </div>
+                
+                <div id="mode-edit"
+                     class="hidden mb-3 bg-green-100 border border-green-400 text-green-800 text-xs p-2 rounded">
+                </div>
                 <div class="mb-3">
                     <label class="text-xs font-bold text-gray-600">STATUS SERVIS</label>
                     <select id="status-servis" class="w-full p-2 border rounded text-sm">
@@ -326,6 +345,7 @@
         const db = firebase.database();
 
         let currentTeknisi = "TEKNISI";
+        let currentServisKey = null;
 
         auth.onAuthStateChanged(user => {
             if (!user) { window.location.href = 'login.html'; } 
@@ -850,6 +870,122 @@
                 'Rekap Total Servis',
                 html
             );
+        
+        }
+        async function cariServis(){
+        
+            const keyword =
+                document.getElementById(
+                    'cari-servis'
+                ).value.trim();
+        
+            if(!keyword){
+                alert('Masukkan nomor yang dicari');
+                return;
+            }
+        
+            // 1. Coba cari langsung berdasarkan key
+            const byKey =
+                await db.ref(
+                    'servis/' + keyword
+                ).once('value');
+        
+            if(byKey.exists()){
+        
+                bukaServis(
+                    keyword,
+                    byKey.val()
+                );
+        
+                return;
+            }
+        
+            // 2. Cari berdasarkan nomor invoice
+            const all =
+                await db.ref('servis')
+                .once('value');
+        
+            let ketemu = false;
+        
+            all.forEach(child => {
+        
+                const data = child.val();
+        
+                if(
+                    data.nomor === keyword ||
+                    data.serial === keyword
+                ){
+        
+                    ketemu = true;
+        
+                    bukaServis(
+                        child.key,
+                        data
+                    );
+        
+                }
+        
+            });
+        
+            if(!ketemu){
+        
+                alert('Servis tidak ditemukan');
+        
+            }
+        
+        }
+        function bukaServis(key,data){
+        
+            currentServisKey = key;
+        
+            document.getElementById(
+                'mode-edit'
+            ).classList.remove('hidden');
+        
+            document.getElementById(
+                'mode-edit'
+            ).innerHTML =
+                '🟢 MODE EDIT : ' + key;
+        
+            document.getElementById(
+                'barcode-input'
+            ).value =
+                data.serial || '';
+        
+            document.getElementById(
+                'input-nama'
+            ).value =
+                data.pelanggan || '';
+        
+            document.getElementById(
+                'input-telp'
+            ).value =
+                data.telp || '';
+        
+            document.getElementById(
+                'input-merk'
+            ).value =
+                data.merk || '';
+        
+            document.getElementById(
+                'input-kelengkapan'
+            ).value =
+                data.kelengkapan || '';
+        
+            document.getElementById(
+                'input-keluhan'
+            ).value =
+                data.keluhan || '';
+        
+            document.getElementById(
+                'status-servis'
+            ).value =
+                data.status || 'MASUK';
+        
+            document.getElementById(
+                'keterangan-servis'
+            ).value =
+                data.keterangan || '';
         
         }
         function setTab(tab) {
