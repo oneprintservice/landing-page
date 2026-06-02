@@ -1118,6 +1118,10 @@
             );
         
             currentServisKey = null;
+
+            document.getElementById(
+                'btn-update-servis'
+            ).classList.add('hidden');
         
             document.getElementById(
                 'mode-edit'
@@ -1495,7 +1499,9 @@
                 );
             
             });
-        document.getElementById('btn-simpan-inventori')
+            
+            }
+            document.getElementById('btn-simpan-inventori')
         .addEventListener('click', () => {
 
             const nama = document.getElementById('inv-nama').value.trim();
