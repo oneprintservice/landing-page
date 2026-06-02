@@ -621,9 +621,237 @@
             );
         
         }
-        function lihatMenungguSparepart(){}
-        function lihatSelesai(){}
-        function lihatTotalServis(){}
+        async function lihatMenungguSparepart(){
+        
+            const snapshot =
+                await db.ref('servis')
+                .once('value');
+        
+            let html = '';
+        
+            const sekarang = new Date();
+        
+            snapshot.forEach(child => {
+        
+                const data = child.val();
+        
+                if(
+                    (data.status || '').toUpperCase()
+                    === 'MENUNGGU SPAREPART'
+                ){
+        
+                    const umur =
+                        Math.floor(
+                            (
+                                sekarang -
+                                new Date(data.tanggal)
+                            ) / 86400000
+                        );
+        
+                    html += `
+                        <div class="border-b py-2">
+        
+                            <div class="font-bold">
+                                ${data.nomor}
+                            </div>
+        
+                            <div>
+                                ${data.pelanggan}
+                            </div>
+        
+                            <div>
+                                ${data.merk}
+                            </div>
+        
+                            <div class="text-xs text-gray-600">
+                                ${data.keterangan || '-'}
+                            </div>
+        
+                            <div class="
+                                ${umur > 14
+                                    ? 'text-red-600 font-bold'
+                                    : ''
+                                }
+                            ">
+                                ${umur} hari
+                            </div>
+        
+                        </div>
+                    `;
+                }
+        
+            });
+        
+            bukaModalStatistik(
+                'Menunggu Sparepart',
+                html || 'Tidak ada data'
+            );
+        
+        }
+        async function lihatSelesai(){
+        
+            const snapshot =
+                await db.ref('servis')
+                .once('value');
+        
+            let html = '';
+        
+            const sekarang = new Date();
+        
+            snapshot.forEach(child => {
+        
+                const data = child.val();
+        
+                if(
+                    (data.status || '').toUpperCase()
+                    === 'SELESAI'
+                ){
+        
+                    const umur =
+                        Math.floor(
+                            (
+                                sekarang -
+                                new Date(data.tanggal)
+                            ) / 86400000
+                        );
+        
+                    html += `
+                        <div class="border-b py-2">
+        
+                            <div class="font-bold">
+                                ${data.nomor}
+                            </div>
+        
+                            <div>
+                                ${data.pelanggan}
+                            </div>
+        
+                            <div>
+                                ${data.merk}
+                            </div>
+        
+                            <div class="text-green-700 font-bold">
+                                Rp ${(data.total || 0).toLocaleString()}
+                            </div>
+        
+                            <div>
+                                ${umur} hari
+                            </div>
+        
+                        </div>
+                    `;
+                }
+        
+            });
+        
+            bukaModalStatistik(
+                'Selesai Belum Diambil',
+                html || 'Tidak ada data'
+            );
+        
+        }
+        async function lihatTotalServis(){
+        
+            const snapshot =
+                await db.ref('servis')
+                .once('value');
+        
+            let html = '';
+        
+            let totalCair = 0;
+            let jumlahDiambil = 0;
+            let jumlahSelesai = 0;
+        
+            snapshot.forEach(child => {
+        
+                const data = child.val();
+        
+                const status =
+                    (data.status || '')
+                    .toUpperCase();
+        
+                if(
+                    status === 'SELESAI' ||
+                    status === 'DIAMBIL'
+                ){
+        
+                    if(status === 'DIAMBIL'){
+                        jumlahDiambil++;
+                        totalCair +=
+                            Number(data.total || 0);
+                    }
+        
+                    if(status === 'SELESAI'){
+                        jumlahSelesai++;
+                    }
+        
+                    html += `
+                        <div class="border-b py-2">
+        
+                            <div class="font-bold">
+                                ${data.nomor}
+                            </div>
+        
+                            <div>
+                                ${data.pelanggan}
+                            </div>
+        
+                            <div>
+                                ${data.merk}
+                            </div>
+        
+                            <div>
+                                Rp ${(data.total || 0).toLocaleString()}
+                            </div>
+        
+                            <div class="
+                                ${
+                                    status === 'DIAMBIL'
+                                    ? 'text-green-600'
+                                    : 'text-amber-600'
+                                }
+                                font-bold
+                            ">
+                                ${
+                                    status === 'DIAMBIL'
+                                    ? '🟢 DIAMBIL'
+                                    : '🟡 SELESAI'
+                                }
+                            </div>
+        
+                        </div>
+                    `;
+                }
+        
+            });
+        
+            html += `
+                <div class="mt-4 p-3 bg-gray-100 rounded">
+        
+                    <div class="font-bold">
+                        Pendapatan Cair:
+                        Rp ${totalCair.toLocaleString()}
+                    </div>
+        
+                    <div>
+                        Diambil:
+                        ${jumlahDiambil}
+                    </div>
+        
+                    <div>
+                        Belum Diambil:
+                        ${jumlahSelesai}
+                    </div>
+        
+                </div>
+            `;
+        
+            bukaModalStatistik(
+                'Rekap Total Servis',
+                html
+            );
+        
+        }
         function setTab(tab) {
             currentTab = tab;
             document.getElementById('tab-jasa').className = tab === 'jasa' ? "px-4 py-2 border-b-2 border-blue-600 text-blue-600" : "px-4 py-2 text-gray-500";
