@@ -551,6 +551,12 @@
                     (data.status || '')
                     .toUpperCase();
 
+                if(status === 'MASUK' ){
+
+                    servisBaru++;
+
+                }
+
                 if(
                     status === 'MASUK' ||
                     status === 'DIAGNOSA' ||
@@ -589,6 +595,28 @@
             document.getElementById(
                 'stat-total'
             ).innerText = total;
+
+            const badge =
+                document.getElementById(
+                    'badge-servis-baru'
+                );
+            
+            if(servisBaru > 0){
+            
+                badge.classList.remove(
+                    'hidden'
+                );
+            
+                badge.innerText =
+                    servisBaru;
+            
+            }else{
+            
+                badge.classList.add(
+                    'hidden'
+                );
+            
+            }
 
         }
         function bukaModalStatistik(judul, html){
@@ -649,6 +677,21 @@
         
                     html += `
                         <div class="border-b py-2">
+                    
+                            ${
+                                status === 'MASUK'
+                                ? `
+                                <div class="
+                                    text-red-600
+                                    font-bold
+                                    text-xs
+                                    mb-1
+                                ">
+                                    🔴 BARU MASUK
+                                </div>
+                                `
+                                : ''
+                            }
         
                             <div class="font-bold">
                                 ${data.nomor}
@@ -663,7 +706,19 @@
                             </div>
 
                             <div class="text-xs text-gray-600">
-                                ${data.keterangan || '-'}
+                            
+                                ${
+                                    status === 'MASUK'
+                                    ? (
+                                        data.keluhan ||
+                                        'Belum ada keluhan'
+                                    )
+                                    : (
+                                        data.keterangan ||
+                                        '-'
+                                    )
+                                }
+                            
                             </div>
         
                             <div class="
