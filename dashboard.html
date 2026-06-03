@@ -1208,6 +1208,67 @@
             }
         
         }
+        function resetFormServis(){
+        
+            currentServisKey = null;
+        
+            document.getElementById(
+                'barcode-input'
+            ).value = '';
+        
+            document.getElementById(
+                'cari-servis'
+            ).value = '';
+        
+            document.getElementById(
+                'input-nama'
+            ).value = '';
+        
+            document.getElementById(
+                'input-telp'
+            ).value = '';
+        
+            document.getElementById(
+                'input-merk'
+            ).value = '';
+        
+            document.getElementById(
+                'input-kelengkapan'
+            ).value = '';
+        
+            document.getElementById(
+                'input-keluhan'
+            ).value = '';
+        
+            document.getElementById(
+                'status-servis'
+            ).value = 'MASUK';
+        
+            document.getElementById(
+                'keterangan-servis'
+            ).value = '';
+        
+            daftarSparepart = [];
+        
+            renderDaftarSparepart();
+        
+            document.getElementById(
+                'mode-edit'
+            ).classList.add('hidden');
+        
+            document.getElementById(
+                'btn-update-servis'
+            ).classList.add('hidden');
+        
+            document.getElementById(
+                'btn-hapus-servis'
+            ).classList.add('hidden');
+        
+            document.getElementById(
+                'btn-batal-edit'
+            ).classList.add('hidden');
+        
+        }
         function setTab(tab) {
             currentTab = tab;
             document.getElementById('tab-jasa').className = tab === 'jasa' ? "px-4 py-2 border-b-2 border-blue-600 text-blue-600" : "px-4 py-2 text-gray-500";
