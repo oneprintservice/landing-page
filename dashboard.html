@@ -1111,6 +1111,14 @@
                 'keterangan-servis'
             ).value =
                 data.keterangan || '';
+
+            daftarTransaksi.jasa =
+                data.jasa || [];
+            
+            daftarTransaksi.sparepart =
+                data.sparepart || [];
+            
+            updateList();
         
         }
         function batalEditServis(){
