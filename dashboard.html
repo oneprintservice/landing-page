@@ -1277,39 +1277,37 @@
                     const stokLama =
                         stokSnap.val() || 0;
         
-                    await stokRef.set(
-                        let pengembali = 1;
-                        
-                        const dataInv =
-                            inventoriCache.find(
-                                x =>
-                                x.key === item.key &&
-                                x.kategori === item.kategori
-                            );
-                        
-                        if(dataInv){
-                        
-                            const satuan =
-                                (dataInv.satuan || '')
-                                .toLowerCase();
-                        
-                            if(satuan === 'ml'){
-                        
-                                pengembali = 100;
-                        
-                            }
-                        
-                            if(satuan === 'gram'){
-                        
-                                pengembali = 100;
-                        
-                            }
-                        
-                        }
-                        
-                        await stokRef.set(
-                            stokLama + pengembali
+                    let pengembali = 1;
+                    
+                    const dataInv =
+                        inventoriCache.find(
+                            x =>
+                            x.key === item.key &&
+                            x.kategori === item.kategori
                         );
+                    
+                    if(dataInv){
+                    
+                        const satuan =
+                            (dataInv.satuan || '')
+                            .toLowerCase();
+                    
+                        if(satuan === 'ml'){
+                    
+                            pengembali = 100;
+                    
+                        }
+                    
+                        if(satuan === 'gram'){
+                    
+                            pengembali = 100;
+                    
+                        }
+                    
+                    }
+                    
+                    await stokRef.set(
+                        stokLama + pengembali
                     );
         
                 }
