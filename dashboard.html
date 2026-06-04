@@ -1377,8 +1377,10 @@
         
             }
         
-            // langsung print TANPA save
-            window.print();
+            cetakDokumen(
+                'nota',
+                true
+            );
         
         }
         function setTab(tab) {
@@ -1529,7 +1531,7 @@
 
         }
 
-        function cetakDokumen(tipe) {
+        function cetakDokumen(tipe, reprint = false) {
             simpanDataKeDatabase();
 
             const nama = document.getElementById('input-nama').value || '-';
@@ -1645,29 +1647,46 @@
                     </div>
                 </div>`;
 
-            const aksiSimpan = currentServisKey
-                ? db.ref(
-                    'servis/' + currentServisKey
-                  ).update(dataServis)
-                : db.ref(
-                    'servis/' + noNota
-                  ).set(dataServis);
+            if(!reprint){
             
-            aksiSimpan
-            .then(() => {
-            
-                console.log(
+                const aksiSimpan =
                     currentServisKey
-                    ? 'Servis diupdate'
-                    : 'Servis baru disimpan'
-                );
+                    ? db.ref(
+                        'servis/' + currentServisKey
+                      ).update(dataServis)
+                    : db.ref(
+                        'servis/' + noNota
+                      ).set(dataServis);
             
-                loadStatistik();
+                aksiSimpan
+                .then(() => {
+            
+                    console.log(
+                        currentServisKey
+                        ? 'Servis diupdate'
+                        : 'Servis baru disimpan'
+                    );
+            
+                    loadStatistik();
+            
+                    window.print();
+            
+                })
+                .catch(err => {
+            
+                    console.error(err);
+            
+                    alert(
+                        'Gagal menyimpan data servis!'
+                    );
+            
+                });
+            
+            }else{
             
                 window.print();
             
-            })
-            .catch(err => {
+            }
             
                 console.error(err);
             
