@@ -888,6 +888,7 @@
             let html = '';
         
             let totalCair = 0;
+            let totalModal = 0;
             let jumlahDiambil = 0;
             let jumlahSelesai = 0;
         
@@ -905,9 +906,70 @@
                 ){
         
                     if(status === 'DIAMBIL'){
+                    
                         jumlahDiambil++;
+                    
                         totalCair +=
                             Number(data.total || 0);
+                    
+                        (data.sparepart || []).forEach(item => {
+                    
+                            let modalItem = 0;
+                    
+                            // barang inventori biasa
+                            if(item.harga_beli){
+                    
+                                modalItem =
+                                    Number(item.harga_beli);
+                    
+                            }
+                    
+                            // fallback hitung dari inventori
+                            else{
+                    
+                                const dataInv =
+                                    inventoriCache.find(
+                                        x =>
+                                        x.key === item.key &&
+                                        x.kategori === item.kategori
+                                    );
+                    
+                                if(dataInv){
+                    
+                                    modalItem =
+                                        Number(
+                                            dataInv.harga_beli || 0
+                                        );
+                    
+                                    const satuan =
+                                        (
+                                            dataInv.satuan || ''
+                                        ).toLowerCase();
+                    
+                                    // tinta & cleaner
+                                    if(satuan === 'ml'){
+                    
+                                        modalItem =
+                                            modalItem / 10;
+                    
+                                    }
+                    
+                                    // toner
+                                    if(satuan === 'gram'){
+                    
+                                        modalItem =
+                                            modalItem / 10;
+                    
+                                    }
+                    
+                                }
+                    
+                            }
+                    
+                            totalModal += modalItem;
+                    
+                        });
+                    
                     }
         
                     if(status === 'SELESAI'){
@@ -960,6 +1022,16 @@
                     <div class="font-bold">
                         Pendapatan Cair:
                         Rp ${totalCair.toLocaleString()}
+                    </div>
+
+                    <div class="font-bold text-red-600 mt-1">
+                        Modal Keluar:
+                        Rp ${totalModal.toLocaleString()}
+                    </div>
+                    
+                    <div class="font-bold text-green-700 mt-1">
+                        Estimasi Profit:
+                        Rp ${(totalCair - totalModal).toLocaleString()}
                     </div>
         
                     <div>
@@ -1206,7 +1278,38 @@
                         stokSnap.val() || 0;
         
                     await stokRef.set(
-                        stokLama + 1
+                        let pengembali = 1;
+                        
+                        const dataInv =
+                            inventoriCache.find(
+                                x =>
+                                x.key === item.key &&
+                                x.kategori === item.kategori
+                            );
+                        
+                        if(dataInv){
+                        
+                            const satuan =
+                                (dataInv.satuan || '')
+                                .toLowerCase();
+                        
+                            if(satuan === 'ml'){
+                        
+                                pengembali = 100;
+                        
+                            }
+                        
+                            if(satuan === 'gram'){
+                        
+                                pengembali = 100;
+                        
+                            }
+                        
+                        }
+                        
+                        await stokRef.set(
+                            stokLama + pengembali
+                        );
                     );
         
                 }
@@ -1435,8 +1538,26 @@
                         return;
                     }
 
+                    let pengurang = 1;
+                    
+                    const satuan =
+                        (item.satuan || '')
+                        .toLowerCase();
+                    
+                    if(satuan === 'ml'){
+                    
+                        pengurang = 100;
+                    
+                    }
+                    
+                    if(satuan === 'gram'){
+                    
+                        pengurang = 100;
+                    
+                    }
+                    
                     const stokBaru =
-                        (item.stok || 0) - 1;
+                        (item.stok || 0) - pengurang;
 
                     db.ref(
                         'inventori/' +
@@ -1519,8 +1640,26 @@
 
                 if(dataInv){
 
+                    let pengembali = 1;
+                    
+                    const satuan =
+                        (dataInv.satuan || '')
+                        .toLowerCase();
+                    
+                    if(satuan === 'ml'){
+                    
+                        pengembali = 100;
+                    
+                    }
+                    
+                    if(satuan === 'gram'){
+                    
+                        pengembali = 100;
+                    
+                    }
+                    
                     const stokBaru =
-                        (dataInv.stok || 0) + 1;
+                        (dataInv.stok || 0) + pengembali;
                         
 
                     db.ref(
