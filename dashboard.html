@@ -220,6 +220,13 @@
                     class="hidden w-full mb-2 bg-red-600 text-white py-2 rounded text-xs font-bold">
                     HAPUS SERVIS
                 </button>
+
+                <button
+                    id="btn-reprint-nota"
+                    onclick="reprintNota()"
+                    class="hidden w-full mb-2 bg-blue-600 text-white py-2 rounded text-xs font-bold">
+                    REPRINT NOTA
+                </button>
                 
                 <button
                     id="btn-batal-edit"
@@ -1045,6 +1052,10 @@
             ).classList.remove('hidden');
 
             document.getElementById(
+                'btn-reprint-nota'
+            ).classList.remove('hidden');
+
+            document.getElementById(
                 'btn-batal-edit'
             ).classList.remove('hidden');
 
@@ -1108,6 +1119,10 @@
 
             document.getElementById(
                 'btn-update-servis'
+            ).classList.add('hidden');
+
+            document.getElementById(
+                'btn-reprint-nota'
             ).classList.add('hidden');
 
             document.getElementById(
@@ -1324,6 +1339,10 @@
             document.getElementById(
                 'keterangan-servis'
             ).value = '';
+
+            document.getElementById(
+                'btn-reprint-nota'
+            ).classList.add('hidden');
         
             daftarSparepart = [];
         
@@ -1344,6 +1363,22 @@
             document.getElementById(
                 'btn-batal-edit'
             ).classList.add('hidden');
+        
+        }
+        function reprintNota(){
+        
+            if(!currentServisKey){
+        
+                alert(
+                    'Tidak ada servis dipilih'
+                );
+        
+                return;
+        
+            }
+        
+            // langsung print TANPA save
+            window.print();
         
         }
         function setTab(tab) {
