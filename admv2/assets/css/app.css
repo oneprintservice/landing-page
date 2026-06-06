@@ -24,3 +24,78 @@
 .card .card-body{
     min-height: 220px;
 }
+.new-service-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:14px 0;
+
+    border-bottom:1px solid #f1f1f1;
+}
+
+.new-service-item:last-child{
+    border-bottom:none;
+}
+
+.service-icon{
+    width:50px;
+    height:50px;
+
+    border-radius:12px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    color:white;
+
+    margin-right:15px;
+
+    flex-shrink:0;
+}
+
+.service-icon i{
+    font-size:20px;
+}
+
+.service-info{
+    flex-grow:1;
+}
+
+.service-info h5{
+    margin:0;
+    font-size:16px;
+}
+
+.service-info p{
+    margin:0;
+    color:#888;
+    font-size:14px;
+}
+
+.service-badge{
+    background:#e8fff3;
+    color:#18a058;
+
+    font-size:12px;
+    font-weight:700;
+
+    padding:6px 10px;
+
+    border-radius:999px;
+}
+
+.priority-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:12px 0;
+
+    border-bottom:1px solid #f1f1f1;
+}
+
+.priority-item:last-child{
+    border-bottom:none;
+}
