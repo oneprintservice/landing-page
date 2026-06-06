@@ -13,3 +13,11 @@
     width: 100%;
     font-size: 1.4rem;
 }
+@media (max-width: 767px){
+
+    .stats-icon{
+        float:none;
+        margin:auto;
+    }
+
+}
