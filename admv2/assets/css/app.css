@@ -21,3 +21,6 @@
     }
 
 }
+.card .card-body{
+    min-height: 220px;
+}
