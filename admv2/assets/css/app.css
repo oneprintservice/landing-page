@@ -259,51 +259,70 @@
 .quick-card{
     background:white;
 
-    border-radius:16px;
+    border-radius:20px;
 
-    padding:14px 8px;
+    padding:20px 10px;
 
     text-align:center;
 
-    cursor:pointer;
+    box-shadow:0 4px 20px rgba(0,0,0,.04);
 
     transition:.2s;
 
-    box-shadow:0 4px 20px rgba(0,0,0,.04);
+    height:100%;
 }
 
 .quick-card:hover{
-    transform:translateY(-4px);
+    transform:translateY(-3px);
 }
 
 .quick-icon{
-    width:50px;
-    height:50px;
+    width:56px;
+    height:56px;
 
-    border-radius:16px;
+    border-radius:18px;
 
-    margin:auto auto 10px;
+    margin:0 auto 12px;
 
     display:flex;
     align-items:center;
     justify-content:center;
-
-    color:white;
 }
 
 .quick-icon i{
-    font-size:20px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
+    font-size:22px;
+    color:white;
     line-height:1;
 }
 
 .quick-card span{
+    display:block;
+
     font-size:14px;
-    font-weight:600;
+    font-weight:700;
+
+    color:#555;
+}
+
+@media (max-width:768px){
+
+    .quick-card{
+        padding:16px 8px;
+    }
+
+    .quick-icon{
+        width:50px;
+        height:50px;
+    }
+
+    .quick-icon i{
+        font-size:20px;
+    }
+
+    .quick-card span{
+        font-size:12px;
+    }
+
 }
 /* ===== DASHBOARD CARD ===== */
 
