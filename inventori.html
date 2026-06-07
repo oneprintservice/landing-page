@@ -4,12 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Inventori - OnePrint Repair Service</title>
+
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 </head>
+
 <body class="bg-gray-100 min-h-screen">
 
 <header class="bg-slate-800 text-white p-4 flex justify-between items-center shadow-lg">
@@ -19,20 +22,19 @@
     </div>
 
     <div class="flex gap-2">
-        <a href="dashboard.html" class="bg-blue-600 px-4 py-2 rounded-lg text-xs font-bold">Dashboard</a>
-        <a href="inventori.html" class="bg-indigo-600 px-4 py-2 rounded-lg text-xs font-bold">Inventori</a>
+        <a href="dashboard.html" class="bg-blue-600 px-4 py-2 rounded-lg text-xs font-bold">
+            Dashboard
+        </a>
+
+        <a href="inventori.html" class="bg-indigo-600 px-4 py-2 rounded-lg text-xs font-bold">
+            Inventori
+        </a>
     </div>
 </header>
 
 <main class="p-4">
-    <div class="max-w-6xl mx-auto">
-        <div class="bg-white rounded-xl shadow-sm p-5 border">
-            <div class="flex items-center justify-between border-b pb-3 mb-4">
-                <h2 class="font-bold text-gray-800 text-lg">MANAJEMEN INVENTORI</h2>
-                <span class="text-xs text-gray-500">Halaman inventori terpisah agar dashboard lebih rapi</span>
-            </div>
-
-            
+    <div class="max-w-5xl mx-auto">
+        <div class="bg-white rounded-xl shadow-sm p-5 border mt-4">
                     <h2 class="font-bold text-gray-800 mb-4 border-b pb-2 text-sm">
                         INVENTORI CEPAT
                     </h2>
@@ -90,11 +92,234 @@
                             Memuat inventori...
                         </div>
                     </div>
-                </div>
-        
-        </div>
     </div>
 </main>
+
+<script>
+const firebaseConfig = {
+            apiKey: "AIzaSyBcyS36JnJNGZPdSxd_g9UmCq4BJRiG2rA",
+            authDomain: "oneprintservice-db.firebaseapp.com",
+            databaseURL: "https://oneprintservice-db-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "oneprintservice-db",
+            storageBucket: "oneprintservice-db.firebasestorage.app",
+            messagingSenderId: "330853999249",
+            appId: "1:330853999249:web:4503ed115d2694d9cb5530"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        let currentTeknisi = "TEKNISI";
+        let currentServisKey = null;
+
+        auth.onAuthStateChanged(user => {
+            if (!user) { window.location.href = 'login.html'; } 
+            else { 
+                const name = user.email.split('@')[0].toUpperCase();
+                currentTeknisi = name;
+                document.getElementById('user-display').innerText = "TEKNISI: " + name; 
+            }
+        });
+
+        document.getElementById('btn-logout').addEventListener('click', () => {
+            auth.signOut().then(() => window.location.href = 'login.html');
+        });
+
+        let idleTime = 0;
+        setInterval(() => {
+            if (auth.currentUser) {
+                idleTime++;
+                document.getElementById('idle-timer').innerText = `Idle: ${idleTime}/30 mnt`;
+                if (idleTime >= 30) auth.signOut().then(() => window.location.href = 'login.html');
+            }
+        }, 60000); 
+
+        function resetTimer() { idleTime = 0; }
+        window.onmousemove = resetTimer; window.onclick = resetTimer; window.onkeypress = resetTimer;
+
+        function simpanDataKeDatabase() {
+            const sn = document.getElementById('barcode-input').value.trim();
+            if (!sn || sn === '-') return; 
+            const safeSn = sn.replace(/[.#$[\]]/g, "_"); 
+            db.ref('pelanggan/' + safeSn).update({
+                nama: document.getElementById('input-nama').value,
+                telp: document.getElementById('input-telp').value,
+                merk: document.getElementById('input-merk').value,
+                kelengkapan: document.getElementById('input-kelengkapan').value
+            });
+        }
+
+        const barcodeInput = document.getElementById('barcode-input');
+        function isiDataOtomatis(sn) {
+            if(!sn) return;
+            const safeSn = sn.trim().replace(/[.#$[\]]/g, "_");
+            db.ref('pelanggan/' + safeSn).once('value').then(snapshot => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    document.getElementById('input-nama').value = data.nama || '';
+                    document.getElementById('input-telp').value = data.telp || '';
+                    document.getElementById('input-merk').value = data.merk || '';
+                    document.getElementById('input-kelengkapan').value = data.kelengkapan || '';
+                    try { new Audio('https://www.soundjay.com/button/beep-07.mp3').play(); } catch(e){}
+                }
+            });
+        }
+        barcodeInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') isiDataOtomatis(e.target.value); });
+
+        // --- OPTIMASI SCANNER BARCODE ---
+        let html5QrcodeScanner;
+        
+        document.getElementById('btn-scan').addEventListener('click', () => {
+            const readerDiv = document.getElementById('reader');
+            readerDiv.classList.toggle('hidden');
+            
+            if (!html5QrcodeScanner) {
+                // Konfigurasi agar lebih responsif dan akurat
+                const config = { 
+                    fps: 25, // Meningkatkan kelancaran gambar
+                    qrbox: { width: 280, height: 150 }, // Area pindaian lebih lebar (cocok untuk S/N)
+                    aspectRatio: 1.777778, // Rasio 16:9 agar jangkauan kamera lebih luas
+                    experimentalFeatures: {
+                        useBarCodeDetectorIfSupported: true // Gunakan engine native browser (Sangat Cepat & Akurat)
+                    },
+                    // Hanya fokus pada format yang sering ada di printer/laptop
+                    formatsToSupport: [ 
+                        Html5QrcodeSupportedFormats.CODE_128, 
+                        Html5QrcodeSupportedFormats.CODE_39, 
+                        Html5QrcodeSupportedFormats.EAN_13, 
+                        Html5QrcodeSupportedFormats.QR_CODE 
+                    ]
+                };
+        
+                html5QrcodeScanner = new Html5QrcodeScanner("reader", config, /* verbose= */ false);
+                
+                html5QrcodeScanner.render((decodedText) => {
+                    // Jika scan sukses
+                    barcodeInput.value = decodedText;
+                    isiDataOtomatis(decodedText);
+                    
+                    // Tutup scanner otomatis setelah berhasil
+                    html5QrcodeScanner.clear().then(() => {
+                        readerDiv.classList.add('hidden');
+                    }).catch(error => console.error("Gagal menghentikan scanner:", error));
+                    
+                }, (errorMessage) => {
+                    // Abaikan error saat proses mencari (untuk menjaga performa)
+                });
+            } else {
+                // Jika scanner sudah ada, tinggal stop atau bersihkan
+                html5QrcodeScanner.clear();
+                html5QrcodeScanner = null;
+            }
+        });
+
+        let currentTab = 'jasa';
+        let daftarTransaksi = { jasa: [], sparepart: [] };
+
+        let inventoriCache = [];
+        let inventoriEditKey = null;
+        let inventoriEditKategori = null;
+        let selectedInventori = null;
+        async function loadInventori() {
+
+            inventoriCache = [];
+
+            const kategoriList =
+                ['sparepart','tinta','lisensi','jasa'];
+
+            for(const kategori of kategoriList){
+
+                const snapshot =
+                    await db.ref(
+                        'inventori/' + kategori
+                    ).once('value');
+
+                snapshot.forEach(child => {
+
+                    inventoriCache.push({
+                        kategori: kategori,
+                        key: child.key,
+                        ...child.val()
+                    });
+
+                });
+
+            }
+
+            renderInventoriList();
+
+        }
+
+        loadInventori();
+        loadStatistik();
+        async 
+
+function renderInventoriList() {
+    const wrap = document.getElementById('inventori-list');
+
+    if(!wrap) return;
+
+    if(inventoriCache.length === 0){
+        wrap.innerHTML = '<div class="text-gray-400 italic">Belum ada inventori</div>';
+        return;
+    }
+
+    wrap.innerHTML = '';
+
+    inventoriCache.forEach(item => {
+        wrap.innerHTML += `
+            <div class="border rounded-lg p-3 mb-2 bg-gray-50">
+                <div class="font-bold uppercase">${item.nama || '-'} </div>
+
+                <div class="text-xs text-gray-600 mt-1">
+                    Kategori: ${item.kategori || '-'}
+                </div>
+
+                <div class="text-xs text-gray-600">
+                    Stok: ${item.stok || 0} ${item.satuan || ''}
+                </div>
+
+                <div class="text-xs text-green-700 font-bold">
+                    Harga Jual: Rp ${Number(item.harga_jual || 0).toLocaleString()}
+                </div>
+            </div>
+        `;
+    });
+}
+
+document.getElementById('btn-simpan-inventori')?.addEventListener('click', async () => {
+    const nama = document.getElementById('inv-nama').value.trim();
+    const kategori = document.getElementById('inv-kategori').value;
+    const harga_beli = parseInt(document.getElementById('inv-beli').value) || 0;
+    const harga_jual = parseInt(document.getElementById('inv-jual').value) || 0;
+    const satuan = document.getElementById('inv-satuan').value;
+    const stok = parseInt(document.getElementById('inv-stok').value) || 0;
+
+    if(!nama){
+        alert('Nama barang wajib diisi');
+        return;
+    }
+
+    await db.ref('inventori/' + kategori).push({
+        nama,
+        harga_beli,
+        harga_jual,
+        satuan,
+        stok
+    });
+
+    alert('Inventori berhasil disimpan');
+
+    document.getElementById('inv-nama').value = '';
+    document.getElementById('inv-beli').value = '';
+    document.getElementById('inv-jual').value = '';
+    document.getElementById('inv-stok').value = '';
+
+    loadInventori();
+});
+
+loadInventori();
+</script>
 
 </body>
 </html>
