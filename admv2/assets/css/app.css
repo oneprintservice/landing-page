@@ -22,7 +22,7 @@
 
 }
 .card .card-body{
-    min-height: 220px;
+    min-height: 150px;
 }
 .new-service-item{
     display:flex;
@@ -159,11 +159,12 @@
     display:flex;
     align-items:center;
     gap:14px;
+    margin-left:auto;
 }
 
 .topbar-btn{
-    width:46px;
-    height:46px;
+    width:40px;
+    height:40px;
 
     border:none;
 
@@ -175,7 +176,7 @@
     align-items:center;
     justify-content:center;
 
-    font-size:18px;
+    font-size:16px;
 
     position:relative;
 }
@@ -283,9 +284,9 @@
 .quick-card{
     background:white;
 
-    border-radius:18px;
+    border-radius:16px;
 
-    padding:18px 10px;
+    padding:14px 8px;
 
     text-align:center;
 
@@ -301,12 +302,12 @@
 }
 
 .quick-icon{
-    width:60px;
-    height:60px;
+    width:50px;
+    height:50px;
 
-    border-radius:18px;
+    border-radius:16px;
 
-    margin:auto auto 12px;
+    margin:auto auto 10px;
 
     display:flex;
     align-items:center;
@@ -316,7 +317,13 @@
 }
 
 .quick-icon i{
-    font-size:24px;
+    font-size:20px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    line-height:1;
 }
 
 .quick-card span{
