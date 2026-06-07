@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inventori - OnePrint Repair Service</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+<header class="bg-slate-800 text-white p-4 flex justify-between items-center shadow-lg">
+    <div class="font-bold text-xl flex items-center italic">
+        <i class="fas fa-boxes-stacked mr-3 text-yellow-400"></i>
+        OnePrint <span class="text-blue-400 ml-1">Repair Service</span>
+    </div>
+
+    <div class="flex gap-2">
+        <a href="dashboard.html" class="bg-blue-600 px-4 py-2 rounded-lg text-xs font-bold">Dashboard</a>
+        <a href="inventori.html" class="bg-indigo-600 px-4 py-2 rounded-lg text-xs font-bold">Inventori</a>
+    </div>
+</header>
+
+<main class="p-4">
+    <div class="max-w-6xl mx-auto">
+        <div class="bg-white rounded-xl shadow-sm p-5 border">
+            <div class="flex items-center justify-between border-b pb-3 mb-4">
+                <h2 class="font-bold text-gray-800 text-lg">MANAJEMEN INVENTORI</h2>
+                <span class="text-xs text-gray-500">Halaman inventori terpisah agar dashboard lebih rapi</span>
+            </div>
+
+            
+                    <h2 class="font-bold text-gray-800 mb-4 border-b pb-2 text-sm">
+                        INVENTORI CEPAT
+                    </h2>
+
+                    <input type="text"
+                        id="inv-nama"
+                        placeholder="Nama Barang"
+                        class="w-full p-2 text-sm border rounded mb-2">
+
+                    <select id="inv-kategori"
+                            class="w-full p-2 text-sm border rounded mb-2">
+                        <option value="sparepart">Sparepart</option>
+                        <option value="tinta">Tinta</option>
+                        <option value="lisensi">Lisensi / Resetkey</option>
+                        <option value="jasa">Jasa</option>
+                    </select>
+
+                    <input type="number"
+                        id="inv-beli"
+                        placeholder="Harga Beli"
+                        class="w-full p-2 text-sm border rounded mb-2">
+
+                    <input type="number"
+                        id="inv-jual"
+                        placeholder="Harga Jual"
+                        class="w-full p-2 text-sm border rounded mb-2">
+
+                    <select id="inv-satuan"
+                            class="w-full p-2 text-sm border rounded mb-2">
+                        <option value="pcs">pcs</option>
+                        <option value="ml">ml</option>
+                        <option value="gram">gram</option>
+                        <option value="kuota">kuota</option>
+                    </select>
+
+                    <input type="number"
+                        id="inv-stok"
+                        placeholder="Stok"
+                        class="w-full p-2 text-sm border rounded mb-2">
+
+                    <button id="btn-simpan-inventori"
+                            class="w-full bg-indigo-600 text-white font-bold py-2 rounded-lg">
+                        SIMPAN BARANG
+                    </button>
+
+                    <hr class="my-4">
+
+                    <h2 class="font-bold text-gray-800 mb-3 border-b pb-2 text-sm">
+                        DAFTAR INVENTORI
+                    </h2>
+
+                    <div id="inventori-list"
+                        class="max-h-96 overflow-y-auto text-xs">
+                        <div class="text-gray-400 italic">
+                            Memuat inventori...
+                        </div>
+                    </div>
+                </div>
+        
+        </div>
+    </div>
+</main>
+
+</body>
+</html>
