@@ -30,13 +30,19 @@
                     </div>
                 </div>
                 <div class="sidebar-menu">
-                <div class="sidebar-search" onclick="event.stopPropagation()">
+                <div class="sidebar-search"
+     onclick="event.stopPropagation()"
+     ontouchstart="event.stopPropagation()"
+     ontouchmove="event.stopPropagation()">
                 
                     <i class="bi bi-search"></i>
                 
                     <input
                         type="text"
                         placeholder="Cari stok / harga..."
+                        onclick="event.stopPropagation()"
+                        ontouchstart="event.stopPropagation()"
+                        ontouchmove="event.stopPropagation()"
                     >
                 
                 </div>
@@ -156,7 +162,7 @@
             </div>
             <div class="page-content">
             
-                <section class="row">
+                <section class="row align-items-stretch">
                 
                     <div class="col-6 col-lg-3 col-md-6">
                         <div class="card dashboard-card"
@@ -292,65 +298,7 @@
                 
                 </section>
 
-                <section class="row g-3 mb-4">
                 
-                    <div class="col-6 col-md-3">
-                
-                        <div class="quick-card">
-                
-                            <div class="quick-icon bg-primary">
-                                <i class="bi bi-plus-circle-fill"></i>
-                            </div>
-                
-                            <span>WO Baru</span>
-                
-                        </div>
-                
-                    </div>
-                
-                    <div class="col-6 col-md-3">
-                
-                        <div class="quick-card">
-                
-                            <div class="quick-icon bg-success">
-                                <i class="bi bi-box-seam"></i>
-                            </div>
-                
-                            <span>Inventori</span>
-                
-                        </div>
-                
-                    </div>
-                
-                    <div class="col-6 col-md-3">
-                
-                        <div class="quick-card">
-                
-                            <div class="quick-icon bg-dark">
-                                <i class="bi bi-search"></i>
-                            </div>
-                
-                            <span>Cari</span>
-                
-                        </div>
-                
-                    </div>
-                
-                    <div class="col-6 col-md-3">
-                
-                        <div class="quick-card">
-                
-                            <div class="quick-icon bg-warning">
-                                <i class="bi bi-receipt"></i>
-                            </div>
-                
-                            <span>Transaksi</span>
-                
-                        </div>
-                
-                    </div>
-                
-                </section>
 
                 <section class="row mt-4">
             
