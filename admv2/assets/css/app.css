@@ -723,3 +723,72 @@
     }
 
 }
+/* ======================================================
+   WORK ORDER DETAIL MODAL
+====================================================== */
+
+.detail-card{
+    background:#fff;
+    border:1px solid #f1f1f1;
+    border-radius:18px;
+    padding:20px;
+    margin-bottom:20px;
+}
+
+.detail-title{
+    font-weight:800;
+    margin-bottom:18px;
+}
+
+.detail-card label{
+    font-size:13px;
+    font-weight:700;
+    margin-bottom:6px;
+    color:#666;
+}
+
+.timeline-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 0;
+    border-bottom:1px solid #f1f1f1;
+}
+
+.timeline-item:last-child{
+    border-bottom:none;
+}
+
+.timeline-item strong{
+    font-size:14px;
+}
+
+.timeline-item small{
+    color:#888;
+}
+
+.modal-content{
+    border:none;
+    border-radius:22px;
+}
+
+.modal-header{
+    border-bottom:1px solid #f1f1f1;
+    padding:20px 24px;
+}
+
+.modal-body{
+    padding:24px;
+}
+
+@media (max-width:768px){
+
+    .detail-card{
+        padding:16px;
+    }
+
+    .modal-body{
+        padding:18px;
+    }
+
+}
