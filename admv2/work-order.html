@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Work Order - OnePrint</title>
+
+<link rel="stylesheet" href="assets/css/bootstrap.css">
+<link rel="stylesheet" href="assets/css/bootstrap-icons.css">
+<link rel="stylesheet" href="assets/css/perfect-scrollbar.css">
+<link rel="stylesheet" href="assets/css/app.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div id="app">
+
+<div id="sidebar" class="active">
+<div class="sidebar-wrapper active">
+
+<div class="sidebar-header">
+<div class="d-flex justify-content-between">
+
+<div class="logo">
+<a href="#">
+<img src="assets/images/logo/logos.png" alt="Logo">
+</a>
+</div>
+
+<div class="toggler">
+<a href="#" class="sidebar-hide d-xl-none d-block">
+<i class="bi bi-x bi-middle"></i>
+</a>
+</div>
+
+</div>
+</div>
+
+<div class="sidebar-menu">
+
+<ul class="menu">
+
+<li class="sidebar-title">MENU UTAMA</li>
+
+<li class="sidebar-item">
+<a href="index.html" class="sidebar-link">
+<i class="bi bi-grid-fill"></i>
+<span>Dashboard</span>
+</a>
+</li>
+
+<li class="sidebar-item active">
+<a href="work-order.html" class="sidebar-link">
+<i class="bi bi-clipboard-check"></i>
+<span>Work Order</span>
+</a>
+</li>
+
+<li class="sidebar-item">
+<a href="#" class="sidebar-link">
+<i class="bi bi-box-seam"></i>
+<span>Inventori</span>
+</a>
+</li>
+
+<li class="sidebar-item">
+<a href="#" class="sidebar-link">
+<i class="bi bi-bar-chart-fill"></i>
+<span>Laporan</span>
+</a>
+</li>
+
+<li class="sidebar-item">
+<a href="#" class="sidebar-link">
+<i class="bi bi-tools"></i>
+<span>Service Management</span>
+</a>
+</li>
+
+<li class="sidebar-item">
+<a href="#" class="sidebar-link">
+<i class="bi bi-people-fill"></i>
+<span>Pelanggan</span>
+</a>
+</li>
+
+<li class="sidebar-item">
+<a href="#" class="sidebar-link">
+<i class="bi bi-search"></i>
+<span>Tracking</span>
+</a>
+</li>
+
+</ul>
+
+</div>
+</div>
+</div>
+
+<div id="main">
+
+<header class="mb-3">
+<nav class="navbar navbar-expand navbar-light">
+
+<div class="d-flex align-items-center w-100">
+
+<a href="#" class="sidebar-toggler me-3">
+<i class="bi bi-list"></i>
+</a>
+
+<div class="topbar-search">
+<i class="bi bi-search"></i>
+<input type="text" placeholder="Cari servis, pelanggan, nomor TT, nomor WA...">
+</div>
+
+<div class="topbar-right">
+
+<button class="topbar-btn">
+<i class="bi bi-moon"></i>
+</button>
+
+<button class="topbar-btn position-relative">
+<i class="bi bi-bell-fill"></i>
+<span class="notif-badge">3</span>
+</button>
+
+<div class="admin-profile">
+<div class="admin-avatar">OP</div>
+</div>
+
+</div>
+
+</div>
+
+</nav>
+</header>
+
+<div class="page-heading">
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+
+<div>
+<h3>Work Order Servis</h3>
+<p class="text-muted mb-0">Kelola data servis masuk dan progres pengerjaan</p>
+</div>
+
+<div class="d-flex gap-2 flex-wrap">
+
+<button class="btn btn-primary">
+<i class="bi bi-plus-circle"></i>
+WO Baru
+</button>
+
+<button class="btn btn-light">
+<i class="bi bi-printer"></i>
+Print TT
+</button>
+
+</div>
+
+</div>
+
+<div class="card mb-4">
+
+<div class="card-body">
+
+<div class="row g-3">
+
+<div class="col-md-3 col-6">
+<button class="status-filter active-filter">Semua</button>
+</div>
+
+<div class="col-md-3 col-6">
+<button class="status-filter">Proses</button>
+</div>
+
+<div class="col-md-3 col-6">
+<button class="status-filter">Konfirmasi</button>
+</div>
+
+<div class="col-md-3 col-6">
+<button class="status-filter">Selesai</button>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-body">
+
+<div class="table-responsive">
+
+<table class="table workorder-table">
+
+<thead>
+
+<tr>
+<th>No TT</th>
+<th>Pelanggan</th>
+<th>Unit</th>
+<th>Status</th>
+<th>Estimasi</th>
+<th>Aksi</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td>#TT1024</td>
+
+<td>
+<strong>Budi Santoso</strong>
+<br>
+<small>08123456789</small>
+</td>
+
+<td>Epson L3110</td>
+
+<td>
+<span class="status-chip chip-blue">
+Proses
+</span>
+</td>
+
+<td>2 Hari</td>
+
+<td>
+<button class="btn btn-sm btn-light">
+Detail
+</button>
+</td>
+
+</tr>
+
+<tr>
+
+<td>#TT1025</td>
+
+<td>
+<strong>Rizky</strong>
+<br>
+<small>08999999999</small>
+</td>
+
+<td>Canon G2010</td>
+
+<td>
+<span class="status-chip chip-yellow">
+Konfirmasi
+</span>
+</td>
+
+<td>Menunggu User</td>
+
+<td>
+<button class="btn btn-sm btn-light">
+Detail
+</button>
+</td>
+
+</tr>
+
+<tr>
+
+<td>#TT1026</td>
+
+<td>
+<strong>Andi</strong>
+<br>
+<small>08222222222</small>
+</td>
+
+<td>HP Laserjet</td>
+
+<td>
+<span class="status-chip chip-green">
+Selesai
+</span>
+</td>
+
+<td>Siap Ambil</td>
+
+<td>
+<button class="btn btn-sm btn-light">
+Detail
+</button>
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="assets/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/main.js"></script>
+
+</body>
+</html>
