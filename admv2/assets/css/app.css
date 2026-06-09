@@ -657,3 +657,69 @@
     }
 
 }
+
+
+/* ======================================================
+   WORK ORDER PAGE
+====================================================== */
+
+.status-filter{
+    width:100%;
+    height:44px;
+    border:none;
+    border-radius:14px;
+    background:#f5f7fb;
+    font-weight:700;
+    transition:.2s;
+}
+
+.active-filter{
+    background:#435ebe;
+    color:white;
+}
+
+.workorder-table th{
+    font-size:13px;
+    color:#999;
+    border:none;
+}
+
+.workorder-table td{
+    vertical-align:middle;
+    padding:18px 12px;
+}
+
+.status-chip{
+    padding:7px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+}
+
+.chip-blue{
+    background:#eaf1ff;
+    color:#435ebe;
+}
+
+.chip-yellow{
+    background:#fff7df;
+    color:#d49b00;
+}
+
+.chip-green{
+    background:#e8fff3;
+    color:#18a058;
+}
+
+@media (max-width:768px){
+
+    .page-heading h3{
+        font-size:26px;
+    }
+
+    .workorder-table td,
+    .workorder-table th{
+        white-space:nowrap;
+    }
+
+}
