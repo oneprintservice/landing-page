@@ -3,7 +3,7 @@
 <head>
 <meta charset='UTF-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-<title>OnePrint QR Identifier</title>
+<title>OnePrint Android Print</title>
 
 <script src='https://cdn.tailwindcss.com'></script>
 <script src='https://unpkg.com/html5-qrcode'></script>
@@ -11,15 +11,10 @@
 
 <style>
 body{
-background:
-radial-gradient(circle at top left, rgba(132,204,22,.18), transparent 24%),
-radial-gradient(circle at bottom right, rgba(59,130,246,.12), transparent 30%),
-linear-gradient(135deg,#fffef7,#f7fee7,#fef9c3);
+background:linear-gradient(135deg,#fefce8,#f7fee7,#fef9c3);
 font-family:Arial,sans-serif;
 }
 .glass{
-box-shadow:0 20px 60px rgba(15,23,42,.08);
-
 background:rgba(255,255,255,.82);
 backdrop-filter:blur(14px);
 border:1px solid rgba(255,255,255,.45);
@@ -39,8 +34,8 @@ display:block;
 position:absolute;
 left:0;
 top:0;
-width:58mm;
-padding:4mm;
+width:48mm;
+padding:2.5mm;
 background:white;
 color:black;
 }
@@ -48,65 +43,6 @@ color:black;
 display:none!important;
 }
 }
-
-button{
-transition:.25s;
-}
-
-button:hover{
-transform:translateY(-2px) scale(1.01);
-filter:brightness(1.03);
-}
-
-input{
-transition:.2s;
-font-size:16px;
-}
-
-input:focus{
-outline:none;
-transform:translateY(-1px);
-box-shadow:
-0 0 0 3px rgba(34,197,94,.18),
-0 12px 24px rgba(0,0,0,.08)!important;
-}
-
-#reader{
-border-radius:28px;
-overflow:hidden;
-border:2px dashed rgba(59,130,246,.22);
-background:#fff;
-padding:8px;
-}
-
-.preview-card{
-background:linear-gradient(180deg,#ffffff,#f8fafc);
-border:1px solid rgba(255,255,255,.6);
-}
-
-.hero-title{
-letter-spacing:-1px;
-}
-
-.soft-badge{
-background:rgba(34,197,94,.12);
-color:#15803d;
-padding:8px 16px;
-border-radius:999px;
-font-weight:700;
-font-size:13px;
-display:inline-flex;
-align-items:center;
-gap:8px;
-}
-
-@media(min-width:1024px){
-body{
-padding-left:28px!important;
-padding-right:28px!important;
-}
-}
-
 </style>
 </head>
 
@@ -118,7 +54,7 @@ padding-right:28px!important;
 
 <div class='glass rounded-[34px] p-7 shadow-2xl'>
 
-<div class='soft-badge mb-4'>● SYSTEM READY</div><div class='text-4xl font-black text-slate-800 hero-title'>
+<div class='text-4xl font-black text-slate-800'>
 OnePrint Scanner
 </div>
 
@@ -152,12 +88,12 @@ AUTO
 <div class='grid grid-cols-1 lg:grid-cols-2 gap-4'>
 
 <button onclick='generateQR()'
-class='rounded-[28px] bg-gradient-to-r from-green-500 to-emerald-500 text-white p-5 shadow-xl font-black'>
+class='rounded-3xl bg-gradient-to-r from-green-500 to-emerald-500 text-white p-5 shadow-xl font-black'>
 Generate QR
 </button>
 
 <button onclick='printThermal()'
-class='rounded-[28px] bg-gradient-to-r from-blue-600 to-cyan-500 text-white p-5 shadow-xl font-black'>
+class='rounded-3xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white p-5 shadow-xl font-black'>
 Print Bluetooth
 </button>
 
@@ -173,7 +109,7 @@ Print Bluetooth
 Preview Label
 </div>
 
-<div class='preview-card rounded-[32px] p-7 shadow-xl flex flex-col items-center'>
+<div class='bg-white rounded-3xl p-6 shadow-xl flex flex-col items-center'>
 
 <canvas id='qrcode'></canvas>
 
@@ -205,17 +141,39 @@ QR akan muncul di sini
 Scanner Kamera
 </div>
 
-<button onclick='startScanner()'
+<button id='scanToggleBtn' onclick='toggleScanner()'
 class='mt-4 rounded-2xl bg-blue-600 text-white px-5 py-3 font-black shadow-lg'>
 Start Scan
 </button>
 
 <div id='reader'
-class='mt-6 rounded-[28px] overflow-hidden'></div>
+class='mt-6 rounded-3xl overflow-hidden'></div>
+
+<div class='mt-5 bg-slate-900 text-white rounded-[24px] p-5'>
+
+<div class='text-xs uppercase tracking-widest text-slate-400 font-bold'>
+LAST SCAN
+</div>
 
 <div id='scanResult'
-class='mt-5 bg-slate-900 text-green-400 rounded-2xl p-4 text-center font-bold'>
-Menunggu scan...
+class='mt-2 text-2xl font-black text-green-400 break-all'>
+Belum ada hasil
+</div>
+
+<div class='grid grid-cols-2 gap-3 mt-5'>
+
+<button onclick='copyScanResult()'
+class='rounded-2xl bg-white/10 py-3 font-bold'>
+Copy ID
+</button>
+
+<button onclick='fillManualCode()'
+class='rounded-2xl bg-lime-500 text-slate-900 py-3 font-bold'>
+Gunakan ID
+</button>
+
+</div>
+
 </div>
 
 </div>
@@ -325,6 +283,9 @@ window.print();
 
 function startScanner(){
 
+if(scannerRunning) return;
+
+
 const html5QrCode = new Html5Qrcode('reader');
 
 html5QrCode.start(
@@ -336,17 +297,87 @@ qrbox:{width:250,height:250}
 (decodedText)=>{
 
 document.getElementById('scanResult').innerText =
-'Hasil Scan: ' + decodedText;
+decodedText;
 
 if(navigator.vibrate){
-navigator.vibrate(100);
+navigator.vibrate(120);
 }
+
+scannerRunning = true;
+
+document.getElementById('scanToggleBtn').innerText =
+'Stop Scan';
+
+document.getElementById('scanToggleBtn')
+.classList.remove('bg-blue-600');
+
+document.getElementById('scanToggleBtn')
+.classList.add('bg-red-500');
 
 },
 ()=>{}
 );
 
 }
+
+
+let html5QrCode = null;
+let scannerRunning = false;
+
+function toggleScanner(){
+if(scannerRunning){
+stopScanner();
+}else{
+startScanner();
+}
+}
+
+function stopScanner(){
+
+if(html5QrCode){
+
+html5QrCode.stop().then(()=>{
+
+scannerRunning = false;
+
+document.getElementById('scanToggleBtn').innerText =
+'Start Scan';
+
+document.getElementById('scanToggleBtn')
+.classList.remove('bg-red-500');
+
+document.getElementById('scanToggleBtn')
+.classList.add('bg-blue-600');
+
+});
+
+}
+
+}
+
+function copyScanResult(){
+
+const text =
+document.getElementById('scanResult').innerText;
+
+if(text && text !== 'Belum ada hasil'){
+navigator.clipboard.writeText(text);
+alert('ID berhasil disalin');
+}
+
+}
+
+function fillManualCode(){
+
+const text =
+document.getElementById('scanResult').innerText;
+
+if(text && text !== 'Belum ada hasil'){
+document.getElementById('manualCode').value = text;
+}
+
+}
+
 
 generateRandomCode();
 
