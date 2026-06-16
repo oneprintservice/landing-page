@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang='id'>
+<head>
+<meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+<title>OnePrint QR Identifier</title>
+
+<script src='https://cdn.tailwindcss.com'></script>
+<script src='https://unpkg.com/html5-qrcode'></script>
+<script src='https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js'></script>
+
+<style>
+body{
+background:
+radial-gradient(circle at top left, rgba(132,204,22,.18), transparent 24%),
+radial-gradient(circle at bottom right, rgba(59,130,246,.12), transparent 30%),
+linear-gradient(135deg,#fffef7,#f7fee7,#fef9c3);
+font-family:Arial,sans-serif;
+}
+.glass{
+box-shadow:0 20px 60px rgba(15,23,42,.08);
+
+background:rgba(255,255,255,.82);
+backdrop-filter:blur(14px);
+border:1px solid rgba(255,255,255,.45);
+}
+#printArea{
+display:none;
+}
+@media print{
+body *{
+visibility:hidden;
+}
+#printArea,#printArea *{
+visibility:visible;
+}
+#printArea{
+display:block;
+position:absolute;
+left:0;
+top:0;
+width:58mm;
+padding:4mm;
+background:white;
+color:black;
+}
+.no-print{
+display:none!important;
+}
+}
+
+button{
+transition:.25s;
+}
+
+button:hover{
+transform:translateY(-2px) scale(1.01);
+filter:brightness(1.03);
+}
+
+input{
+transition:.2s;
+font-size:16px;
+}
+
+input:focus{
+outline:none;
+transform:translateY(-1px);
+box-shadow:
+0 0 0 3px rgba(34,197,94,.18),
+0 12px 24px rgba(0,0,0,.08)!important;
+}
+
+#reader{
+border-radius:28px;
+overflow:hidden;
+border:2px dashed rgba(59,130,246,.22);
+background:#fff;
+padding:8px;
+}
+
+.preview-card{
+background:linear-gradient(180deg,#ffffff,#f8fafc);
+border:1px solid rgba(255,255,255,.6);
+}
+
+.hero-title{
+letter-spacing:-1px;
+}
+
+.soft-badge{
+background:rgba(34,197,94,.12);
+color:#15803d;
+padding:8px 16px;
+border-radius:999px;
+font-weight:700;
+font-size:13px;
+display:inline-flex;
+align-items:center;
+gap:8px;
+}
+
+@media(min-width:1024px){
+body{
+padding-left:28px!important;
+padding-right:28px!important;
+}
+}
+
+</style>
+</head>
+
+<body class='min-h-screen p-4 lg:p-8'>
+
+<div class='max-w-7xl mx-auto grid lg:grid-cols-2 gap-6 no-print'>
+
+<div class='space-y-6'>
+
+<div class='glass rounded-[34px] p-7 shadow-2xl'>
+
+<div class='soft-badge mb-4'>● SYSTEM READY</div><div class='text-4xl font-black text-slate-800 hero-title'>
+OnePrint Scanner
+</div>
+
+<div class='text-slate-500 mt-1'>
+QR Generator + Android Print Service
+</div>
+
+<div class='mt-8 grid gap-5'>
+
+<input id='customer' type='text'
+placeholder='Nama Pelanggan'
+class='w-full rounded-2xl border-0 bg-white p-4 shadow-lg'>
+
+<input id='unit' type='text'
+placeholder='Jenis Unit'
+class='w-full rounded-2xl border-0 bg-white p-4 shadow-lg'>
+
+<div class='flex gap-3'>
+
+<input id='manualCode' type='text'
+placeholder='OPS-250616-001'
+class='flex-1 rounded-2xl border-0 bg-white p-4 shadow-lg'>
+
+<button onclick='generateRandomCode()'
+class='px-5 rounded-2xl bg-lime-500 text-white font-black shadow-lg'>
+AUTO
+</button>
+
+</div>
+
+<div class='grid grid-cols-1 lg:grid-cols-2 gap-4'>
+
+<button onclick='generateQR()'
+class='rounded-[28px] bg-gradient-to-r from-green-500 to-emerald-500 text-white p-5 shadow-xl font-black'>
+Generate QR
+</button>
+
+<button onclick='printThermal()'
+class='rounded-[28px] bg-gradient-to-r from-blue-600 to-cyan-500 text-white p-5 shadow-xl font-black'>
+Print Bluetooth
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<div class='glass rounded-[34px] p-7 shadow-2xl'>
+
+<div class='text-2xl font-black text-slate-800 mb-5'>
+Preview Label
+</div>
+
+<div class='preview-card rounded-[32px] p-7 shadow-xl flex flex-col items-center'>
+
+<canvas id='qrcode'></canvas>
+
+<div class='mt-5 text-center'>
+
+<div id='previewCode'
+class='text-2xl font-black text-slate-800'>
+Belum dibuat
+</div>
+
+<div id='previewInfo'
+class='text-slate-500 mt-2'>
+QR akan muncul di sini
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class='space-y-6'>
+
+<div class='glass rounded-[34px] p-7 shadow-2xl'>
+
+<div class='text-3xl font-black text-slate-800'>
+Scanner Kamera
+</div>
+
+<button onclick='startScanner()'
+class='mt-4 rounded-2xl bg-blue-600 text-white px-5 py-3 font-black shadow-lg'>
+Start Scan
+</button>
+
+<div id='reader'
+class='mt-6 rounded-[28px] overflow-hidden'></div>
+
+<div id='scanResult'
+class='mt-5 bg-slate-900 text-green-400 rounded-2xl p-4 text-center font-bold'>
+Menunggu scan...
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div id='printArea'>
+
+<div style='text-align:center'>
+
+<div style='font-size:22px;font-weight:900'>
+ONEPRINT SERVICE
+</div>
+
+<hr style='margin:10px 0'>
+
+<div id='printCode'></div>
+<div id='printCustomer' style='margin-top:4px'></div>
+<div id='printUnit' style='margin-top:4px'></div>
+
+<div style='margin-top:14px'>
+<canvas id='printQR'></canvas>
+</div>
+
+<div style='margin-top:10px;font-size:10px'>
+Scan untuk identifikasi servis
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function generateRandomCode(){
+
+const random =
+'OPS-' +
+new Date().getFullYear().toString().slice(-2) +
+String(new Date().getMonth()+1).padStart(2,'0') +
+String(new Date().getDate()).padStart(2,'0') +
+'-' +
+Math.floor(Math.random()*900+100);
+
+document.getElementById('manualCode').value = random;
+
+}
+
+function generateQR(){
+
+const code = document.getElementById('manualCode').value;
+const customer = document.getElementById('customer').value;
+const unit = document.getElementById('unit').value;
+
+if(!code){
+alert('Masukkan kode terlebih dahulu');
+return;
+}
+
+const qrText = code;
+
+QRCode.toCanvas(
+document.getElementById('qrcode'),
+qrText,
+{
+width:220,
+margin:1
+}
+);
+
+QRCode.toCanvas(
+document.getElementById('printQR'),
+qrText,
+{
+width:180,
+margin:1
+}
+);
+
+document.getElementById('previewCode').innerText = code;
+
+document.getElementById('previewInfo').innerText =
+(customer || '-') + ' | ' + (unit || '-');
+
+document.getElementById('printCode').innerText =
+'ID : ' + code;
+
+document.getElementById('printCustomer').innerText =
+'Nama : ' + (customer || '-');
+
+document.getElementById('printUnit').innerText =
+'Unit : ' + (unit || '-');
+
+}
+
+function printThermal(){
+
+generateQR();
+
+setTimeout(()=>{
+window.print();
+},300);
+
+}
+
+function startScanner(){
+
+const html5QrCode = new Html5Qrcode('reader');
+
+html5QrCode.start(
+{ facingMode:'environment' },
+{
+fps:10,
+qrbox:{width:250,height:250}
+},
+(decodedText)=>{
+
+document.getElementById('scanResult').innerText =
+'Hasil Scan: ' + decodedText;
+
+if(navigator.vibrate){
+navigator.vibrate(100);
+}
+
+},
+()=>{}
+);
+
+}
+
+generateRandomCode();
+
+</script>
+
+</body>
+</html>
