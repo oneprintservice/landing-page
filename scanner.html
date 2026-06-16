@@ -286,7 +286,13 @@ function startScanner(){
 if(scannerRunning) return;
 
 
-const html5QrCode = new Html5Qrcode('reader');
+html5QrCode = new Html5Qrcode('reader');
+
+scannerRunning = true;
+
+document.getElementById('scanToggleBtn').innerText = 'Stop Scan';
+document.getElementById('scanToggleBtn').classList.remove('bg-blue-600');
+document.getElementById('scanToggleBtn').classList.add('bg-red-500');
 
 html5QrCode.start(
 { facingMode:'environment' },
@@ -296,23 +302,12 @@ qrbox:{width:250,height:250}
 },
 (decodedText)=>{
 
-document.getElementById('scanResult').innerText =
-decodedText;
+document.getElementById('scanResult').innerText = decodedText;
+document.getElementById('manualCode').value = decodedText;
 
 if(navigator.vibrate){
 navigator.vibrate(120);
 }
-
-scannerRunning = true;
-
-document.getElementById('scanToggleBtn').innerText =
-'Stop Scan';
-
-document.getElementById('scanToggleBtn')
-.classList.remove('bg-blue-600');
-
-document.getElementById('scanToggleBtn')
-.classList.add('bg-red-500');
 
 },
 ()=>{}
