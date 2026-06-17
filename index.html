@@ -120,6 +120,49 @@ transition:.3s;
 opacity:.5;
 }
 
+
+.logo-area{
+display:flex;
+align-items:center;
+gap:14px;
+}
+
+.header-info{
+display:flex;
+flex-direction:column;
+gap:6px;
+}
+
+.header-location,
+.header-assistant{
+font-size:12px;
+font-weight:600;
+padding:4px 10px;
+border-radius:999px;
+width:max-content;
+}
+
+.header-location{
+background:#f3f4f6;
+color:#555;
+}
+
+.header-assistant{
+background:#e8f2ff;
+color:#1e88ff;
+}
+
+@media(max-width:600px){
+.logo img{
+height:70px !important;
+}
+.header-location,
+.header-assistant{
+font-size:10px;
+padding:3px 8px;
+}
+}
+
 /* HERO */
 
 .hero{
@@ -569,8 +612,15 @@ padding:35px 25px;
 
 <header>
 
+<div class="logo-area">
 <div class="logo">
 <img src="logos.png" alt="OnePrint Repair Service">
+</div>
+
+<div class="header-info">
+<div class="header-location">📍 Ponorogo & Eks Karesidenan Madiun</div>
+<div class="header-assistant">🤖 OnePrint Virtual Assistant</div>
+</div>
 </div>
 
 <nav>
