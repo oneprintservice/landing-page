@@ -12,6 +12,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
         @media print {
@@ -1886,14 +1887,15 @@
                 noteContent = `<div class="note-box"><span class="note-title">SYARAT PENGAMBILAN:</span><ol><li>WAJIB bawa tanda terima ini saat pengambilan.</li><li>Barang tidak diambil >2 bulan setelah konfirmasi bukan tanggung jawab kami.</li></ol></div>`;
             }
 
-            document.getElementById('print-container').innerHTML = `
+            const trackingUrl=`https://oneprintservice.web.id/tracking.html?tt=${noNota}`;
+document.getElementById('print-container').innerHTML = `
                 <div class="invoice-page">
                     ${kopHeader}
                     ${clientGrid}
                     ${mainContent}
                     <div class="footer-area">
                         ${noteContent}
-                        <div class="signature-wrapper">
+                        <div style="text-align:center;margin-right:10px;"><div id="qr-print"></div><div style="font-size:8px">Scan untuk tracking</div></div><div class="signature-wrapper">
                             <div class="signature-box">
                                 <span>Hormat Kami,</span>
                                 <span class="signature-line">${currentTeknisi}</span>
@@ -1928,7 +1930,14 @@
             
                     loadStatistik();
             
-                    window.print();
+                    setTimeout(()=>{
+const qrEl=document.getElementById('qr-print');
+if(qrEl && typeof QRCode!=='undefined'){
+ qrEl.innerHTML='';
+ new QRCode(qrEl,{text:trackingUrl,width:70,height:70});
+}
+setTimeout(()=>window.print(),300);
+},100);
             
                 })
                 .catch(err => {
