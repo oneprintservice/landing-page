@@ -53,7 +53,7 @@ function startScan(){
  const r=document.getElementById('reader');
  r.style.display='block';document.getElementById('scanHint').style.display='block';
  const qr=new Html5Qrcode('reader');
- qr.start({facingMode:'environment',width:{ideal:1920},height:{ideal:1080}},{fps:20,qrbox:300},(txt)=>{
+ qr.start({facingMode:'environment'},{fps:10,qrbox:250},(txt)=>{
    let m=txt.match(/tt=([^&]+)/i);
    document.getElementById('tt').value=m?m[1]:txt.replace('TT-','');
    qr.stop().then(()=>{
