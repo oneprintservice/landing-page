@@ -5,14 +5,22 @@ h1{text-align:center;margin-bottom:20px}
 .search{display:flex;gap:10px}
 .search input{flex:1;padding:14px;border:1px solid #ddd;border-radius:14px}
 .search button{padding:14px 22px;border:none;background:#f4c542;border-radius:14px;font-weight:700}
-.statusbox{margin:20px 0;padding:20px;border-radius:20px;text-align:center}
+.statusbox{margin:20px 0;padding:26px;border-radius:24px;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,.08)}
 .timeline{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
 .step{padding:10px 14px;border-radius:999px;background:#eee;font-weight:600}
 .done{background:#d1fae5}
 .current{background:#dbeafe}
 .info p{margin:10px 0}
 .wa{display:block;margin-top:20px;background:#25d366;color:#fff;text-decoration:none;text-align:center;padding:14px;border-radius:14px;font-weight:700}
-</style></head><body><div class='card'><div style='text-align:center'><img src="logos.png" style="max-width:180px;max-height:80px"></div><h1>Tracking Servis OnePrint</h1><div class='search'><input id='tt'><button onclick='cari()'>CEK</button></div><div id='result' style='display:none'>
+</style><script src='https://unpkg.com/html5-qrcode'></script></head><body><div class='card'><div style='text-align:center'><img src="logos.png" style="max-width:180px;max-height:80px"></div><h1>Tracking Servis OnePrint</h1><div class='search' style='display:block'>
+<input id='tt' placeholder='Masukkan nomor TT' style='width:100%;box-sizing:border-box;margin-bottom:12px'>
+<button onclick='cari()' style='width:100%;margin-bottom:12px'>CEK STATUS</button>
+<button id='scanBtn' onclick='startScan()' style='width:100%;background:#333;color:#fff'>📷 SCAN QR</button>
+</div>
+<div id='reader' style='display:none;margin-top:15px'></div><div id='scanHint' style='display:none;text-align:center;color:#666;font-size:13px;margin-top:8px'>Arahkan QR ke dalam kotak. Jarak ideal 10–20 cm.</div>
+<div id='scanAgain' style='display:none;margin-top:10px'>
+<button onclick='startScan()' style='width:100%;background:#333;color:#fff'>📷 SCAN LAGI</button>
+</div><div id='result' style='display:none'>
 <div id='statusbox' class='statusbox'>
 <div style='font-size:13px;font-weight:700'>STATUS SERVIS</div>
 <h2 id='status'></h2>
@@ -40,4 +48,20 @@ drawTimeline(st);
 if(statusInfo[st]){
 document.getElementById('statusbox').style.background=statusInfo[st][0];
 document.getElementById('statusmsg').innerText=statusInfo[st][1];
-}}const p=new URLSearchParams(location.search);if(p.get('tt')){tt.value=p.get('tt');cari();}</script></body></html>
+}}
+function startScan(){
+ const r=document.getElementById('reader');
+ r.style.display='block';document.getElementById('scanHint').style.display='block';
+ const qr=new Html5Qrcode('reader');
+ qr.start({facingMode:'environment',width:{ideal:1920},height:{ideal:1080}},{fps:20,qrbox:300},(txt)=>{
+   let m=txt.match(/tt=([^&]+)/i);
+   document.getElementById('tt').value=m?m[1]:txt.replace('TT-','');
+   qr.stop().then(()=>{
+      r.style.display='none';
+      document.getElementById('scanAgain').style.display='block';
+      cari();
+   });
+ });
+}
+const p=new URLSearchParams(location.search);
+if(p.get('tt')){tt.value=p.get('tt');cari();}</script></body></html>
