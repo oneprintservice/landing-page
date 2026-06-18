@@ -6,15 +6,23 @@ h1{text-align:center;margin-bottom:20px}
 .search input{flex:1;padding:14px;border:1px solid #ddd;border-radius:14px}
 .search button{padding:14px 22px;border:none;background:#f4c542;border-radius:14px;font-weight:700}
 .statusbox{margin:20px 0;padding:20px;border-radius:20px;text-align:center}
-.timeline{display:flex;flex-direction:column;gap:12px;margin-top:15px;border-left:3px solid #f4c542;padding-left:18px}
+.timeline{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
 .step{padding:10px 14px;border-radius:999px;background:#eee;font-weight:600}
 .done{background:#d1fae5}
 .current{background:#dbeafe}
 .info p{margin:10px 0}
 .wa{display:block;margin-top:20px;background:#25d366;color:#fff;text-decoration:none;text-align:center;padding:14px;border-radius:14px;font-weight:700}
-</style></head><body><div class='card'><div style='text-align:center'><img src="logos.png" style="max-width:180px;max-height:80px"></div><h1>Tracking Servis OnePrint</h1><p style='text-align:center;color:#666;margin-top:-10px'>Cek progres perbaikan perangkat Anda secara realtime</p><div class='search'><input id='tt'><button onclick='cari()'>CEK</button></div><div id='result' style='display:none'>
+</style><script src='https://unpkg.com/html5-qrcode'></script></head><body><div class='card'><div style='text-align:center'><img src="logos.png" style="max-width:180px;max-height:80px"></div><h1>Tracking Servis OnePrint</h1><div class='search' style='display:block'>
+<input id='tt' placeholder='Masukkan nomor TT' style='width:100%;box-sizing:border-box;margin-bottom:12px'>
+<button onclick='cari()' style='width:100%;margin-bottom:12px'>CEK STATUS</button>
+<button id='scanBtn' onclick='startScan()' style='width:100%;background:#333;color:#fff'>📷 SCAN QR</button>
+</div>
+<div id='reader' style='display:none;margin-top:15px'></div>
+<div id='scanAgain' style='display:none;margin-top:10px'>
+<button onclick='startScan()' style='width:100%;background:#333;color:#fff'>📷 SCAN LAGI</button>
+</div><div id='result' style='display:none'>
 <div id='statusbox' class='statusbox'>
-<div style='font-size:13px;font-weight:700;letter-spacing:1px'>STATUS SERVIS</div>
+<div style='font-size:13px;font-weight:700'>STATUS SERVIS</div>
 <h2 id='status'></h2>
 <div id='statusmsg'></div>
 </div>
@@ -35,9 +43,25 @@ const statusInfo={
 'DIKERJAKAN':['#dbeafe','Unit sedang dalam proses perbaikan.'],
 'SELESAI':['#dcfce7','Unit telah selesai diperbaiki dan siap diambil.'],
 'DIAMBIL':['#e5e7eb','Unit telah diterima pelanggan.']
-};function maskNama(n){if(!n)return '-';let p=n.trim().split(' ');if(p.length===1)return p[0];let b=p.slice(1).join(' ');return p[0]+' '+b.substring(0,3)+'***';}function drawTimeline(s){let idx=steps.indexOf(s);let h='';steps.forEach((x,i)=>{let c='step';if(i<idx)c+=' done';if(i===idx)c+=' current';let icon=i<idx?'✓':(i===idx?'➜':'○');h+=`<div class='${c}'>${icon} ${x}</div>`});document.getElementById('timeline').innerHTML=h;}async function cari(){let k=document.getElementById('tt').value.toUpperCase().replace('TT-','').replace('TT','').trim();let snap=await db.ref('servis/'+k).once('value');if(!snap.exists()){alert('Tidak ditemukan');return;}let d=snap.val();result.style.display='block';nomor.innerText='TT-'+d.nomor;status.innerText=d.status||'-';pelanggan.innerText=d.pelanggan||'-';merk.innerText=d.merk||'-';keluhan.innerText=d.keluhan||'-';ket.innerText=d.keterangan||'-';let st=(d.status||'').toUpperCase();
+};function maskNama(n){if(!n)return '-';let p=n.trim().split(' ');if(p.length===1)return p[0];let b=p.slice(1).join(' ');return p[0]+' '+b.substring(0,3)+'***';}function drawTimeline(s){let idx=steps.indexOf(s);let h='';steps.forEach((x,i)=>{let c='step';if(i<idx)c+=' done';if(i===idx)c+=' current';h+=`<div class='${c}'>${x}</div>`});document.getElementById('timeline').innerHTML=h;}async function cari(){let k=document.getElementById('tt').value.toUpperCase().replace('TT-','').replace('TT','').trim();let snap=await db.ref('servis/'+k).once('value');if(!snap.exists()){alert('Tidak ditemukan');return;}let d=snap.val();result.style.display='block';nomor.innerText='TT-'+d.nomor;status.innerText=d.status||'-';pelanggan.innerText=d.pelanggan||'-';merk.innerText=d.merk||'-';keluhan.innerText=d.keluhan||'-';ket.innerText=d.keterangan||'-';let st=(d.status||'').toUpperCase();
 drawTimeline(st);
 if(statusInfo[st]){
 document.getElementById('statusbox').style.background=statusInfo[st][0];
 document.getElementById('statusmsg').innerText=statusInfo[st][1];
-}}const p=new URLSearchParams(location.search);if(p.get('tt')){tt.value=p.get('tt');cari();}</script></body></html>
+}}
+function startScan(){
+ const r=document.getElementById('reader');
+ r.style.display='block';
+ const qr=new Html5Qrcode('reader');
+ qr.start({facingMode:'environment'},{fps:10,qrbox:220},(txt)=>{
+   let m=txt.match(/tt=([^&]+)/i);
+   document.getElementById('tt').value=m?m[1]:txt.replace('TT-','');
+   qr.stop().then(()=>{
+      r.style.display='none';
+      document.getElementById('scanAgain').style.display='block';
+      cari();
+   });
+ });
+}
+const p=new URLSearchParams(location.search);
+if(p.get('tt')){tt.value=p.get('tt');cari();}</script></body></html>
