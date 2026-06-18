@@ -1852,9 +1852,14 @@
                         </div>
                     </div>
                     <div class="header-right">
-                        <div class="invoice-title">${tipe === 'nota' ? 'INVOICE' : 'TANDA TERIMA'}</div>
-                        <span class="invoice-number"># ${tipe === 'nota' ? 'INV' : 'TT'}-${noNota}</span>
-                    </div>
+<div style="display:flex;align-items:center;gap:8px">
+<div>
+<div class="invoice-title">${tipe === 'nota' ? 'INVOICE' : 'TANDA TERIMA'}</div>
+<span class="invoice-number"># ${tipe === 'nota' ? 'INV' : 'TT'}-${noNota}</span>
+</div>
+<div id="qr-print"></div>
+</div>
+</div>
                 </div>`;
 
             // PERBAIKAN: Layout Grid yang mepet ke kiri
@@ -1883,7 +1888,14 @@
                 mainContent = `<table class="service-table"><thead><tr><th width="5%">No</th><th width="70%">Rincian</th><th width="25%">Subtotal</th></tr></thead><tbody>${rows}</tbody><tfoot><tr class="font-bold"><td colspan="2" style="text-align:right">TOTAL :</td><td style="text-align:right; background:#eee;">Rp ${total.toLocaleString()}</td></tr></tfoot></table>`;
                 noteContent = `<div class="note-box"><span class="note-title">PERHATIAN:</span><ol><li>1. Simpan nota / invoice sebagai bukti garansi.</li><li>2. Garansi tidak berlaku jika segel rusak atau cacat fisik karena pemakaian.</li></ol></div>`;
             } else {
-                mainContent = `<div style="border:1px solid #000; padding:10px; min-height:160px; font-size:10px;"><div style="font-weight:bold; border-bottom:1px solid #ccc; margin-bottom:8px;">KELUHAN PERANGKAT:</div><div class="uppercase">${keluhan.replace(/\n/g, '<br>')}</div></div>`;
+                mainContent = `<div style="border:1px solid #000; padding:10px; min-height:160px; font-size:10px;"><div style="font-weight:bold; border-bottom:1px solid #ccc; margin-bottom:8px;">KELUHAN PERANGKAT:</div><div class="uppercase">${keluhan.replace(/\n/g, '<br>')}</div>
+<hr style="margin:10px 0">
+<div style="font-size:9px;line-height:1.5">
+<b>TRACKING SERVIS ONLINE</b><br>
+oneprintservice.web.id/tracking<br>
+Masukkan nomor tanda terima: TT-${noNota}<br>
+atau scan QR di bagian atas.
+</div></div>`;
                 noteContent = `<div class="note-box"><span class="note-title">SYARAT PENGAMBILAN:</span><ol><li>WAJIB bawa tanda terima ini saat pengambilan.</li><li>Barang tidak diambil >2 bulan setelah konfirmasi bukan tanggung jawab kami.</li></ol></div>`;
             }
 
@@ -1895,7 +1907,7 @@ document.getElementById('print-container').innerHTML = `
                     ${mainContent}
                     <div class="footer-area">
                         ${noteContent}
-                        <div style="text-align:center;margin-right:10px;"><div id="qr-print"></div><div style="font-size:8px">Scan untuk tracking</div></div><div class="signature-wrapper">
+                        <div class="signature-wrapper">
                             <div class="signature-box">
                                 <span>Hormat Kami,</span>
                                 <span class="signature-line">${currentTeknisi}</span>
@@ -1934,7 +1946,7 @@ document.getElementById('print-container').innerHTML = `
 const qrEl=document.getElementById('qr-print');
 if(qrEl && typeof QRCode!=='undefined'){
  qrEl.innerHTML='';
- new QRCode(qrEl,{text:trackingUrl,width:70,height:70});
+ new QRCode(qrEl,{text:trackingUrl,width:55,height:55});
 }
 setTimeout(()=>window.print(),300);
 },100);
