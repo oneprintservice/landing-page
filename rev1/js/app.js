@@ -106,7 +106,6 @@
         }
 
         loadInventori();
-        loadStatistik();
 
         function setTab(tab) {
             currentTab = tab;
