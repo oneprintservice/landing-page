@@ -960,3 +960,6 @@
             );
         
         }
+window.addEventListener('load', () => {
+    loadStatistik();
+});
