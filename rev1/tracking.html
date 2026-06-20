@@ -1,0 +1,68 @@
+<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Tracking OnePrint</title><link href='https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap' rel='stylesheet'><script src='https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js'></script><script src='https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js'></script><style>
+body{font-family:Poppins,sans-serif;background:linear-gradient(180deg,#fffef3,#eef2f7);padding:20px}
+.card{max-width:900px;margin:auto;background:#fff;padding:30px;border-radius:28px;box-shadow:0 12px 35px rgba(0,0,0,.08)}
+h1{text-align:center;margin-bottom:20px}
+.search{display:flex;gap:10px}
+.search input{flex:1;padding:14px;border:1px solid #ddd;border-radius:14px}
+.search button{padding:14px 22px;border:none;background:#f4c542;border-radius:14px;font-weight:700}
+.statusbox{margin:20px 0;padding:26px;border-radius:24px;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,.08)}
+.timeline{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
+.step{padding:10px 14px;border-radius:999px;background:#eee;font-weight:600}
+.done{background:#d1fae5}
+.current{background:#dbeafe}
+.info p{margin:10px 0}
+.wa{display:block;margin-top:20px;background:#25d366;color:#fff;text-decoration:none;text-align:center;padding:14px;border-radius:14px;font-weight:700}
+</style><script src='https://unpkg.com/html5-qrcode'></script></head><body><div class='card'><div style='text-align:center'><a href="index.html"><img src="logos.png" style="max-width:180px;max-height:80px;cursor:pointer"></a></div>
+<h1>Tracking Servis OnePrint</h1><div class='search' style='display:block'>
+<input id='tt' placeholder='Masukkan nomor TT' style='width:100%;box-sizing:border-box;margin-bottom:12px'>
+<button onclick='cari()' style='width:100%;margin-bottom:12px'>CEK STATUS</button>
+<button id='scanBtn' onclick='startScan()' style='width:100%;background:#333;color:#fff'>📷 SCAN QR</button>
+</div>
+<div id='reader' style='display:none;margin-top:15px'></div><div id='scanHint' style='display:none;text-align:center;color:#666;font-size:13px;margin-top:8px'>Arahkan QR ke dalam kotak. Jarak ideal 10–20 cm.</div>
+<div id='scanAgain' style='display:none;margin-top:10px'>
+<button onclick='startScan()' style='width:100%;background:#333;color:#fff'>📷 SCAN LAGI</button>
+</div><div id='result' style='display:none'>
+<div id='statusbox' class='statusbox'>
+<div style='font-size:13px;font-weight:700'>STATUS SERVIS</div>
+<h2 id='status'></h2>
+<div id='statusmsg'></div>
+</div>
+<div class='info'>
+<p><b>No TT:</b> <span id='nomor'></span></p>
+<p><b>Pelanggan:</b> <span id='pelanggan'></span></p>
+<p><b>Perangkat:</b> <span id='merk'></span></p>
+<p><b>Keluhan:</b> <span id='keluhan'></span></p>
+<p><b>Catatan:</b> <span id='ket'></span></p>
+</div>
+<h3>Progres Servis</h3>
+<div id='timeline' class='timeline' style='flex-direction:column;align-items:flex-start'></div>
+<a class='wa' href='https://wa.me/6282337557178'>Chat Admin</a>
+</div></div><script>const firebaseConfig={apiKey:'AIzaSyBcyS36JnJNGZPdSxd_g9UmCq4BJRiG2rA',authDomain:'oneprintservice-db.firebaseapp.com',databaseURL:'https://oneprintservice-db-default-rtdb.asia-southeast1.firebasedatabase.app',projectId:'oneprintservice-db'};firebase.initializeApp(firebaseConfig);const db=firebase.database();const steps=['MASUK','DIAGNOSA','MENUNGGU SPAREPART','DIKERJAKAN','SELESAI','DIAMBIL'];
+const statusInfo={
+'DIAGNOSA':['#eadcff','Unit sedang dalam tahap diagnosa.'],
+'MENUNGGU SPAREPART':['#fff3bf','Sparepart sedang dalam proses pengadaan.'],
+'DIKERJAKAN':['#dbeafe','Unit sedang dalam proses perbaikan.'],
+'SELESAI':['#dcfce7','Unit telah selesai diperbaiki dan siap diambil.'],
+'DIAMBIL':['#e5e7eb','Unit telah diterima pelanggan.']
+};function maskNama(n){if(!n)return '-';let p=n.trim().split(' ');if(p.length===1)return p[0];let b=p.slice(1).join(' ');return p[0]+' '+b.substring(0,3)+'***';}function drawTimeline(s){let idx=steps.indexOf(s);let h='';steps.forEach((x,i)=>{let c='step';if(i<idx)c+=' done';if(i===idx)c+=' current';h+=`<div class='${c}'>${x}</div>`});document.getElementById('timeline').innerHTML=h;}async function cari(){let k=document.getElementById('tt').value.toUpperCase().replace('TT-','').replace('TT','').trim();let snap=await db.ref('servis/'+k).once('value');if(!snap.exists()){alert('Tidak ditemukan');return;}let d=snap.val();result.style.display='block';nomor.innerText='TT-'+d.nomor;status.innerText=d.status||'-';pelanggan.innerText=d.pelanggan||'-';merk.innerText=d.merk||'-';keluhan.innerText=d.keluhan||'-';ket.innerText=d.keterangan||'-';let st=(d.status||'').toUpperCase();
+drawTimeline(st);
+if(statusInfo[st]){
+document.getElementById('statusbox').style.background=statusInfo[st][0];
+document.getElementById('statusmsg').innerText=statusInfo[st][1];
+}}
+function startScan(){
+ const r=document.getElementById('reader');
+ r.style.display='block';document.getElementById('scanHint').style.display='block';
+ const qr=new Html5Qrcode('reader');
+ qr.start({facingMode:'environment'},{fps:10,qrbox:250},(txt)=>{
+   let m=txt.match(/tt=([^&]+)/i);
+   document.getElementById('tt').value=m?m[1]:txt.replace('TT-','');
+   qr.stop().then(()=>{
+      r.style.display='none';
+      document.getElementById('scanAgain').style.display='block';
+      cari();
+   });
+ });
+}
+const p=new URLSearchParams(location.search);
+if(p.get('tt')){tt.value=p.get('tt');cari();}</script></body></html>
