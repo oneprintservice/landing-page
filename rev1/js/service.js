@@ -954,10 +954,7 @@
         
             }
         
-            cetakDokumen(
-                'nota',
-                true
-            );
+            cetakDokumen('nota',true);
         
         }
 window.addEventListener('load', () => {
