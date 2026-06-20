@@ -960,6 +960,3 @@
             );
         
         }
-document.addEventListener('DOMContentLoaded', () => {
-    loadStatistik();
-});
