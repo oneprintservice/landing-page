@@ -1852,14 +1852,14 @@
                         </div>
                     </div>
                     <div class="header-right">
-<div style="display:flex;align-items:center;gap:8px">
-<div>
-<div class="invoice-title">${tipe === 'nota' ? 'INVOICE' : 'TANDA TERIMA'}</div>
-<span class="invoice-number"># ${tipe === 'nota' ? 'INV' : 'TT'}-${noNota}</span>
-</div>
-<div id="qr-print"></div>
-</div>
-</div>
+                        <div class="invoice-title">
+                            ${tipe === 'nota' ? 'INVOICE' : 'TANDA TERIMA'}
+                        </div>
+                    
+                        <span class="invoice-number">
+                            # ${tipe === 'nota' ? 'INV' : 'TT'}-${noNota}
+                        </span>
+                    </div>
                 </div>`;
 
             // PERBAIKAN: Layout Grid yang mepet ke kiri
@@ -1890,12 +1890,35 @@
             } else {
                 mainContent = `<div style="border:1px solid #000; padding:10px; min-height:160px; font-size:10px;"><div style="font-weight:bold; border-bottom:1px solid #ccc; margin-bottom:8px;">KELUHAN PERANGKAT:</div><div class="uppercase">${keluhan.replace(/\n/g, '<br>')}</div>
 <hr style="margin:10px 0">
-<div style="font-size:9px;line-height:1.5">
+
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:15px;
+">
+
+<div style="
+font-size:9px;
+line-height:1.5;
+flex:1;
+">
+
 <b>TRACKING SERVIS ONLINE</b><br>
+
 oneprintservice.web.id/tracking<br>
-Masukkan nomor tanda terima: TT-${noNota}<br>
-atau scan QR di bagian atas.
-</div></div>`;
+
+Masukkan nomor tanda terima:<br>
+
+<b>TT-${noNota}</b><br>
+
+atau scan QR di samping.
+
+</div>
+
+<div id="qr-print"></div>
+
+</div>
                 noteContent = `<div class="note-box"><span class="note-title">SYARAT PENGAMBILAN:</span><ol><li>WAJIB bawa tanda terima ini saat pengambilan.</li><li>Barang tidak diambil >2 bulan setelah konfirmasi bukan tanggung jawab kami.</li></ol></div>`;
             }
 
@@ -1946,7 +1969,7 @@ document.getElementById('print-container').innerHTML = `
 const qrEl=document.getElementById('qr-print');
 if(qrEl && typeof QRCode!=='undefined'){
  qrEl.innerHTML='';
- new QRCode(qrEl,{text:trackingUrl,width:55,height:55});
+ new QRCode(qrEl,{text:trackingUrl,width:110,height:110});
 }
 setTimeout(()=>window.print(),300);
 },100);
