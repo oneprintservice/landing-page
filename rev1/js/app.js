@@ -1,4 +1,3 @@
-<script>
         const firebaseConfig = {
             apiKey: "AIzaSyBcyS36JnJNGZPdSxd_g9UmCq4BJRiG2rA",
             authDomain: "oneprintservice-db.firebaseapp.com",
@@ -1883,4 +1882,3 @@ setTimeout(()=>window.print(),300);
                 }
 
             });
-    </script>
