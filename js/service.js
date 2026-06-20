@@ -807,7 +807,6 @@
             ).value = '';
         
             loadInventori();
-            loadStatistik();
         
         }
         async function updateServisAktif(){
