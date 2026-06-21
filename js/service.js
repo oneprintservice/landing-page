@@ -961,4 +961,7 @@
         }
 window.addEventListener('load', () => {
     loadStatistik();
+    db.ref('servis').on('value', () => {
+        loadStatistik();
+    });
 });
