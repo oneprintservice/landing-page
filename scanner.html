@@ -186,22 +186,30 @@ Gunakan ID
 
 <div style='text-align:center'>
 
-<div style='font-size:22px;font-weight:900'>
+<div style='font-size:16px;font-weight:900'>
 ONEPRINT SERVICE
 </div>
 
-<hr style='margin:10px 0'>
+<div style='font-size:9px;margin-top:2px'>
+Printer • Laptop • IT Support
+</div>
 
-<div id='printCode'></div>
-<div id='printCustomer' style='margin-top:4px'></div>
-<div id='printUnit' style='margin-top:4px'></div>
+<div style='margin-top:6px;font-size:11px'>
+<span id='printCode'></span>
+</div>
 
-<div style='margin-top:14px'>
+<div id='printCustomer'
+style='font-size:11px;margin-top:2px'></div>
+
+<div id='printUnit'
+style='font-size:11px;margin-top:2px'></div>
+
+<div style='margin-top:6px'>
 <canvas id='printQR'></canvas>
 </div>
 
-<div style='margin-top:10px;font-size:10px'>
-Scan untuk identifikasi servis
+<div style='font-size:8px;margin-top:4px'>
+Scan untuk identifikasi perangkat
 </div>
 
 </div>
@@ -250,7 +258,7 @@ QRCode.toCanvas(
 document.getElementById('printQR'),
 qrText,
 {
-width:180,
+width:100,
 margin:1
 }
 );
