@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login - KSP Manager</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            padding: 35px;
+            border-radius: 18px;
+            box-shadow: 0 10px 35px rgba(0,0,0,.10);
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+            border-radius: 22px;
+            background: #2563eb;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 5px;
+            color: #172554;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+            color: #334155;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 13px;
+            margin-bottom: 18px;
+            border: 1px solid #cbd5e1;
+            border-radius: 9px;
+            font-size: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: 0;
+            border-radius: 9px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #64748b;
+            text-decoration: none;
+        }
+
+        #error {
+            color: #dc2626;
+            text-align: center;
+            margin-bottom: 15px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-box">
+
+        <div class="logo">
+            M.K.S.
+        </div>
+
+        <h1>SMART-KSP</h1>
+
+        <div class="subtitle">
+            Masuk ke Sistem Manajemen Koperasi
+        </div>
+
+        <div id="error">
+            Username dan password wajib diisi.
+        </div>
+
+        <label for="username">
+            Username
+        </label>
+
+        <input
+            type="text"
+            id="username"
+            placeholder="Masukkan username"
+        >
+
+        <label for="password">
+            Password
+        </label>
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Masukkan password"
+        >
+
+        <label for="role">
+            Role
+        </label>
+
+        <select id="role">
+            <option value="admin">
+                Admin / Pengelola
+            </option>
+
+            <option value="lapangan">
+                Petugas Lapangan
+            </option>
+        </select>
+
+        <button id="btnLogin">
+            🔐 Masuk ke Sistem
+        </button>
+
+        <a href="index.html" class="back">
+            ← Kembali ke halaman utama
+        </a>
+
+    </div>
+
+
+    <script>
+
+        document
+            .getElementById("btnLogin")
+            .addEventListener("click", function () {
+
+                const username =
+                    document.getElementById("username").value.trim();
+
+                const password =
+                    document.getElementById("password").value.trim();
+
+                const role =
+                    document.getElementById("role").value;
+
+                const error =
+                    document.getElementById("error");
+
+
+                if (!username || !password) {
+
+                    error.textContent =
+                        "Username dan password wajib diisi.";
+
+                    error.style.display = "block";
+
+                    return;
+                }
+
+
+                error.style.display = "none";
+
+
+                /*
+                 * LOGIN DEMO PRESENTASI
+                 *
+                 * Authentication asli kita pasang
+                 * setelah alur sistem selesai.
+                 */
+
+                sessionStorage.setItem(
+                    "ksp_username",
+                    username
+                );
+
+                sessionStorage.setItem(
+                    "ksp_role",
+                    role
+                );
+
+
+                if (role === "admin") {
+
+                    window.location.href =
+                        "dashboard.html";
+
+                } else {
+
+                    window.location.href =
+                        "lapangan/cari-nasabah.html";
+
+                }
+
+            });
+
+    </script>
+
+</body>
+
+</html>

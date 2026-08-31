@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Pengajuan Kredit - KSP Manager</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: inherit;
+            background: #f1f5f9;
+            color: #172554;
+        }
+
+        .header {
+            background: #2563eb;
+            color: white;
+            padding: 20px;
+        }
+
+        .header h1 {
+            margin: 0 0 5px;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: .9;
+        }
+
+        .container {
+            max-width: 1050px;
+            margin: auto;
+            padding: 25px;
+        }
+
+        .topbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 11px 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-back {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-success {
+            background: #16a34a;
+            color: white;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,.06);
+        }
+
+        .card h2 {
+            margin-top: 0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        input:focus,
+        select:focus {
+            outline: 2px solid #93c5fd;
+            border-color: #2563eb;
+        }
+
+        .nasabah-info {
+            display: none;
+            background: #eff6ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .message {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .message.success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        th {
+            background: #f8fafc;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .badge-yellow {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-green {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-red {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-group {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            border: none;
+            border-radius: 6px;
+            padding: 7px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-detail {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .btn-approve {
+            background: #16a34a;
+            color: white;
+        }
+
+        .btn-reject {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-small:hover {
+            opacity: .85;
+        }
+
+        .empty {
+            padding: 25px;
+            text-align: center;
+            color: #64748b;
+            background: #f8fafc;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 650px) {
+
+            .container {
+                padding: 15px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../assets/css/admin.css">
+
+</head>
+
+
+<body>
+
+    <header class="header">
+
+        <h1>Pengajuan Kredit</h1>
+
+        <p>KSP Manager</p>
+
+    </header>
+
+
+    <main class="container">
+
+        <p class="page-intro">Tinjau pengajuan, periksa detail, lalu setujui atau tolak dengan cepat.</p>
+
+        <div class="topbar">
+
+            <a href="../dashboard.html"
+               class="btn btn-back">
+                ← Dashboard
+            </a>
+
+            <button
+                id="btnTampilkanForm"
+                class="btn btn-success">
+                + Buat Pengajuan
+            </button>
+
+        </div>
+
+
+        <!-- FORM -->
+
+        <section
+            id="formCard"
+            class="card"
+            style="display:none;">
+
+            <h2>Buat Pengajuan Kredit</h2>
+
+            <div
+                id="message"
+                class="message">
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group full">
+
+                    <label for="inputNik">
+                        Cari Nasabah berdasarkan NIK
+                    </label>
+
+                    <input
+                        type="text"
+                        id="inputNik"
+                        maxlength="16"
+                        placeholder="Masukkan NIK nasabah">
+
+                    <button
+                        id="btnCariNasabah"
+                        type="button"
+                        class="btn btn-primary">
+                        🔎 Cari Nasabah
+                    </button>
+
+                    <div
+                        id="nasabahInfo"
+                        class="nasabah-info">
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="jumlahPinjaman">
+                        Jumlah Pengajuan
+                    </label>
+
+                    <input
+                        type="number"
+                        id="jumlahPinjaman"
+                        min="1"
+                        placeholder="Contoh: 5000000">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="tenor">
+                        Tenor
+                    </label>
+
+                    <select id="tenor">
+
+                        <option value="">
+                            Pilih tenor
+                        </option>
+
+                        <option value="1">
+                            1 bulan
+                        </option>
+
+                        <option value="2">
+                            2 bulan
+                        </option>
+
+                        <option value="3">
+                            3 bulan
+                        </option>
+
+                        <option value="6">
+                            6 bulan
+                        </option>
+
+                        <option value="9">
+                            9 bulan
+                        </option>
+
+                        <option value="12">
+                            12 bulan
+                        </option>
+
+                        <option value="15">
+                            15 bulan
+                        </option>
+
+                        <option value="18">
+                            18 bulan
+                        </option>
+
+                        <option value="24">
+                            24 bulan
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="tujuan">
+                        Tujuan Pengajuan
+                    </label>
+
+                    <input
+                        type="text"
+                        id="tujuan"
+                        placeholder="Contoh: modal usaha, kebutuhan rumah tangga">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="catatan">
+                        Catatan
+                    </label>
+
+                    <input
+                        type="text"
+                        id="catatan"
+                        placeholder="Catatan tambahan (opsional)">
+
+                </div>
+
+
+                <div class="form-group full">
+
+                    <button
+                        id="btnSimpan"
+                        type="button"
+                        class="btn btn-success">
+                        💾 Simpan Pengajuan
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- DAFTAR -->
+
+        <section class="card">
+
+            <h2>Daftar Pengajuan</h2>
+
+            <div
+                id="hasil">
+                Memuat data...
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- SUPABASE -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    </script>
+
+    <script src="../assets/js/supabase.js">
+    </script>
+
+    <script src="pengajuan.js">
+    </script>
+
+
+    <nav class="admin-bottom-nav" aria-label="Navigasi admin">
+        <a href="../dashboard.html"><span>⌂</span>Dashboard</a>
+        <a href="nasabah.html"><span>👥</span>Nasabah</a>
+        <a href="pengajuan.html"><span>📋</span>Pengajuan</a>
+        <a href="pinjaman.html"><span>💰</span>Pinjaman</a>
+    </nav>
+
+</body>
+
+</html>

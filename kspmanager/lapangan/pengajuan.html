@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#2563eb">
+    <title>Pengajuan Kredit - KSP Manager</title>
+    <link rel="stylesheet" href="../assets/css/lapangan.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-inner">
+            <div class="brand">
+                <div class="brand-mark">MKS</div>
+                <div>
+                    <h1 class="brand-title">KSP Manager</h1>
+                    <p class="brand-subtitle">Petugas Lapangan</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="page-head">
+            <div>
+                <div class="page-kicker">💰 Proses Pengajuan</div>
+                <h2 class="page-title">Pengajuan Kredit</h2>
+                <p class="page-desc">Masukkan detail pengajuan untuk nasabah terpilih.</p>
+            </div>
+        </div>
+
+        <section class="card">
+            <h3 class="form-section-title"><span class="section-number">1</span> Nasabah</h3>
+            <div class="customer-banner">
+                <div class="customer-avatar">👤</div>
+                <div>
+                    <h3 class="customer-name" id="namaNasabah">-</h3>
+                    <p class="customer-nik">NIK: <span id="nikNasabah">-</span></p>
+                </div>
+            </div>
+        </section>
+
+        <div id="pesan" class="message"></div>
+
+        <section class="card">
+            <h3 class="form-section-title"><span class="section-number">2</span> Detail Pengajuan</h3>
+            <form id="formPengajuan">
+                <div class="form-tip">💡 Pastikan nominal, tenor, dan tujuan pengajuan sudah dikonfirmasi bersama nasabah sebelum dikirim.</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="jumlah_pengajuan">Jumlah Pengajuan *</label>
+                        <input type="number" id="jumlah_pengajuan" inputmode="numeric" min="1" placeholder="Contoh: 5000000" required>
+                        <p class="helper">Masukkan nominal pengajuan dalam rupiah.</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="tenor">Tenor (bulan) *</label>
+                        <input type="number" id="tenor" inputmode="numeric" min="1" placeholder="Contoh: 12" required>
+                    </div>
+                    <div class="form-group full">
+                        <label for="tujuan">Tujuan Pengajuan *</label>
+                        <textarea id="tujuan" rows="4" placeholder="Contoh: modal usaha, kebutuhan pendidikan, renovasi rumah..." required></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label for="catatan">Catatan</label>
+                        <textarea id="catatan" rows="4" placeholder="Catatan tambahan jika diperlukan"></textarea>
+                    </div>
+                </div>
+
+                <div class="action-row sticky-submit">
+                    <button type="submit" class="btn btn-success">✓ Ajukan Kredit</button>
+                    <button type="button" class="btn btn-secondary" onclick="history.back()">← Kembali</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navigasi lapangan">
+        <a href="../dashboard.html"><span>🏠</span><span>Dashboard</span></a>
+        <a href="cari-nasabah.html"><span>🔎</span><span>Cari</span></a>
+        <a href="tambah-nasabah.html"><span>👤</span><span>Tambah</span></a>
+    </nav>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/supabase.js"></script>
+    <script src="pengajuan.js"></script>
+</body>
+</html>

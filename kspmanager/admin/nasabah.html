@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Data Nasabah - KSP Manager</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: inherit;
+            background: #f1f5f9;
+            color: #172554;
+        }
+
+        .header {
+            background: #2563eb;
+            color: white;
+            padding: 20px;
+        }
+
+        .header h1 {
+            margin: 0 0 5px;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: .9;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 25px;
+        }
+
+        .topbar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 8px;
+            padding: 11px 16px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-back {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .btn-add {
+            background: #16a34a;
+            color: white;
+        }
+
+        .search-box {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,.06);
+            margin-bottom: 20px;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-row input {
+            flex: 1;
+            padding: 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .btn-search {
+            background: #2563eb;
+            color: white;
+        }
+
+        .table-box {
+            background: white;
+            border-radius: 14px;
+            overflow-x: auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,.06);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+
+        th,
+        td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #475569;
+            font-size: 14px;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 999px;
+            background: #dcfce7;
+            color: #166534;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+
+        .error {
+            text-align: center;
+            padding: 30px;
+            color: #dc2626;
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                padding: 15px;
+            }
+
+            .search-row {
+                flex-direction: column;
+            }
+
+            .btn-search {
+                width: 100%;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../assets/css/admin.css">
+
+</head>
+
+<body>
+
+    <header class="header">
+
+        <h1>Data Nasabah</h1>
+
+        <p>
+            KSP Manager
+        </p>
+
+    </header>
+
+
+    <main class="container">
+
+        <p class="page-intro">Kelola data nasabah, cari profil, dan buka detail riwayat dengan cepat.</p>
+
+        <div class="topbar">
+
+            <a
+                href="../dashboard.html"
+                class="btn btn-back">
+                ← Dashboard
+            </a>
+
+            <a
+                href="../lapangan/tambah-nasabah.html"
+                class="btn btn-add">
+                + Tambah Nasabah
+            </a>
+
+        </div>
+
+
+        <section class="search-box">
+
+            <div class="search-row">
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Cari berdasarkan NIK atau nama..."
+                >
+
+                <button
+                    class="btn btn-search"
+                    id="searchButton">
+                    🔍 Cari
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <section class="table-box">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Nama</th>
+                        <th>NIK</th>
+                        <th>Alamat</th>
+                        <th>No. HP</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="nasabahTable">
+
+                    <tr>
+                        <td
+                            colspan="5"
+                            class="loading">
+                            Memuat data nasabah...
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="../assets/js/supabase.js"></script>
+
+    <script src="nasabah.js"></script>
+
+
+    <nav class="admin-bottom-nav" aria-label="Navigasi admin">
+        <a href="../dashboard.html"><span>⌂</span>Dashboard</a>
+        <a href="nasabah.html"><span>👥</span>Nasabah</a>
+        <a href="pengajuan.html"><span>📋</span>Pengajuan</a>
+        <a href="pinjaman.html"><span>💰</span>Pinjaman</a>
+    </nav>
+
+</body>
+
+</html>

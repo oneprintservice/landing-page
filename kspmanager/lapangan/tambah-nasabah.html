@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#2563eb">
+    <title>Tambah Nasabah - KSP Manager</title>
+    <link rel="stylesheet" href="../assets/css/lapangan.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-inner">
+            <div class="brand">
+                <div class="brand-mark">MKS</div>
+                <div>
+                    <h1 class="brand-title">KSP Manager</h1>
+                    <p class="brand-subtitle">Petugas Lapangan</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="page-head">
+            <div>
+                <div class="page-kicker">📍 Operasional Lapangan</div>
+                <h2 class="page-title">Tambah Nasabah</h2>
+                <p class="page-desc">Daftarkan nasabah baru langsung dari lapangan.</p>
+            </div>
+        </div>
+
+        <div id="pesan" class="message"></div>
+
+        <form id="formNasabah">
+            <section class="card">
+                <h3 class="form-section-title"><span class="section-number">1</span> Identitas Nasabah</h3>
+                <div class="form-tip">💡 Gunakan data sesuai KTP agar pencarian dan pengajuan berikutnya tidak bermasalah.</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label for="nik">NIK *</label>
+                        <input type="text" id="nik" inputmode="numeric" autocomplete="off" maxlength="16" placeholder="16 digit NIK" required>
+                    </div>
+                    <div class="form-group full">
+                        <label for="nama_lengkap">Nama Lengkap *</label>
+                        <input type="text" id="nama_lengkap" autocomplete="name" placeholder="Nama sesuai KTP" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tempat_lahir">Tempat Lahir</label>
+                        <input type="text" id="tempat_lahir" placeholder="Kota / Kabupaten">
+                    </div>
+                    <div class="form-group">
+                        <label for="tanggal_lahir">Tanggal Lahir</label>
+                        <input type="date" id="tanggal_lahir">
+                    </div>
+                    <div class="form-group full">
+                        <label for="jenis_kelamin">Jenis Kelamin</label>
+                        <select id="jenis_kelamin">
+                            <option value="">Pilih jenis kelamin</option>
+                            <option value="L">Laki-laki</option>
+                            <option value="P">Perempuan</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h3 class="form-section-title"><span class="section-number">2</span> Alamat & Kontak</h3>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label for="alamat">Alamat</label>
+                        <textarea id="alamat" rows="3" placeholder="Alamat lengkap sesuai domisili"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="desa">Desa / Kelurahan</label>
+                        <input type="text" id="desa" placeholder="Nama desa / kelurahan">
+                    </div>
+                    <div class="form-group">
+                        <label for="kecamatan">Kecamatan</label>
+                        <input type="text" id="kecamatan" placeholder="Nama kecamatan">
+                    </div>
+                    <div class="form-group full">
+                        <label for="kabupaten">Kabupaten</label>
+                        <input type="text" id="kabupaten" placeholder="Nama kabupaten / kota">
+                    </div>
+                    <div class="form-group full">
+                        <label for="no_hp">No. HP</label>
+                        <input type="tel" id="no_hp" inputmode="tel" autocomplete="tel" placeholder="08xxxxxxxxxx">
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h3 class="form-section-title"><span class="section-number">3</span> Informasi Tambahan</h3>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label for="pekerjaan">Pekerjaan</label>
+                        <input type="text" id="pekerjaan" placeholder="Pekerjaan utama nasabah">
+                    </div>
+                </div>
+
+                <div class="action-row sticky-submit">
+                    <button type="submit" class="btn btn-success">✓ Simpan Nasabah</button>
+                    <button type="button" class="btn btn-secondary" onclick="history.back()">← Kembali</button>
+                </div>
+            </section>
+        </form>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navigasi lapangan">
+        <a href="../dashboard.html"><span>🏠</span><span>Dashboard</span></a>
+        <a href="cari-nasabah.html"><span>🔎</span><span>Cari</span></a>
+        <a href="tambah-nasabah.html" class="active"><span>👤</span><span>Tambah</span></a>
+    </nav>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/supabase.js"></script>
+    <script src="tambah-nasabah.js"></script>
+</body>
+</html>

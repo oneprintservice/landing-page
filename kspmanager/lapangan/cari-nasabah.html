@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#2563eb">
+    <title>Cari Nasabah - KSP Manager</title>
+    <link rel="stylesheet" href="../assets/css/lapangan.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-inner">
+            <div class="brand">
+                <div class="brand-mark">MKS</div>
+                <div>
+                    <h1 class="brand-title">KSP Manager</h1>
+                    <p class="brand-subtitle">Petugas Lapangan</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="page-head">
+            <div>
+                <div class="page-kicker">📍 Operasional Lapangan</div>
+                <h2 class="page-title">Cari Nasabah</h2>
+                <p class="page-desc">Temukan data nasabah menggunakan NIK.</p>
+            </div>
+        </div>
+
+        <section class="card search-card">
+            <div class="search-row">
+                <div class="input-wrap">
+                    <span class="input-icon">🔎</span>
+                    <input type="text" id="inputNik" inputmode="numeric" autocomplete="off" placeholder="Masukkan 16 digit NIK" maxlength="16">
+                </div>
+                <button class="btn btn-primary" id="btnCari">Cari Nasabah</button>
+            </div>
+            <p class="helper">Pastikan NIK sesuai KTP agar data yang ditemukan tepat.</p>
+        </section>
+
+        <section class="card">
+            <h3 class="form-section-title"><span class="section-number">1</span> Aksi Cepat</h3>
+            <div class="quick-actions">
+                <a class="quick-action" href="tambah-nasabah.html"><span class="quick-action-icon">👤</span><span>Tambah Nasabah</span></a>
+                <a class="quick-action" href="pengajuan.html"><span class="quick-action-icon">💰</span><span>Pengajuan Kredit</span></a>
+            </div>
+        </section>
+
+        <section class="card">
+            <h3 class="form-section-title"><span class="section-number">2</span> Hasil Pencarian</h3>
+            <div id="hasil">
+                <div class="result-placeholder">
+                    <div class="result-icon">👤</div>
+                    <h3 class="result-title">Belum ada pencarian</h3>
+                    <p class="result-text">Masukkan NIK lalu tekan tombol Cari Nasabah.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navigasi lapangan">
+        <a href="../dashboard.html"><span>🏠</span><span>Dashboard</span></a>
+        <a href="cari-nasabah.html" class="active"><span>🔎</span><span>Cari</span></a>
+        <a href="tambah-nasabah.html"><span>👤</span><span>Tambah</span></a>
+    </nav>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/supabase.js"></script>
+    <script>
+        const inputNik = document.getElementById("inputNik");
+        const btnCari = document.getElementById("btnCari");
+        const hasil = document.getElementById("hasil");
+
+        btnCari.addEventListener("click", cariNasabah);
+        inputNik.addEventListener("keydown", function (event) {
+            if (event.key === "Enter") cariNasabah();
+        });
+
+        async function cariNasabah() {
+            const nik = inputNik.value.trim();
+            if (nik === "") {
+                hasil.innerHTML = `<div class="message">⚠️ Silakan masukkan NIK terlebih dahulu.</div>`;
+                inputNik.focus();
+                return;
+            }
+
+            hasil.innerHTML = `<div class="result-placeholder"><div class="result-icon">⏳</div><h3 class="result-title">Mencari data...</h3><p class="result-text">Mohon tunggu sebentar.</p></div>`;
+
+            const { data, error } = await supabaseClient
+                .from("nasabah")
+                .select("*")
+                .eq("nik", nik)
+                .maybeSingle();
+
+            if (error) {
+                console.error(error);
+                hasil.innerHTML = `<div class="message">❌ Terjadi kesalahan: ${error.message}</div>`;
+                return;
+            }
+
+            if (!data) {
+                hasil.innerHTML = `
+                    <div class="result-placeholder">
+                        <div class="result-icon">😕</div>
+                        <h3 class="result-title">Nasabah tidak ditemukan</h3>
+                        <p class="result-text">Belum ada data dengan NIK tersebut.</p>
+                        <div class="action-row">
+                            <button class="btn btn-success" onclick="tambahNasabah()">＋ Tambah Nasabah Baru</button>
+                        </div>
+                    </div>`;
+                return;
+            }
+
+            hasil.innerHTML = `
+                <div class="nasabah-card">
+                    <div class="nasabah-top">
+                        <h3 class="nasabah-name">${data.nama_lengkap}</h3>
+                        <p class="nasabah-nik">NIK: ${data.nik}</p>
+                    </div>
+                    <div class="detail-list">
+                        <div class="detail-row"><div class="detail-label">Tempat / Tanggal Lahir</div><div class="detail-value">${data.tempat_lahir ?? "-"} / ${data.tanggal_lahir ?? "-"}</div></div>
+                        <div class="detail-row"><div class="detail-label">Jenis Kelamin</div><div class="detail-value">${data.jenis_kelamin ?? "-"}</div></div>
+                        <div class="detail-row"><div class="detail-label">Alamat</div><div class="detail-value">${data.alamat ?? "-"}</div></div>
+                        <div class="detail-row"><div class="detail-label">Desa / Kecamatan</div><div class="detail-value">${data.desa ?? "-"} / ${data.kecamatan ?? "-"}</div></div>
+                        <div class="detail-row"><div class="detail-label">Kabupaten</div><div class="detail-value">${data.kabupaten ?? "-"}</div></div>
+                        <div class="detail-row"><div class="detail-label">No. HP</div><div class="detail-value">${data.no_hp ?? "-"}</div></div>
+                        <div class="detail-row"><div class="detail-label">Pekerjaan</div><div class="detail-value">${data.pekerjaan ?? "-"}</div></div>
+                        <div class="detail-row"><div class="detail-label">Status</div><div class="detail-value"><span class="status">${data.status ?? "-"}</span></div></div>
+                    </div>
+                    <div class="action-row" style="padding: 0 17px 17px;">
+                        <button class="btn btn-primary btn-block" onclick="ajukanKredit('${data.id}')">💰 Ajukan Kredit</button>
+                    </div>
+                </div>`;
+        }
+
+        function tambahNasabah() {
+            window.location.href = "tambah-nasabah.html?nik=" + encodeURIComponent(inputNik.value.trim());
+        }
+
+        function ajukanKredit(nasabahId) {
+            window.location.href = "pengajuan.html?nasabah_id=" + encodeURIComponent(nasabahId);
+        }
+    </script>
+</body>
+</html>

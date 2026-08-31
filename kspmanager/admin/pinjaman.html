@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pinjaman - KSP Manager</title>
+    <link rel="stylesheet" href="../assets/css/admin.css">
+</head>
+<body>
+    <header class="header">
+        <h1>Pinjaman</h1>
+        <p>KSP Manager</p>
+    </header>
+
+    <main class="container ksp-page">
+        <p class="page-intro">Pantau saldo pinjaman, pembayaran, dan jadwal angsuran nasabah.</p>
+
+        <div class="topbar ksp-page-actions">
+            <a href="../dashboard.html" class="btn btn-back">← Dashboard</a>
+            <a href="pengajuan.html" class="btn btn-success">📋 Pengajuan</a>
+        </div>
+
+        <section class="card ksp-list-card">
+            <h2>Daftar Pinjaman</h2>
+            <div id="daftar-pinjaman"></div>
+        </section>
+    </main>
+
+    <nav class="admin-bottom-nav" aria-label="Navigasi admin">
+        <a href="../dashboard.html"><span>⌂</span>Dashboard</a>
+        <a href="nasabah.html"><span>👥</span>Nasabah</a>
+        <a href="pengajuan.html"><span>📋</span>Pengajuan</a>
+        <a href="pinjaman.html" class="active"><span>💰</span>Pinjaman</a>
+    </nav>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/supabase.js"></script>
+    <script src="pinjaman.js"></script>
+</body>
+</html>
