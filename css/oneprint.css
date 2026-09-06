@@ -1,0 +1,68 @@
+body{
+background:
+linear-gradient(135deg,#fefce8 0%,#f7fee7 40%,#fef9c3 100%);
+overflow-x:hidden;
+font-family:Inter,sans-serif;
+}
+
+.glass{
+background:rgba(255,255,255,.72);
+backdrop-filter:blur(14px);
+border:1px solid rgba(255,255,255,.45);
+}
+
+.hero-bg{
+background:
+radial-gradient(circle at top left, rgba(132,204,22,.18), transparent 25%),
+radial-gradient(circle at bottom right, rgba(250,204,21,.25), transparent 35%),
+linear-gradient(135deg,#fffef5,#fefce8);
+}
+
+.card-hover{
+transition:.25s;
+}
+
+.card-hover:hover{
+transform:translateY(-4px);
+}
+
+.brand{
+font-weight:900;
+font-size:32px;
+opacity:.9;
+}
+
+@media(min-width:1024px){
+.desktop-grid{
+display:grid;
+grid-template-columns:1.1fr .9fr;
+gap:28px;
+align-items:start;
+}
+
+.desktop-side{
+position:sticky;
+top:24px;
+}
+}
+
+.lock-btn{
+opacity:.15;
+transition:.2s;
+}
+
+.lock-btn:hover{
+opacity:.4;
+}
+
+@media(min-width:1400px){
+.desktop-grid{
+grid-template-columns:1.05fr .95fr;
+gap:40px;
+}
+
+body{
+padding-left:40px;
+padding-right:40px;
+}
+}

@@ -1,0 +1,30 @@
+body{
+            background:
+            radial-gradient(circle at top left, rgba(37,99,235,0.25), transparent 35%),
+            radial-gradient(circle at bottom right, rgba(14,165,233,0.18), transparent 35%),
+            #020617;
+            overflow-x:hidden;
+        }
+
+        .glass{
+            backdrop-filter: blur(12px);
+            background: rgba(255,255,255,0.95);
+            border:1px solid rgba(255,255,255,0.25);
+        }
+
+        .floating{
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float{
+            0%,100%{ transform: translateY(0px); }
+            50%{ transform: translateY(-6px); }
+        }
+
+        .menu-card:hover{
+            transform: translateY(-3px);
+        }
+
+        .glow{
+            box-shadow: 0 0 25px rgba(37,99,235,0.25);
+        }

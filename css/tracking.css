@@ -1,0 +1,25 @@
+body{font-family:Poppins,sans-serif;background:linear-gradient(180deg,#fffef3,#eef2f7);padding:20px}
+.card{max-width:900px;margin:auto;background:#fff;padding:30px;border-radius:28px;box-shadow:0 12px 35px rgba(0,0,0,.08)}
+h1{text-align:center;margin-bottom:20px}
+.search{display:flex;gap:10px}
+.search input{flex:1;padding:14px;border:1px solid #ddd;border-radius:14px}
+.search button{padding:14px 22px;border:none;background:#f4c542;border-radius:14px;font-weight:700}
+.statusbox{margin:20px 0;padding:26px;border-radius:24px;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,.08)}
+.timeline{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
+.step{padding:10px 14px;border-radius:999px;background:#eee;font-weight:600}
+.done{background:#d1fae5}
+.current{background:#dbeafe}
+.info p{margin:10px 0}
+.wa{display:block;margin-top:20px;background:#25d366;color:#fff;text-decoration:none;text-align:center;padding:14px;border-radius:14px;font-weight:700}
+
+/* OnePrint UI system v2 - presentation only; business logic remains in JS modules. */
+:root{--op-primary:#2563eb;--op-dark:#0f172a;--op-surface:#ffffff;--op-muted:#64748b;--op-border:#e2e8f0}
+.oneprint-nav{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--op-border);box-shadow:0 4px 16px rgba(15,23,42,.06)}
+.oneprint-nav-inner{display:flex;gap:.35rem;overflow-x:auto;padding:.55rem .75rem;scrollbar-width:none}
+.oneprint-nav-inner::-webkit-scrollbar{display:none}
+.oneprint-nav-item{flex:0 0 auto;display:flex;align-items:center;gap:.45rem;padding:.6rem .8rem;border-radius:.75rem;color:#475569;font-size:.72rem;font-weight:700;text-decoration:none;white-space:nowrap;transition:.18s ease}
+.oneprint-nav-item:hover,.oneprint-nav-item.active{background:#eff6ff;color:#1d4ed8}
+.oneprint-nav-item i{font-size:.8rem}
+button,input,select,textarea{font-family:inherit}
+:focus-visible{outline:3px solid rgba(37,99,235,.25);outline-offset:2px}
+@media(min-width:1024px){.oneprint-nav-inner{max-width:1400px;margin:auto;padding-left:1rem;padding-right:1rem}}

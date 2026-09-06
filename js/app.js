@@ -1,0 +1,1 @@
+/* Compatibility entry point. Core logic is now split into focused modules. */
