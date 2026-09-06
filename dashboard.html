@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard OnePrint Service - Ponorogo</title>
+    <title>OnePrint — Service Management</title>
     <link rel="icon" type="image/png" href="logos.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -19,9 +19,11 @@
 <body class="bg-gray-100 min-h-screen">
 
     <div id="app-ui">
-        <header class="bg-slate-800 text-white p-4 flex justify-between items-center shadow-lg">
-            <div class="font-bold text-xl flex items-center italic">
-                <i class="fas fa-tools mr-3 text-yellow-400"></i> OnePrint <span class="text-blue-400 ml-1">Repair Service</span>
+        <header class="op-app-header">
+            <button id="mobile-menu-toggle" class="op-icon-btn mobile-only" aria-label="Buka menu"><i class="fas fa-bars"></i></button>
+            <div class="op-app-brand">
+                <span class="op-app-logo"><i class="fas fa-screwdriver-wrench"></i></span>
+                <div><strong>OnePrint</strong><small>Service Management</small></div>
             </div>
             
             <div class="flex items-center gap-4">
@@ -29,13 +31,44 @@
                     <span id="user-display" class="text-[10px] text-cyan-300 font-mono"></span>
                     <span id="idle-timer" class="text-[9px] text-gray-400 italic">Sesi Aktif</span>
                 </div>
-                <button id="btn-logout" class="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center">
-                    <i class="fas fa-power-off mr-2"></i> LOGOUT
-                </button>
+                <button class="op-icon-btn" title="Notifikasi"><i class="far fa-bell"></i></button>
+                <button id="btn-logout" class="op-logout"><i class="fas fa-power-off"></i><span>Keluar</span></button>
             </div>
         </header>
+<nav class="oneprint-nav" id="app-sidebar" aria-label="Navigasi utama">
+  <div class="op-sidebar-head"><span class="op-sidebar-caption">WORKSPACE</span></div>
+  <div class="oneprint-nav-inner">
+    <a class="oneprint-nav-item active" href="dashboard.html"><i class="fas fa-gauge-high"></i><span>Dashboard</span></a>
+    <a class="oneprint-nav-item" href="dashboard.html#service-panel"><i class="fas fa-screwdriver-wrench"></i><span>Service</span></a>
+    <a class="oneprint-nav-item" href="inventori.html"><i class="fas fa-boxes-stacked"></i><span>Inventori</span></a>
+    <a class="oneprint-nav-item" href="pembelanjaan.html"><i class="fas fa-cart-shopping"></i><span>Pembelanjaan</span></a>
+    <a class="oneprint-nav-item" href="scanner.html"><i class="fas fa-qrcode"></i><span>Scanner</span></a>
+    <div class="op-sidebar-caption nav-section">UTILITAS</div>
+    <a class="oneprint-nav-item" href="pln.html"><i class="fas fa-bolt"></i><span>PLN</span></a>
+    <a class="oneprint-nav-item" href="internet.html"><i class="fas fa-wifi"></i><span>Internet</span></a>
+    <a class="oneprint-nav-item" href="tracking.html"><i class="fas fa-location-dot"></i><span>Tracking</span></a>
+  </div>
+  <div class="op-sidebar-foot"><div><i class="fas fa-shield-halved"></i><span>Sistem aktif</span></div></div>
+</nav>
+<div class="op-mobile-backdrop" id="mobile-menu-backdrop"></div>
+<nav class="op-bottom-nav" aria-label="Navigasi cepat">
+  <a class="active" href="dashboard.html"><i class="fas fa-house"></i><span>Home</span></a>
+  <a href="dashboard.html#service-panel"><i class="fas fa-screwdriver-wrench"></i><span>Service</span></a>
+  <a href="inventori.html"><i class="fas fa-boxes-stacked"></i><span>Stok</span></a>
+  <a href="pembelanjaan.html"><i class="fas fa-cart-shopping"></i><span>Belanja</span></a>
+  <a href="tracking.html"><i class="fas fa-location-dot"></i><span>Tracking</span></a>
+</nav>
 
-        <main class="p-4 grid grid-cols-1 lg:grid-cols-3 gap-3 items-start">
+
+        <div class="op-pagebar"><div><span class="op-eyebrow">WORKSPACE / SERVICE</span><h1>Service Management</h1><p>Kelola work order, pelanggan, jasa, sparepart, pembayaran, dan status servis.</p></div><div class="op-page-actions"><button type="button" class="op-soft-action op-action-primary" onclick="mulaiServiceBaru()"><i class="fas fa-plus"></i><span>Service Baru</span></button><a href="pembelanjaan.html" class="op-soft-action"><i class="fas fa-cart-plus"></i><span>Pembelanjaan</span></a><a href="inventori.html" class="op-soft-action"><i class="fas fa-boxes-stacked"></i><span>Inventori</span></a></div></div>
+        <section class="service-commandbar" aria-label="Aksi cepat service">
+            <button type="button" class="service-command primary" onclick="mulaiServiceBaru()"><i class="fas fa-plus"></i><span>Service Baru</span><small>Buat work order</small></button>
+            <button type="button" class="service-command" onclick="lihatServisAktif()"><i class="fas fa-screwdriver-wrench"></i><span>Aktif</span><small>Masuk · Diagnosa · Dikerjakan</small></button>
+            <button type="button" class="service-command" onclick="lihatMenungguSparepart()"><i class="fas fa-box-open"></i><span>Sparepart</span><small>Menunggu barang</small></button>
+            <button type="button" class="service-command" onclick="lihatSelesai()"><i class="fas fa-circle-check"></i><span>Selesai</span><small>Siap dicek</small></button>
+            <button type="button" class="service-command" onclick="lihatTotalServis()"><i class="fas fa-chart-simple"></i><span>Rekap</span><small>Ringkasan service</small></button>
+        </section>
+        <main id="service-panel" class="p-4 grid grid-cols-1 lg:grid-cols-3 gap-3 items-start">
             <div class="lg:col-span-2 space-y-4">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
 
@@ -329,11 +362,37 @@
     
     <div id="print-container" style="display: none;"></div>
 
-    <script src="js/app.js"></script>
+    <script>
+    function mulaiServiceBaru(){
+        if(typeof resetFormServis === 'function') resetFormServis();
+        const el=document.getElementById('input-nama');
+        if(el){ el.focus(); el.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+    </script>
+
+    <!-- OnePrint modular runtime: order is intentional -->
+    <script src="js/firebase.js"></script>
+    <script src="js/auth-session.js"></script>
+    <script src="js/customer.js"></script>
+    <script src="js/inventory-workflow.js"></script>
+    <script src="js/inventory-ledger.js"></script>
+    <script src="js/billing.js"></script>
+    <script src="js/billing-search.js"></script>
     <script src="js/scanner.js"></script>
     <script src="js/print.js"></script>
     <script src="js/inventory.js"></script>
     <script src="js/service.js"></script>
     
+<script>
+(function(){
+  const toggle=document.getElementById('mobile-menu-toggle');
+  const sidebar=document.getElementById('app-sidebar');
+  const backdrop=document.getElementById('mobile-menu-backdrop');
+  function close(){sidebar?.classList.remove('mobile-open');backdrop?.classList.remove('show');}
+  toggle?.addEventListener('click',()=>{sidebar?.classList.toggle('mobile-open');backdrop?.classList.toggle('show');});
+  backdrop?.addEventListener('click',close);
+  sidebar?.querySelectorAll('a').forEach(a=>a.addEventListener('click',close));
+})();
+</script>
 </body>
 </html>

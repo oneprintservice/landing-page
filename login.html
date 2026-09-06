@@ -9,38 +9,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
-    <style>
-        body{
-            background:
-            radial-gradient(circle at top left, rgba(37,99,235,0.25), transparent 35%),
-            radial-gradient(circle at bottom right, rgba(14,165,233,0.18), transparent 35%),
-            #020617;
-            overflow-x:hidden;
-        }
-
-        .glass{
-            backdrop-filter: blur(12px);
-            background: rgba(255,255,255,0.95);
-            border:1px solid rgba(255,255,255,0.25);
-        }
-
-        .floating{
-            animation: float 4s ease-in-out infinite;
-        }
-
-        @keyframes float{
-            0%,100%{ transform: translateY(0px); }
-            50%{ transform: translateY(-6px); }
-        }
-
-        .menu-card:hover{
-            transform: translateY(-3px);
-        }
-
-        .glow{
-            box-shadow: 0 0 25px rgba(37,99,235,0.25);
-        }
-    </style>
+    
+    <link rel="stylesheet" href="css/login.css">
 </head>
 
 <body class="min-h-screen flex items-center justify-center px-4 py-10">
@@ -171,51 +141,9 @@
         </div>
     </div>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBcyS36JnJNGZPdSxd_g9UmCq4BJRiG2rA",
-            authDomain: "oneprintservice-db.firebaseapp.com",
-            databaseURL: "https://oneprintservice-db-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "oneprintservice-db",
-            storageBucket: "oneprintservice-db.firebasestorage.app",
-            messagingSenderId: "330853999249",
-            appId: "1:330853999249:web:4503ed115d2694d9cb5530"
-        };
+    
 
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                window.location.href = 'dashboard.html';
-            }
-        });
-
-        document.getElementById('btn-login').addEventListener('click', () => {
-
-            const username = document.getElementById('login-user').value.trim();
-            const pass = document.getElementById('login-pass').value;
-
-            if (!username || !pass) return;
-
-            const emailFormat = username.includes('@')
-                ? username
-                : username + "@oneprint.com";
-
-            auth.signInWithEmailAndPassword(emailFormat, pass)
-            .catch(err => {
-                console.error(err);
-                document.getElementById('login-error')
-                .classList.remove('hidden');
-            });
-        });
-
-        document.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                document.getElementById('btn-login').click();
-            }
-        });
-    </script>
-
+    <script src="js/firebase.js"></script>
+    <script src="js/login.js"></script>
 </body>
 </html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pembelanjaan - OnePrint</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+<link rel="stylesheet" href="css/purchasing.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+<header class="bg-slate-800 text-white p-4 flex justify-between items-center shadow-lg">
+  <div class="font-bold text-xl flex items-center italic"><i class="fas fa-cart-shopping mr-3 text-yellow-400"></i>OnePrint <span class="text-blue-400 ml-1">Purchasing</span></div>
+  <a href="dashboard.html" class="bg-blue-600 px-4 py-2 rounded-lg text-xs font-bold">Dashboard</a>
+</header>
+<nav class="oneprint-nav" aria-label="Navigasi utama">
+  <div class="oneprint-nav-inner">
+    <a class="oneprint-nav-item" href="dashboard.html"><i class="fas fa-gauge-high"></i><span>Dashboard</span></a>
+    <a class="oneprint-nav-item" href="oneprint.html"><i class="fas fa-screwdriver-wrench"></i><span>Service</span></a>
+    <a class="oneprint-nav-item" href="inventori.html"><i class="fas fa-boxes-stacked"></i><span>Inventori</span></a>
+    <a class="oneprint-nav-item active" href="pembelanjaan.html"><i class="fas fa-cart-shopping"></i><span>Pembelanjaan</span></a>
+    <a class="oneprint-nav-item" href="scanner.html"><i class="fas fa-qrcode"></i><span>Scanner</span></a>
+    <a class="oneprint-nav-item" href="tracking.html"><i class="fas fa-location-dot"></i><span>Tracking</span></a>
+  </div>
+</nav>
+<main class="p-4 pb-10"><div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4">
+<section class="lg:col-span-2 bg-white rounded-xl shadow-sm border p-5">
+  <div class="flex justify-between items-center border-b pb-3 mb-4"><div><h1 class="font-bold text-gray-800">Pembelanjaan Baru</h1><p class="text-xs text-gray-500">Barang yang disimpan di sini otomatis menambah stok.</p></div><span id="purchase-number" class="text-xs font-mono text-gray-500"></span></div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+    <input id="purchase-date" type="date" class="p-2 border rounded-lg text-sm">
+    <input id="supplier-name" list="supplier-list" placeholder="Nama supplier" class="p-2 border rounded-lg text-sm">
+    <datalist id="supplier-list"></datalist>
+    <input id="supplier-contact" placeholder="Kontak supplier (opsional)" class="p-2 border rounded-lg text-sm">
+    <input id="purchase-note" placeholder="Catatan / nomor nota (opsional)" class="p-2 border rounded-lg text-sm sm:col-span-2">
+  </div>
+  <div class="bg-gray-50 rounded-xl border p-3 mb-4">
+    <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+      <select id="item-select" class="sm:col-span-5 p-2 border rounded-lg text-sm"><option value="">Pilih barang inventori...</option></select>
+      <input id="item-qty" type="number" min="1" step="1" value="1" class="sm:col-span-2 p-2 border rounded-lg text-sm" placeholder="Qty">
+      <input id="item-price" type="number" min="0" step="1" class="sm:col-span-3 p-2 border rounded-lg text-sm" placeholder="Harga beli / unit">
+      <button id="btn-add-item" class="sm:col-span-2 bg-slate-800 text-white rounded-lg font-bold text-sm">TAMBAH</button>
+    </div>
+  </div>
+  <div id="purchase-items" class="space-y-2"></div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+    <input id="purchase-shipping" type="number" min="0" value="0" class="p-2 border rounded-lg text-sm" placeholder="Ongkir">
+    <input id="purchase-other" type="number" min="0" value="0" class="p-2 border rounded-lg text-sm" placeholder="Biaya lain">
+  </div>
+  <div class="mt-4 p-4 bg-slate-50 rounded-xl border flex justify-between items-center"><span class="font-bold text-sm">TOTAL PEMBELIAN</span><strong id="purchase-total" class="text-xl">Rp 0</strong></div>
+  <button id="btn-save-purchase" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold">SIMPAN PEMBELIAN & TAMBAH STOK</button>
+</section>
+<section class="bg-white rounded-xl shadow-sm border p-5">
+  <div class="flex justify-between border-b pb-3 mb-3"><h2 class="font-bold text-gray-800">Riwayat Pembelanjaan</h2><button id="btn-refresh" class="text-xs text-blue-600 font-bold">REFRESH</button></div>
+  <div id="purchase-history" class="space-y-2 max-h-[650px] overflow-y-auto"><div class="text-xs text-gray-400 italic">Memuat...</div></div>
+</section>
+</div></main>
+<script src="js/firebase.js"></script><script src="js/inventory-ledger.js"></script><script src="js/purchasing.js"></script>
+</body></html>
