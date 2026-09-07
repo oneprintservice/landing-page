@@ -1,4 +1,6 @@
         function cetakDokumen(tipe, reprint = false) {
+            simpanDataKeDatabase();
+
             const nama = document.getElementById('input-nama').value || '-';
             const telp = document.getElementById('input-telp').value || '-';
             const merk = document.getElementById('input-merk').value || '-';
@@ -199,8 +201,8 @@ setTimeout(()=>window.print(),300);
             }
 
             }
-            const inventorySaveButton = document.getElementById('btn-simpan-inventori');
-            if (inventorySaveButton) inventorySaveButton.addEventListener('click', () => {
+            document.getElementById('btn-simpan-inventori')
+        .addEventListener('click', () => {
 
             const nama = document.getElementById('inv-nama').value.trim();
             const kategori = document.getElementById('inv-kategori').value;

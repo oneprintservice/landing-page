@@ -1,4 +1,3 @@
-window.inventoriCache = window.inventoriCache || [];
         async function loadStatistik(){
 
             const snapshot =
@@ -50,20 +49,27 @@ window.inventoriCache = window.inventoriCache || [];
 
             });
 
-            const statAktif = document.getElementById('stat-aktif'); if(statAktif) statAktif.innerText = aktif;
+            document.getElementById(
+                'stat-aktif'
+            ).innerText = aktif;
 
-            const statSparepart = document.getElementById('stat-sparepart'); if(statSparepart) statSparepart.innerText = sparepart;
+            document.getElementById(
+                'stat-sparepart'
+            ).innerText = sparepart;
 
-            const statSelesai = document.getElementById('stat-selesai'); if(statSelesai) statSelesai.innerText = selesai;
+            document.getElementById(
+                'stat-selesai'
+            ).innerText = selesai;
 
-            const statTotal = document.getElementById('stat-total'); if(statTotal) statTotal.innerText = total;
+            document.getElementById(
+                'stat-total'
+            ).innerText = total;
 
             const badge =
                 document.getElementById(
                     'badge-servis-baru'
                 );
             
-            if(!badge) return;
             if(servisBaru > 0){
             
                 badge.classList.remove(
@@ -765,23 +771,6 @@ window.inventoriCache = window.inventoriCache || [];
                     await stokRef.set(
                         stokLama + pengembali
                     );
-
-                    if(window.recordStockMovement){
-                        await recordStockMovement({
-                            tipe: 'BATAL_SERVICE',
-                            sumber: 'SERVICE',
-                            referensi: data.nomor || currentServisKey,
-                            kategori: item.kategori,
-                            itemKey: item.key,
-                            nama: item.nama || (dataInv && dataInv.nama) || 'Sparepart',
-                            qty: pengembali,
-                            delta: pengembali,
-                            stokSebelum: Number(stokLama)||0,
-                            stokSesudah: Number(stokLama)||0 + pengembali,
-                            hargaSatuan: Number(item.harga_beli || (dataInv && dataInv.harga_beli)) || 0,
-                            catatan: 'Stok dikembalikan karena service dihapus'
-                        });
-                    }
         
                 }
         
@@ -933,7 +922,7 @@ window.inventoriCache = window.inventoriCache || [];
             
             updateList();
         
-            if (typeof renderDaftarSparepart === 'function') renderDaftarSparepart();
+            renderDaftarSparepart();
         
             document.getElementById(
                 'mode-edit'

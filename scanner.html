@@ -9,23 +9,51 @@
 <script src='https://unpkg.com/html5-qrcode'></script>
 <script src='https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js'></script>
 
-
-    <link rel="stylesheet" href="css/scanner.css"><link rel="stylesheet" href="css/app-shell.css">
+<style>
+body{
+background:linear-gradient(135deg,#fefce8,#f7fee7,#fef9c3);
+font-family:Arial,sans-serif;
+}
+.glass{
+background:rgba(255,255,255,.82);
+backdrop-filter:blur(14px);
+border:1px solid rgba(255,255,255,.45);
+}
+#printArea{
+display:none;
+}
+@media print{
+body *{
+visibility:hidden;
+}
+#printArea,#printArea *{
+visibility:visible;
+}
+#printArea{
+display:flex;
+flex-direction:column;
+align-items:center;
+position:absolute;
+left:0;
+top:0;
+width:48mm;
+padding:1mm;
+box-sizing:border-box;
+background:white;
+color:black;
+}
+#printQR{
+display:block;
+margin:0 auto !important;
+}
+.no-print{
+display:none!important;
+}
+}
+</style>
 </head>
 
 <body class='min-h-screen p-4 lg:p-8'>
-<header class="op-app-header no-print">
-  <button id="mobile-menu-toggle" class="op-icon-btn mobile-only" aria-label="Buka menu"><i class="fas fa-bars"></i></button>
-  <div class="op-app-brand"><span class="op-app-logo"><i class="fas fa-screwdriver-wrench"></i></span><div><strong>OnePrint</strong><small>Service Management</small></div></div>
-  <div class="flex items-center gap-4"><div class="hidden sm:flex flex-col text-right"><span id="user-display" class="text-[10px] text-cyan-300 font-mono"></span><span id="idle-timer" class="text-[9px] text-gray-400 italic">Sesi Aktif</span></div><button class="op-icon-btn" title="Notifikasi"><i class="far fa-bell"></i></button><button id="btn-logout" class="op-logout"><i class="fas fa-power-off"></i><span>Keluar</span></button></div>
-</header>
-<nav class="oneprint-nav no-print" id="app-sidebar" aria-label="Navigasi utama">
-  <div class="op-sidebar-head"><span class="op-sidebar-caption">WORKSPACE</span></div>
-  <div class="oneprint-nav-inner"><a class="oneprint-nav-item" href="dashboard.html"><i class="fas fa-gauge-high"></i><span>Dashboard</span></a><a class="oneprint-nav-item" href="service.html"><i class="fas fa-screwdriver-wrench"></i><span>Service</span></a><a class="oneprint-nav-item" href="inventori.html"><i class="fas fa-boxes-stacked"></i><span>Stok</span></a><a class="oneprint-nav-item" href="pembelanjaan.html"><i class="fas fa-cart-shopping"></i><span>Belanja</span></a><a class="oneprint-nav-item active" href="scanner.html"><i class="fas fa-qrcode"></i><span>Scanner</span></a><a class="oneprint-nav-item" href="pln.html"><i class="fas fa-bolt"></i><span>PLN</span></a><a class="oneprint-nav-item" href="internet.html"><i class="fas fa-wifi"></i><span>Internet</span></a><a class="oneprint-nav-item" href="tracking.html"><i class="fas fa-location-dot"></i><span>Tracking</span></a></div>
-  <div class="op-sidebar-foot"><div><i class="fas fa-shield-halved"></i><span>Sistem aktif</span></div></div>
-</nav>
-<div class="op-mobile-backdrop" id="mobile-menu-backdrop"></div>
-<div class='op-shell-content'>
 
 <div class='max-w-7xl mx-auto grid lg:grid-cols-2 gap-6 no-print'>
 
@@ -194,8 +222,175 @@ style="font-size:6px;margin-top:0px">
 
 </div>
 
+<script>
+
+function generateRandomCode(){
+
+const random =
+'OPS-' +
+new Date().getFullYear().toString().slice(-2) +
+String(new Date().getMonth()+1).padStart(2,'0') +
+String(new Date().getDate()).padStart(2,'0') +
+'-' +
+Math.floor(Math.random()*900+100);
+
+document.getElementById('manualCode').value = random;
+
+}
+
+function generateQR(){
+
+const code = document.getElementById('manualCode').value;
+const customer = document.getElementById('customer').value;
+const unit = document.getElementById('unit').value;
+
+if(!code){
+alert('Masukkan kode terlebih dahulu');
+return;
+}
+
+const qrText = code;
+
+QRCode.toCanvas(
+document.getElementById('qrcode'),
+qrText,
+{
+width:220,
+margin:1
+}
+);
+
+QRCode.toCanvas(
+document.getElementById('printQR'),
+qrText,
+{
+width:100,
+margin:1
+}
+);
+
+document.getElementById('previewCode').innerText = code;
+
+document.getElementById('previewInfo').innerText =
+(customer || '-') + ' | ' + (unit || '-');
+
+document.getElementById('printCode').innerText =
+'ID : ' + code;
+
+document.getElementById('printCustomer').innerText =
+'Nama : ' + (customer || '-');
+
+document.getElementById('printUnit').innerText =
+'Unit : ' + (unit || '-');
+
+}
+
+function printThermal(){
+
+generateQR();
+
+setTimeout(()=>{
+window.print();
+},300);
+
+}
+
+function startScanner(){
+
+if(scannerRunning) return;
 
 
-    </div><script src="js/scanner-page.js"></script><script src="js/app-shell.js"></script>
+html5QrCode = new Html5Qrcode('reader');
+
+scannerRunning = true;
+
+document.getElementById('scanToggleBtn').innerText = 'Stop Scan';
+document.getElementById('scanToggleBtn').classList.remove('bg-blue-600');
+document.getElementById('scanToggleBtn').classList.add('bg-red-500');
+
+html5QrCode.start(
+{ facingMode:'environment' },
+{
+fps:10,
+qrbox:{width:250,height:250}
+},
+(decodedText)=>{
+
+document.getElementById('scanResult').innerText = decodedText;
+document.getElementById('manualCode').value = decodedText;
+
+if(navigator.vibrate){
+navigator.vibrate(120);
+}
+
+},
+()=>{}
+);
+
+}
+
+
+let html5QrCode = null;
+let scannerRunning = false;
+
+function toggleScanner(){
+if(scannerRunning){
+stopScanner();
+}else{
+startScanner();
+}
+}
+
+function stopScanner(){
+
+if(html5QrCode){
+
+html5QrCode.stop().then(()=>{
+
+scannerRunning = false;
+
+document.getElementById('scanToggleBtn').innerText =
+'Start Scan';
+
+document.getElementById('scanToggleBtn')
+.classList.remove('bg-red-500');
+
+document.getElementById('scanToggleBtn')
+.classList.add('bg-blue-600');
+
+});
+
+}
+
+}
+
+function copyScanResult(){
+
+const text =
+document.getElementById('scanResult').innerText;
+
+if(text && text !== 'Belum ada hasil'){
+navigator.clipboard.writeText(text);
+alert('ID berhasil disalin');
+}
+
+}
+
+function fillManualCode(){
+
+const text =
+document.getElementById('scanResult').innerText;
+
+if(text && text !== 'Belum ada hasil'){
+document.getElementById('manualCode').value = text;
+}
+
+}
+
+
+generateRandomCode();
+
+</script>
+
 </body>
 </html>
