@@ -28,7 +28,7 @@
 
             }
 
-            renderInventoriList();
+            if (typeof renderInventoriList === 'function') renderInventoriList();
 
         }
 

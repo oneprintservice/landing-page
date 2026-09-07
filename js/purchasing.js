@@ -14,7 +14,7 @@
       snap.forEach(ch=>state.inventory.push({key:ch.key,kategori,...(ch.val()||{})}));
     }
     state.inventory.sort((a,b)=>String(a.nama).localeCompare(String(b.nama)));
-    $('item-select').innerHTML='<option value="">Pilih barang inventori...</option>'+state.inventory.map(x=>`<option value="${esc(x.kategori+'|'+x.key)}">${esc(inventoryLabel(x))}</option>`).join('');
+
   }
   async function loadSuppliers(){
     const snap=await db.ref('suppliers').once('value'); const list=$('supplier-list');
@@ -25,13 +25,15 @@
     $('purchase-total').textContent=rupiah(state.items.reduce((s,x)=>s+x.qty*x.harga,0)+(+($('purchase-shipping').value||0))+(+($('purchase-other').value||0)));
     document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{state.items.splice(+b.dataset.remove,1);renderItems()});
   }
+  let selectedItem=null;
+  function renderSearchResults(){const q=($('item-search').value||'').trim().toLowerCase();const box=$('item-search-results');if(!q){box.classList.add('hidden');box.innerHTML='';return;}const hits=state.inventory.filter(x=>String(x.nama||'').toLowerCase().includes(q)).slice(0,12);box.innerHTML=hits.length?hits.map(x=>`<button type="button" class="w-full text-left p-2 border-b hover:bg-blue-50" data-pick="${esc(x.kategori+'|'+x.key)}"><div class="font-bold text-sm">${esc(x.nama)}</div><div class="text-[11px] text-gray-500">Stok: ${x.stok||0} ${esc(x.satuan||'')} · Modal: ${rupiah(x.harga_beli)}</div></button>`).join(''):'<div class="p-3 text-xs text-gray-400">Barang tidak ditemukan.</div>';box.classList.remove('hidden');box.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{const [k,key]=b.dataset.pick.split('|');selectedItem=state.inventory.find(x=>x.kategori===k&&x.key===key)||null;if(selectedItem){$('item-search').value=selectedItem.nama;$('item-price').value=selectedItem.harga_beli||0;}box.classList.add('hidden');});}
   function addItem(){
-    const val=$('item-select').value;if(!val)return alert('Pilih barang terlebih dahulu.');
-    const [kategori,key]=val.split('|'); const inv=state.inventory.find(x=>x.kategori===kategori&&x.key===key);if(!inv)return;
+    if(!selectedItem)return alert('Cari dan pilih barang terlebih dahulu.');
+    const kategori=selectedItem.kategori,key=selectedItem.key,inv=selectedItem;if(!inv)return;
     const qty=Math.max(1,parseInt($('item-qty').value)||0); const harga=Math.max(0,parseInt($('item-price').value)||0);
     const existing=state.items.find(x=>x.kategori===kategori&&x.key===key&&x.harga===harga);
     if(existing) existing.qty+=qty; else state.items.push({kategori,key,nama:inv.nama,satuan:inv.satuan||'pcs',qty,harga});
-    $('item-qty').value=1;$('item-price').value=inv.harga_beli||0;renderItems();
+    $('item-qty').value=1;$('item-price').value=inv.harga_beli||0;$('item-search').value='';selectedItem=null;renderItems();
   }
   async function savePurchase(){
     if(!state.items.length)return alert('Tambahkan minimal satu barang.');
@@ -53,7 +55,7 @@
     try{await db.ref().update(updates);alert(`Pembelian ${number} berhasil disimpan. Stok telah ditambahkan.`);state.items=[];$('supplier-name').value='';$('supplier-contact').value='';$('purchase-note').value='';renderItems();await loadInventory();await loadHistory();}catch(e){console.error(e);alert('Gagal menyimpan pembelian: '+e.message)}finally{btn.disabled=false;btn.textContent='SIMPAN PEMBELIAN & TAMBAH STOK'}
   }
   async function loadHistory(){const snap=await db.ref('pembelanjaan').orderByChild('createdAt').limitToLast(30).once('value');const arr=[];snap.forEach(ch=>arr.push({key:ch.key,...(ch.val()||{})}));arr.reverse();$('purchase-history').innerHTML=arr.length?arr.map(x=>`<div class="border rounded-lg p-3"><div class="flex justify-between gap-2"><strong class="text-sm">${esc(x.nomor||x.key)}</strong><span class="text-xs text-gray-500">${esc(x.tanggal||'')}</span></div><div class="text-xs mt-1">${esc(x.supplier||'-')}</div><div class="text-xs text-gray-500">${(x.items||[]).length} jenis barang</div><div class="font-bold text-sm mt-2">${rupiah(x.total)}</div></div>`).join(''):'<div class="text-xs text-gray-400 italic">Belum ada pembelanjaan.</div>'}
-  $('btn-add-item').onclick=addItem;$('btn-save-purchase').onclick=savePurchase;$('btn-refresh').onclick=loadHistory;$('purchase-shipping').oninput=renderItems;$('purchase-other').oninput=renderItems;$('item-select').onchange=()=>{const [k,key]=($('item-select').value||'|').split('|');const x=state.inventory.find(v=>v.kategori===k&&v.key===key);if(x)$('item-price').value=x.harga_beli||0};
+  $('btn-add-item').onclick=()=>{addItem();};$('btn-save-purchase').onclick=savePurchase;$('btn-refresh').onclick=loadHistory;$('purchase-shipping').oninput=renderItems;$('purchase-other').oninput=renderItems;$('item-search').oninput=renderSearchResults;document.addEventListener('click',e=>{const box=$('item-search-results');if(box&&!box.contains(e.target)&&e.target!==$('item-search'))box.classList.add('hidden')});
   $('purchase-date').value=new Date().toISOString().slice(0,10);$('purchase-number').textContent=makeNumber();
   Promise.all([loadInventory(),loadSuppliers(),loadHistory()]).then(renderItems).catch(e=>{console.error(e);alert('Gagal memuat data inventori.')});
 })();

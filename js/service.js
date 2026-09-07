@@ -49,27 +49,20 @@
 
             });
 
-            document.getElementById(
-                'stat-aktif'
-            ).innerText = aktif;
+            const statAktif = document.getElementById('stat-aktif'); if(statAktif) statAktif.innerText = aktif;
 
-            document.getElementById(
-                'stat-sparepart'
-            ).innerText = sparepart;
+            const statSparepart = document.getElementById('stat-sparepart'); if(statSparepart) statSparepart.innerText = sparepart;
 
-            document.getElementById(
-                'stat-selesai'
-            ).innerText = selesai;
+            const statSelesai = document.getElementById('stat-selesai'); if(statSelesai) statSelesai.innerText = selesai;
 
-            document.getElementById(
-                'stat-total'
-            ).innerText = total;
+            const statTotal = document.getElementById('stat-total'); if(statTotal) statTotal.innerText = total;
 
             const badge =
                 document.getElementById(
                     'badge-servis-baru'
                 );
             
+            if(!badge) return;
             if(servisBaru > 0){
             
                 badge.classList.remove(
@@ -939,7 +932,7 @@
             
             updateList();
         
-            renderDaftarSparepart();
+            if (typeof renderDaftarSparepart === 'function') renderDaftarSparepart();
         
             document.getElementById(
                 'mode-edit'

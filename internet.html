@@ -4,9 +4,21 @@
     <meta charset="UTF-8">
     <title>Struk Pembayaran IndiHome - Full Width</title>
     
-    <link rel="stylesheet" href="css/internet.css">
+    <link rel="stylesheet" href="css/internet.css"><link rel="stylesheet" href="css/app-shell.css">
 </head>
 <body>
+<header class="op-app-header no-print">
+  <button id="mobile-menu-toggle" class="op-icon-btn mobile-only" aria-label="Buka menu"><i class="fas fa-bars"></i></button>
+  <div class="op-app-brand"><span class="op-app-logo"><i class="fas fa-screwdriver-wrench"></i></span><div><strong>OnePrint</strong><small>Service Management</small></div></div>
+  <div class="flex items-center gap-4"><div class="hidden sm:flex flex-col text-right"><span id="user-display" class="text-[10px] text-cyan-300 font-mono"></span><span id="idle-timer" class="text-[9px] text-gray-400 italic">Sesi Aktif</span></div><button class="op-icon-btn" title="Notifikasi"><i class="far fa-bell"></i></button><button id="btn-logout" class="op-logout"><i class="fas fa-power-off"></i><span>Keluar</span></button></div>
+</header>
+<nav class="oneprint-nav no-print" id="app-sidebar" aria-label="Navigasi utama">
+  <div class="op-sidebar-head"><span class="op-sidebar-caption">WORKSPACE</span></div>
+  <div class="oneprint-nav-inner"><a class="oneprint-nav-item" href="dashboard.html"><i class="fas fa-gauge-high"></i><span>Dashboard</span></a><a class="oneprint-nav-item" href="service.html"><i class="fas fa-screwdriver-wrench"></i><span>Service</span></a><a class="oneprint-nav-item" href="inventori.html"><i class="fas fa-boxes-stacked"></i><span>Stok</span></a><a class="oneprint-nav-item" href="pembelanjaan.html"><i class="fas fa-cart-shopping"></i><span>Belanja</span></a><a class="oneprint-nav-item" href="scanner.html"><i class="fas fa-qrcode"></i><span>Scanner</span></a><a class="oneprint-nav-item" href="pln.html"><i class="fas fa-bolt"></i><span>PLN</span></a><a class="oneprint-nav-item active" href="internet.html"><i class="fas fa-wifi"></i><span>Internet</span></a><a class="oneprint-nav-item" href="tracking.html"><i class="fas fa-location-dot"></i><span>Tracking</span></a></div>
+  <div class="op-sidebar-foot"><div><i class="fas fa-shield-halved"></i><span>Sistem aktif</span></div></div>
+</nav>
+<div class="op-mobile-backdrop" id="mobile-menu-backdrop"></div>
+<div class="op-shell-content">
 
 <div class="input-panel">
     <h2 style="margin-top:0; font-family: sans-serif; color: #ed1c24;">Data Tagihan IndiHome</h2>
@@ -62,6 +74,6 @@
 
 
 
-    <script src="js/internet.js"></script>
+    </div><script src="js/internet.js"></script><script src="js/auth-session.js"></script><script src="js/app-shell.js"></script>
 </body>
 </html>
