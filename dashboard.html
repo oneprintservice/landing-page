@@ -30,9 +30,10 @@
     </section>
     <section class="grid grid-cols-1 sm:grid-cols-2 gap-3">
       <a href="service.html" class="dashboard-action"><span class="action-icon primary"><i class="fas fa-plus"></i></span><span><b>Buat Work Order Baru</b><small>Mulai service dan input data pelanggan</small></span><i class="fas fa-chevron-right"></i></a>
-      <a href="service.html?view=aktif" class="dashboard-action"><span class="action-icon blue"><i class="fas fa-screwdriver-wrench"></i></span><span><b>Servis Aktif</b><small>Masuk, diagnosa, dan dikerjakan</small></span><i class="fas fa-chevron-right"></i></a>
-      <a href="service.html?view=sparepart" class="dashboard-action"><span class="action-icon amber"><i class="fas fa-box-open"></i></span><span><b>Menunggu Sparepart</b><small>Daftar pekerjaan yang menunggu barang</small></span><i class="fas fa-chevron-right"></i></a>
-      <a href="service.html?view=rekap" class="dashboard-action"><span class="action-icon purple"><i class="fas fa-chart-simple"></i></span><span><b>Rekap Servis</b><small>Ringkasan total dan status service</small></span><i class="fas fa-chevron-right"></i></a>
+      <button type="button" class="dashboard-action text-left" onclick="lihatServisAktif()"><span class="action-icon blue"><i class="fas fa-screwdriver-wrench"></i></span><span><b>Servis Aktif</b><small>Masuk, diagnosa, dan dikerjakan</small></span><i class="fas fa-chevron-right"></i></button>
+      <button type="button" class="dashboard-action text-left" onclick="lihatMenungguSparepart()"><span class="action-icon amber"><i class="fas fa-box-open"></i></span><span><b>Menunggu Sparepart</b><small>Daftar pekerjaan yang menunggu barang</small></span><i class="fas fa-chevron-right"></i></button>
+      <button type="button" class="dashboard-action text-left" onclick="lihatSelesai()"><span class="action-icon green"><i class="fas fa-circle-check"></i></span><span><b>Servis Selesai</b><small>Kontrol pekerjaan selesai dan belum diambil</small></span><i class="fas fa-chevron-right"></i></button>
+      <button type="button" class="dashboard-action text-left" onclick="lihatTotalServis()"><span class="action-icon purple"><i class="fas fa-chart-simple"></i></span><span><b>Rekap Servis</b><small>Ringkasan total, pendapatan, dan status service</small></span><i class="fas fa-chevron-right"></i></button>
     </section>
   </main>
 </div></div>

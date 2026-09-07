@@ -23,3 +23,7 @@
 /* Modal must remain reachable on short mobile viewports. */
 #modal-statistik{overflow-y:auto;align-items:center}.menu-open{overflow:hidden}
 @media(max-width:640px){#modal-statistik{align-items:flex-start;padding-top:max(12px,env(safe-area-inset-top));padding-bottom:max(12px,env(safe-area-inset-bottom))}#modal-statistik>div{max-height:calc(100dvh - 24px);margin:auto 0}}
+
+/* Dashboard action buttons keep the same visual treatment as links. */
+.dashboard-action{border:1px solid #e5e7eb;cursor:pointer;font:inherit;width:100%;}
+.action-icon.green{background:#dcfce7;color:#16a34a}

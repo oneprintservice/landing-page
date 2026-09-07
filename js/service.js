@@ -1,3 +1,4 @@
+window.inventoriCache = window.inventoriCache || [];
         async function loadStatistik(){
 
             const snapshot =
