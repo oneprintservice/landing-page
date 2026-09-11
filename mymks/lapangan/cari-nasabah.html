@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#2563eb">
+    <title>Cari Nasabah - KSP Manager</title>
+    <link rel="stylesheet" href="../assets/css/lapangan.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-inner">
+            <div class="brand">
+                <div class="brand-mark">MKS</div>
+                <div>
+                    <h1 class="brand-title">KSP Manager</h1>
+                    <p class="brand-subtitle">Petugas Lapangan</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="page-head">
+            <div>
+                <div class="page-kicker">📍 Operasional Lapangan</div>
+                <h2 class="page-title">Cari Nasabah</h2>
+                <p class="page-desc">Temukan nasabah berdasarkan nomor anggota, nama, atau NIK.</p>
+            </div>
+        </div>
+
+        <section class="card search-card">
+            <div class="search-row">
+                <div class="input-wrap">
+                    <span class="input-icon">🔎</span>
+                    <input type="text" id="inputNik" inputmode="numeric" autocomplete="off" placeholder="Nomor anggota / nama / NIK" maxlength="80" id="inputNik">
+                </div>
+                <button class="btn btn-primary" id="btnCari">Cari Nasabah</button>
+            </div>
+            <p class="helper">Pastikan NIK sesuai KTP agar data yang ditemukan tepat.</p>
+        </section>
+
+        <section class="card">
+            <h3 class="form-section-title"><span class="section-number">1</span> Aksi Cepat</h3>
+            <div class="quick-actions">
+                <a class="quick-action" href="tambah-nasabah.html"><span class="quick-action-icon">👤</span><span>Tambah Nasabah</span></a>
+                <a class="quick-action" href="pengajuan.html"><span class="quick-action-icon">💰</span><span>Pengajuan Kredit</span></a>
+            </div>
+        </section>
+
+        <section class="card">
+            <h3 class="form-section-title"><span class="section-number">2</span> Hasil Pencarian</h3>
+            <div id="hasil">
+                <div class="result-placeholder">
+                    <div class="result-icon">👤</div>
+                    <h3 class="result-title">Belum ada pencarian</h3>
+                    <p class="result-text">Masukkan NIK lalu tekan tombol Cari Nasabah.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navigasi lapangan">
+        <a href="../dashboard.html"><span>🏠</span><span>Dashboard</span></a>
+        <a href="cari-nasabah.html" class="active"><span>🔎</span><span>Cari</span></a>
+        <a href="tambah-nasabah.html"><span>👤</span><span>Tambah</span></a>
+    </nav>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/supabase.js"></script>
+    <script>
+        if(!kspRequireRole("lapangan")) throw new Error("unauthorized");
+        const inputNik = document.getElementById("inputNik");
+        const btnCari = document.getElementById("btnCari");
+        const hasil = document.getElementById("hasil");
+
+        btnCari.addEventListener("click", cariNasabah);
+        inputNik.addEventListener("keydown", function (event) {
+            if (event.key === "Enter") cariNasabah();
+        });
+
+        async function cariNasabah(){const q=inputNik.value.trim();if(!q){hasil.innerHTML='<div class="message">Masukkan kata pencarian.</div>';return;}hasil.innerHTML='<div class="message">Mencari...</div>';const {data,error}=await supabaseClient.from("nasabah").select("*").or(`nik.ilike.%${q}%,nama_lengkap.ilike.%${q}%,nomor_anggota.eq.${q}`).limit(20);if(error){hasil.innerHTML=`<div class="message">${kspEsc(error.message)}</div>`;return;}if(!data?.length){hasil.innerHTML='<div class="message">Nasabah tidak ditemukan.</div>';return;}hasil.innerHTML=data.map(d=>`<article class="nasabah-card"><h3>${kspEsc(d.nama_lengkap)}</h3><p>Nomor anggota: ${kspEsc(d.nomor_anggota||'-')}</p><p>NIK: ${kspEsc(d.nik||'-')}</p><p>Status: ${kspEsc(d.status||'-')}</p><a class="btn btn-primary" href="pengajuan.html?nasabah_id=${encodeURIComponent(d.id)}">Ajukan kredit</a></article>`).join('')}
+        function tambahNasabah() {
+            window.location.href = "tambah-nasabah.html?nik=" + encodeURIComponent(inputNik.value.trim());
+        }
+
+        function ajukanKredit(nasabahId) {
+            window.location.href = "pengajuan.html?nasabah_id=" + encodeURIComponent(nasabahId);
+        }
+    </script>
+<script src="../assets/js/common.js"></script></body>
+</html>

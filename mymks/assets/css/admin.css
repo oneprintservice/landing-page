@@ -1,0 +1,401 @@
+/* KSP Manager — Admin Experience v1 */
+:root{
+  --admin-primary:#2563eb;
+  --admin-primary-dark:#1d4ed8;
+  --admin-bg:#f4f7fb;
+  --admin-card:#ffffff;
+  --admin-text:#172554;
+  --admin-muted:#64748b;
+  --admin-line:#e2e8f0;
+  --admin-soft:#eff6ff;
+  --admin-shadow:0 10px 30px rgba(15,23,42,.07);
+  --admin-radius:18px;
+}
+
+html{scroll-behavior:smooth}
+body{background:var(--admin-bg)!important;color:var(--admin-text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif!important;-webkit-font-smoothing:antialiased}
+button,a,input,select{font:inherit}
+button,a{touch-action:manipulation}
+
+.header{
+  color:#fff!important;
+  background:linear-gradient(135deg,#2563eb,#1d4ed8)!important;
+  padding:22px max(18px,calc((100% - 1100px)/2))!important;
+  box-shadow:0 5px 18px rgba(37,99,235,.18);
+  position:relative;
+  overflow:hidden;
+}
+.header:after{content:"";position:absolute;width:190px;height:190px;border-radius:50%;right:-70px;top:-100px;background:rgba(255,255,255,.10)}
+.header h1{font-size:clamp(22px,3vw,30px)!important;letter-spacing:-.02em;position:relative;z-index:1}
+.header p{font-size:13px;position:relative;z-index:1}
+
+.container{max-width:1100px!important;padding:22px 18px 92px!important}
+.topbar{align-items:center}
+.btn{min-height:44px;border-radius:12px!important;box-shadow:0 2px 6px rgba(15,23,42,.05);transition:.18s ease}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(15,23,42,.09)}
+.btn:active{transform:translateY(0)}
+.btn-back{background:#fff!important;border:1px solid var(--admin-line)!important}
+.btn-add,.btn-success{background:#16a34a!important}
+.btn-primary,.btn-search{background:var(--admin-primary)!important}
+
+.card,.search-box,.table-box{
+  border:1px solid rgba(226,232,240,.8);
+  box-shadow:var(--admin-shadow)!important;
+  border-radius:var(--admin-radius)!important;
+}
+.card{padding:22px!important}
+.card h2{font-size:20px;letter-spacing:-.015em}
+
+.search-box{padding:16px!important}
+.search-row input,input,select{
+  min-height:46px!important;
+  border-radius:12px!important;
+  border-color:#d6deea!important;
+  background:#fff;
+}
+input:focus,select:focus{outline:3px solid rgba(37,99,235,.12)!important;border-color:#60a5fa!important}
+
+.table-box,.table-wrap{background:#fff}
+table{border-collapse:separate!important;border-spacing:0!important}
+th{font-weight:700!important;color:#475569!important;background:#f8fafc!important}
+td,th{border-bottom:1px solid #edf1f6!important}
+tbody tr:last-child td{border-bottom:0!important}
+
+.status,.badge,.status-green,.status-yellow,.status-red,.status-neutral{
+  border-radius:999px!important;
+  padding:6px 10px!important;
+  white-space:nowrap;
+}
+
+/* mobile cards from existing tables */
+@media(max-width:700px){
+  .header{padding:18px!important}
+  .container{padding:16px 14px 92px!important}
+  .topbar{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px!important}
+  .topbar .btn{width:100%;text-align:center}
+  .search-row{gap:9px!important}
+  .search-row input{font-size:16px!important}
+
+  .table-box,.table-wrap{overflow:visible!important;background:transparent!important;box-shadow:none!important}
+  .table-box table,.table-wrap table{min-width:0!important;width:100%!important}
+  .table-box thead,.table-wrap thead{display:none}
+  .table-box tbody,.table-wrap tbody{display:grid;gap:12px}
+  .table-box tbody tr,.table-wrap tbody tr{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:0 14px;
+    background:#fff;
+    border:1px solid #e5eaf1;
+    border-radius:16px;
+    padding:5px 14px;
+    box-shadow:0 7px 20px rgba(15,23,42,.05);
+  }
+  .table-box tbody td,.table-wrap tbody td{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    min-height:39px;
+    padding:9px 0!important;
+    border-bottom:1px solid #f0f3f7!important;
+    white-space:normal!important;
+    text-align:right!important;
+  }
+  .table-box tbody td:last-child,.table-wrap tbody td:last-child{border-bottom:0!important}
+  .table-box tbody td:before,.table-wrap tbody td:before{
+    content:attr(data-label);
+    color:#64748b;
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    text-align:left;
+    flex:0 0 auto;
+  }
+  .table-box tbody td:first-child,.table-wrap tbody td:first-child{
+    grid-column:1/-1;
+    display:block;
+    padding:12px 0 9px!important;
+    border-bottom:1px solid #e7edf5!important;
+    text-align:left!important;
+  }
+  .table-box tbody td:first-child:before,.table-wrap tbody td:first-child:before{display:none}
+  .table-box tbody td:first-child a{font-size:17px!important}
+  .action-group{justify-content:flex-end!important;gap:7px!important}
+  .btn-small{min-height:38px!important;padding:8px 11px!important;border-radius:10px!important}
+}
+
+/* admin bottom navigation */
+.admin-bottom-nav{
+  display:none;
+}
+@media(max-width:700px){
+  .admin-bottom-nav{
+    display:grid;
+    position:fixed;
+    z-index:50;
+    left:10px;right:10px;bottom:10px;
+    grid-template-columns:repeat(4,1fr);
+    background:rgba(255,255,255,.96);
+    backdrop-filter:blur(12px);
+    border:1px solid #e2e8f0;
+    border-radius:18px;
+    box-shadow:0 12px 30px rgba(15,23,42,.14);
+    padding:7px;
+  }
+  .admin-bottom-nav a{
+    color:#64748b;text-decoration:none;text-align:center;font-size:10px;font-weight:700;
+    padding:7px 3px;border-radius:12px;
+  }
+  .admin-bottom-nav a span{display:block;font-size:18px;line-height:20px;margin-bottom:2px}
+  .admin-bottom-nav a.active{background:#eff6ff;color:#2563eb}
+}
+
+/* detail page */
+.detail-hero{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}
+.detail-name{display:flex;align-items:center;gap:12px}
+.detail-avatar{width:52px;height:52px;border-radius:16px;background:#eff6ff;color:#2563eb;display:grid;place-items:center;font-size:25px;font-weight:800}
+.detail-kicker{margin:0 0 4px;color:#64748b;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.detail-name h2{margin:0!important}
+.score-placeholder{border:1px dashed #bfdbfe;background:linear-gradient(180deg,#f8fbff,#eff6ff)!important}
+
+@media(max-width:700px){
+  .detail-hero{align-items:flex-start;flex-direction:column}
+  .profile{grid-template-columns:1fr!important;gap:10px!important}
+  .field{padding:14px!important}
+  .detail-table{min-width:0!important}
+  .detail-table-wrap{overflow:visible!important}
+  .detail-table thead{display:none}
+  .detail-table tbody{display:grid;gap:10px}
+  .detail-table tbody tr{display:grid;grid-template-columns:1fr;background:#fff;border:1px solid #e5eaf1;border-radius:14px;padding:4px 12px}
+  .detail-table tbody td{display:flex;justify-content:space-between;gap:12px;white-space:normal!important;padding:9px 0!important;border-bottom:1px solid #f0f3f7!important;text-align:right}
+  .detail-table tbody td:last-child{border-bottom:0!important}
+  .detail-table tbody td:before{content:attr(data-label);font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;text-align:left}
+}
+
+/* pinjaman */
+.loan-card{background:#fff;border:1px solid #e5eaf1;border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 7px 20px rgba(15,23,42,.05)}
+.loan-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+.loan-head h3{margin:0 0 4px;font-size:18px}
+.loan-sub{margin:0;color:#64748b;font-size:13px}
+.loan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.loan-metric{padding:12px;background:#f8fafc;border-radius:12px}
+.loan-metric span{display:block;color:#64748b;font-size:11px;font-weight:700;text-transform:uppercase;margin-bottom:4px}
+.loan-metric strong{font-size:15px}
+.loan-schedule{margin-top:14px;padding-top:14px;border-top:1px solid #edf1f6}
+@media(max-width:700px){.loan-grid{grid-template-columns:1fr 1fr}.loan-head{flex-direction:column}.loan-card{padding:15px}.loan-schedule table{min-width:650px!important}.loan-schedule{overflow-x:auto}}
+
+/* simple page intro */
+.page-intro{margin:0 0 16px;color:#64748b;font-size:13px}
+
+
+/* Admin v2 — mobile fit, consistent typography & anchored navigation */
+html, body { width:100%; max-width:100%; overflow-x:hidden; }
+body, body * { font-family: inherit; }
+
+@media (max-width:700px){
+  body { padding-bottom: 92px !important; }
+  .card,.search-box,.table-box,.loan-card { max-width:100%; min-width:0; }
+
+  /* Never force a horizontal scroll just to read a card. */
+  .table-box tbody tr,.table-wrap tbody tr {
+    width:100%;
+    min-width:0;
+    grid-template-columns:minmax(0,1fr);
+    overflow:hidden;
+  }
+  .table-box tbody td,.table-wrap tbody td {
+    min-width:0;
+    width:100%;
+    overflow-wrap:anywhere;
+    word-break:break-word;
+  }
+  .table-box tbody td:not(:first-child),.table-wrap tbody td:not(:first-child){
+    display:grid;
+    grid-template-columns:minmax(72px,auto) minmax(0,1fr);
+    align-items:start;
+    text-align:right!important;
+  }
+  .table-box tbody td:not(:first-child):before,.table-wrap tbody td:not(:first-child):before{
+    min-width:0;
+  }
+  .table-box tbody td:not(:first-child) > *,.table-wrap tbody td:not(:first-child) > *{
+    min-width:0;
+    overflow-wrap:anywhere;
+  }
+
+  /* Keep action controls inside the card. */
+  .action-group { flex-wrap:wrap!important; }
+  .action-group .btn { max-width:100%; }
+
+  /* A genuinely fixed bottom navigation, including mobile safe areas. */
+  .admin-bottom-nav{
+    position:fixed!important;
+    left:10px!important;
+    right:10px!important;
+    bottom:max(10px, env(safe-area-inset-bottom))!important;
+    width:auto!important;
+    max-width:none!important;
+    z-index:9999!important;
+    transform:translateZ(0);
+    -webkit-transform:translateZ(0);
+    pointer-events:auto!important;
+  }
+  .admin-bottom-nav a{ position:relative; z-index:1; }
+}
+
+/* Detail page: compact fields that never overflow the viewport. */
+@media(max-width:700px){
+  .detail-hero,.detail-name { min-width:0; max-width:100%; }
+  .detail-name h2 { overflow-wrap:anywhere; }
+  .field .value { display:block; overflow-wrap:anywhere; word-break:break-word; line-height:1.45; }
+}
+
+/* Consistent action buttons */
+.btn-small,.btn-detail,.btn-approve,.btn-reject{
+  display:inline-flex!important;align-items:center;justify-content:center;gap:6px;
+  min-height:40px!important;padding:9px 13px!important;border-radius:11px!important;
+  border:1px solid transparent!important;font-weight:700!important;line-height:1.1!important;
+  cursor:pointer;text-decoration:none!important;box-sizing:border-box;
+}
+.btn-detail{background:#eff6ff!important;color:#1d4ed8!important;border-color:#bfdbfe!important}
+.btn-approve{background:#ecfdf5!important;color:#15803d!important;border-color:#bbf7d0!important}
+.btn-reject{background:#fef2f2!important;color:#b91c1c!important;border-color:#fecaca!important}
+.btn-small:hover,.btn-detail:hover,.btn-approve:hover,.btn-reject:hover{transform:translateY(-1px)}
+.action-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+@media(max-width:700px){
+  .action-group{width:100%;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px!important}
+  .action-group .btn-small,.action-group .btn-detail,.action-group .btn-approve,.action-group .btn-reject{width:100%;min-width:0!important;padding:9px 7px!important;font-size:12px!important}
+}
+
+/* KSP Manager — Unified Action System v3 */
+:root{
+  --action-primary:#2563eb;
+  --action-primary-dark:#1d4ed8;
+  --action-success:#16a34a;
+  --action-success-dark:#15803d;
+  --action-danger:#dc2626;
+  --action-danger-dark:#b91c1c;
+  --action-neutral:#fff;
+  --action-neutral-text:#334155;
+}
+
+.btn,
+.btn-small,
+.btn-detail,
+.btn-approve,
+.btn-reject{
+  font-family:inherit!important;
+  font-weight:800!important;
+  letter-spacing:-.01em;
+  border-radius:12px!important;
+  border:1px solid transparent!important;
+  min-height:44px;
+  padding:10px 15px;
+  display:inline-flex!important;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  line-height:1.15;
+  text-decoration:none!important;
+  cursor:pointer;
+  transition:transform .16s ease,box-shadow .16s ease,background .16s ease,border-color .16s ease;
+}
+.btn:hover,.btn-small:hover,.btn-detail:hover,.btn-approve:hover,.btn-reject:hover{transform:translateY(-1px)}
+.btn:active,.btn-small:active,.btn-detail:active,.btn-approve:active,.btn-reject:active{transform:translateY(0)}
+.btn-primary,.btn-search,.btn-detail{background:#eff6ff!important;color:var(--action-primary)!important;border-color:#bfdbfe!important;box-shadow:0 3px 8px rgba(37,99,235,.08)!important}
+.btn-success,.btn-approve{background:var(--action-success)!important;color:#fff!important;border-color:var(--action-success)!important;box-shadow:0 4px 10px rgba(22,163,74,.14)!important}
+.btn-reject{background:var(--action-danger)!important;color:#fff!important;border-color:var(--action-danger)!important;box-shadow:0 4px 10px rgba(220,38,38,.13)!important}
+.btn-back{background:#fff!important;color:var(--action-neutral-text)!important;border-color:#dbe3ee!important;box-shadow:0 3px 8px rgba(15,23,42,.05)!important}
+.btn:disabled,.btn-small:disabled{opacity:.62!important;cursor:not-allowed;transform:none!important}
+
+.action-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.action-group .btn-small{min-height:40px;padding:9px 13px}
+
+/* Cleaner loading/error states: no giant status boxes */
+.pinjaman-status{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0 0 12px!important;color:#64748b;font-size:12px!important}
+.pinjaman-status:empty{display:none}
+
+@media(max-width:700px){
+  .btn,.btn-small,.btn-detail,.btn-approve,.btn-reject{min-height:44px}
+  .topbar .btn{width:100%}
+  .action-group{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .action-group .btn-small{width:100%}
+}
+
+/* Dashboard shares the same action language as Admin pages */
+.dashboard-action,
+.logout{
+  font-family:inherit!important;
+  font-weight:800!important;
+  border-radius:12px!important;
+}
+.logout{
+  min-height:44px!important;
+  border:1px solid #fecaca!important;
+  background:#fff!important;
+  color:#b91c1c!important;
+}
+.logout:hover{background:#fef2f2!important}
+
+/* Compact, consistent top actions across admin pages */
+.topbar{gap:9px!important}
+.topbar .btn{white-space:nowrap}
+
+/* Pengajuan cards: keep action area visually consistent */
+.application-actions,.pengajuan-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+@media(max-width:700px){
+  .application-actions,.pengajuan-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
+  .application-actions .btn,.pengajuan-actions .btn{width:100%}
+}
+
+
+/* KSP Manager — Pinjaman shell parity */
+.header h1,.header p{color:#fff!important;}
+.admin-bottom-nav a{font-family:inherit!important;}
+
+/* KSP Manager — Page parity v3
+   Pinjaman uses the exact same page rhythm as Pengajuan. */
+.ksp-page .page-intro{margin:0 0 14px!important}
+.ksp-page-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px!important;margin:0 0 16px!important}
+.ksp-page-actions .btn{width:100%!important;min-width:0!important}
+.ksp-list-card{padding:18px!important}
+.ksp-list-card > h2{margin:0 0 14px!important;color:var(--admin-text)!important;font-size:20px!important}
+
+/* Loan cards intentionally use the same radius, border and rhythm as application cards. */
+.loan-card{
+  background:#fff!important;
+  border:1px solid #e5eaf1!important;
+  border-radius:14px!important;
+  padding:16px!important;
+  margin:0 0 12px!important;
+  box-shadow:0 4px 14px rgba(15,23,42,.045)!important;
+}
+.loan-card:last-child{margin-bottom:0!important}
+.loan-card h3{margin:0 0 12px!important;color:#172554!important;font-size:17px!important;font-weight:800!important}
+.loan-card p{margin:0!important;display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:9px 0!important;border-bottom:1px solid #edf1f6!important}
+.loan-card p:last-of-type{border-bottom:0!important}
+.loan-card p strong{color:#64748b!important;font-size:10px!important;text-transform:uppercase;letter-spacing:.05em;flex:0 0 auto}
+.loan-card p span{min-width:0;max-width:68%;text-align:right;overflow-wrap:anywhere;word-break:break-word;color:#334155}
+.loan-schedule{margin-top:14px!important;padding-top:14px!important;border-top:1px solid #edf1f6!important}
+.loan-schedule h4{margin:0 0 10px!important;color:#172554!important;font-size:15px!important}
+.loan-schedule table{width:100%;border-collapse:collapse!important}
+.loan-schedule th,.loan-schedule td{padding:10px!important;border-bottom:1px solid #edf1f6!important;text-align:left}
+.loan-schedule th{background:#f8fafc!important;color:#475569!important;font-size:11px!important}
+
+@media(max-width:700px){
+  .ksp-page .page-intro{margin-bottom:14px!important}
+  .ksp-page-actions{grid-template-columns:1fr 1fr!important}
+  .ksp-list-card{padding:14px!important;border-radius:14px!important}
+  .ksp-list-card > h2{font-size:18px!important;margin-bottom:12px!important}
+  .loan-card{padding:14px!important;border-radius:13px!important}
+  .loan-card h3{font-size:16px!important;margin-bottom:9px!important}
+  .loan-card p{padding:8px 0!important;gap:10px!important}
+  .loan-card p span{max-width:62%;font-size:13px}
+  .loan-schedule{overflow-x:auto!important;-webkit-overflow-scrolling:touch}
+  .loan-schedule table{min-width:650px!important}
+}
+
+@media(max-width:360px){
+  .ksp-page-actions{grid-template-columns:1fr!important}
+}
