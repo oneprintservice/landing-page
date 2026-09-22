@@ -203,13 +203,39 @@ function renderServiceTable() {
 
 function renderRestock() {
   const select = $("#restock-item");
-  if (select) {
-    const current = select.value;
-    select.innerHTML = `<option value="">Pilih barang...</option>` + state.inventory
-      .filter(x => x.kategori !== "jasa")
-      .map(x => `<option value="${escapeHtml(x.kategori)}|${escapeHtml(x.key)}">${escapeHtml(x.nama)} · stok ${x.stok ?? 0}</option>`).join("");
-    if ([...select.options].some(o => o.value === current)) select.value = current;
+
+if (select) {
+  const current = select.value;
+  const keyword = ($("#restock-search")?.value || "").trim().toLowerCase();
+
+  const items = state.inventory
+    .filter(x => x.kategori !== "jasa")
+    .filter(x => {
+      if (!keyword) return true;
+
+      return [
+        x.nama,
+        x.kode,
+        x.serial,
+        x.merk,
+        x.kategori
+      ]
+        .filter(Boolean)
+        .some(v => String(v).toLowerCase().includes(keyword));
+    });
+
+  select.innerHTML =
+    `<option value="">${items.length ? "Pilih barang..." : "Barang tidak ditemukan"}</option>` +
+    items.map(x =>
+      `<option value="${escapeHtml(x.kategori)}|${escapeHtml(x.key)}">
+        ${escapeHtml(x.nama)} · stok ${x.stok ?? 0}
+      </option>`
+    ).join("");
+
+  if ([...select.options].some(o => o.value === current)) {
+    select.value = current;
   }
+}
   const rows = state.restocks.slice(0, 30);
   $("#restock-list").innerHTML = rows.map(x => `<tr>
     <td>${new Date(x.tanggal || 0).toLocaleDateString("id-ID")}</td>
@@ -630,6 +656,16 @@ function bind() {
     state.editInventoryKey = null; state.editInventoryCategory = null;
     ["inv-nama","inv-beli","inv-jual","inv-stok"].forEach(id => $(`#${id}`).value = "");
   });
+
+  $("#restock-search").addEventListener("input", () => {
+  const current = $("#restock-item").value;
+  renderRestock();
+
+  // Pertahankan pilihan jika masih cocok dengan pencarian.
+  if ([...$("#restock-item").options].some(o => o.value === current)) {
+    $("#restock-item").value = current;
+  }
+});
 
   $("#restock-item").addEventListener("change", () => {
     const [kategori, key] = $("#restock-item").value.split("|");
