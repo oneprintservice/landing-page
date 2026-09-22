@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OnePrint Repair Service</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+
+    <style>
+        body{
+            background:
+            radial-gradient(circle at top left, rgba(37,99,235,0.25), transparent 35%),
+            radial-gradient(circle at bottom right, rgba(14,165,233,0.18), transparent 35%),
+            #020617;
+            overflow-x:hidden;
+        }
+
+        .glass{
+            backdrop-filter: blur(12px);
+            background: rgba(255,255,255,0.95);
+            border:1px solid rgba(255,255,255,0.25);
+        }
+
+        .floating{
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float{
+            0%,100%{ transform: translateY(0px); }
+            50%{ transform: translateY(-6px); }
+        }
+
+        .menu-card:hover{
+            transform: translateY(-3px);
+        }
+
+        .glow{
+            box-shadow: 0 0 25px rgba(37,99,235,0.25);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center px-4 py-10">
+
+    <div class="w-full max-w-md glass rounded-[30px] shadow-2xl overflow-hidden glow">
+
+        <div class="bg-gradient-to-r from-blue-700 to-cyan-500 px-8 py-10 text-white relative">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10"></div>
+
+            <div class="relative z-10 text-center floating">
+                <div class="text-5xl mb-3">🛠️</div>
+
+                <h1 class="text-3xl font-extrabold tracking-tight">
+                    OnePrint Service
+                </h1>
+
+                <p class="text-blue-100 text-sm mt-1">
+                    Portal Teknisi & Utility Tools
+                </p>
+            </div>
+        </div>
+
+        <div class="p-7">
+
+            <div class="space-y-5">
+
+                <div>
+                    <label class="text-xs font-bold text-slate-500 tracking-wider ml-1">
+                        USERNAME
+                    </label>
+
+                    <input
+                        type="text"
+                        id="login-user"
+                        placeholder="Contoh: admin"
+                        class="w-full mt-2 p-4 rounded-2xl border border-slate-200 bg-slate-50 outline-none focus:ring-4 focus:ring-blue-200 transition"
+                    />
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-slate-500 tracking-wider ml-1">
+                        PASSWORD
+                    </label>
+
+                    <input
+                        type="password"
+                        id="login-pass"
+                        placeholder="••••••••"
+                        class="w-full mt-2 p-4 rounded-2xl border border-slate-200 bg-slate-50 outline-none focus:ring-4 focus:ring-blue-200 transition"
+                    />
+                </div>
+
+                <button
+                    id="btn-login"
+                    class="w-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold py-4 rounded-2xl shadow-lg hover:scale-[1.02] transition duration-200"
+                >
+                    MASUK SISTEM
+                </button>
+
+                <div
+                    id="login-error"
+                    class="hidden text-center text-sm text-red-500 font-semibold"
+                >
+                    Username atau password salah!
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="h-px flex-1 bg-slate-200"></div>
+                    <span class="text-xs font-bold text-slate-400">
+                        QUICK ACCESS
+                    </span>
+                    <div class="h-px flex-1 bg-slate-200"></div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+
+                    <a
+                        href="pln.html"
+                        class="menu-card transition duration-200 bg-blue-50 border border-blue-100 rounded-2xl p-4 text-center shadow-sm"
+                    >
+                        <div class="text-3xl mb-2">⚡</div>
+                        <div class="font-bold text-slate-700 text-sm">
+                            Cetak PLN
+                        </div>
+                    </a>
+
+                    <a
+                        href="internet.html"
+                        class="menu-card transition duration-200 bg-emerald-50 border border-emerald-100 rounded-2xl p-4 text-center shadow-sm"
+                    >
+                        <div class="text-3xl mb-2">🌐</div>
+                        <div class="font-bold text-slate-700 text-sm">
+                            Cetak Internet
+                        </div>
+                    </a>
+
+
+                    <a
+                        href="scanner.html"
+                        class="menu-card transition duration-200 bg-amber-50 border border-amber-100 rounded-2xl p-4 text-center shadow-sm"
+                    >
+                        <div class="text-3xl mb-2">📷</div>
+                        <div class="font-bold text-slate-700 text-sm">
+                            Scanner QR
+                        </div>
+                    </a>
+
+                    <a
+                        href="index.html"
+                        class="menu-card transition duration-200 bg-purple-50 border border-purple-100 rounded-2xl p-4 text-center shadow-sm"
+                    >
+                        <div class="text-3xl mb-2">🏠</div>
+                        <div class="font-bold text-slate-700 text-sm">
+                            Homepage
+                        </div>
+                    </a>
+
+
+                </div>
+            </div>
+
+            <div class="mt-8 text-center text-xs text-slate-400">
+                OnePrint Admin System • Secured Access
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBcyS36JnJNGZPdSxd_g9UmCq4BJRiG2rA",
+            authDomain: "oneprintservice-db.firebaseapp.com",
+            databaseURL: "https://oneprintservice-db-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "oneprintservice-db",
+            storageBucket: "oneprintservice-db.firebasestorage.app",
+            messagingSenderId: "330853999249",
+            appId: "1:330853999249:web:4503ed115d2694d9cb5530"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                window.location.href = 'dashboard.html';
+            }
+        });
+
+        document.getElementById('btn-login').addEventListener('click', () => {
+
+            const username = document.getElementById('login-user').value.trim();
+            const pass = document.getElementById('login-pass').value;
+
+            if (!username || !pass) return;
+
+            const emailFormat = username.includes('@')
+                ? username
+                : username + "@oneprint.com";
+
+            auth.signInWithEmailAndPassword(emailFormat, pass)
+            .catch(err => {
+                console.error(err);
+                document.getElementById('login-error')
+                .classList.remove('hidden');
+            });
+        });
+
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('btn-login').click();
+            }
+        });
+    </script>
+
+</body>
+</html>
