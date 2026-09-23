@@ -1,0 +1,17 @@
+KSP Manager Stage 2 Clean Rebuild v1
+Baseline: user-uploaded kspmanager(1).zip (Stage 2 v3)
+
+Checks performed:
+- JS syntax: PASS (11 JS files)
+- Local relative script/link references: PASS
+- HTML parse: PASS (15 HTML files)
+- ZIP extraction after packaging: will be verified below
+- Browser/Supabase live click-through: NOT CLAIMED; this execution environment cannot reliably launch a browser against localhost/Supabase.
+
+Design decision:
+- Lapangan visual system is the master for Admin Ledger and Admin Pinjaman.
+- Admin and Lapangan differ by permissions/workflow, not visual language.
+
+Important:
+- Run SUPABASE_STAGE2_CLEAN.sql before testing Stage 2 database fields.
+- Do not merge this package into an older project folder. Extract as a clean project.
