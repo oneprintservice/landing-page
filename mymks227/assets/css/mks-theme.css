@@ -57,3 +57,8 @@ header.header:has(.mks-admin-header-logo){display:flex!important;align-items:cen
 .mks-admin-header-text{position:relative;z-index:1;min-width:0;}
 .mks-admin-header-text h1{margin:0 0 5px!important;}
 .mks-admin-header-text p{margin:0!important;}
+/* Perbaikan warna tulisan tombol login */
+a.login-button,
+a.login-button:visited {
+    color: #ffffff !important;
+}
