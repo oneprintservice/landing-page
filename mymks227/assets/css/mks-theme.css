@@ -1,0 +1,59 @@
+/* KSP Maha Karya Saputra — Stage 26 visual theme, no operational JS changes */
+:root{--mks-forest:#14533e;--mks-forest-dark:#103d30;--mks-forest-deep:#0b3028;--mks-gold:#c6a34a;--mks-gold-light:#f4e9c7;--mks-ivory:#fbf9f3;--mks-ink:#18382e;--mks-muted:#64756c;--mks-line:#e4e7dc;
+--primary:#14533e;--primary-dark:#103d30;--primary-soft:#e8f3eb;--text:#18382e;--muted:#64756c;--border:#e4e7dc;--bg:#f7f8f3;
+--admin-primary:#14533e;--admin-primary-dark:#103d30;--admin-bg:#f7f8f3;--admin-text:#18382e;--admin-soft:#e8f3eb;--admin-line:#e4e7dc;--sa-primary:#14533e;--sa-bg:#f7f8f3;--sa-text:#18382e;--sa-line:#e4e7dc;}
+html{scroll-behavior:smooth}body{background:#f7f8f3!important;color:var(--mks-ink)}
+.app-header,.header,.sa-header{background:linear-gradient(125deg,#0d3b30 0%,#14533e 65%,#226d50 100%)!important;box-shadow:0 6px 20px rgba(11,48,40,.14)!important;border-bottom:3px solid var(--mks-gold)}
+.app-header::after,.header::after{background:rgba(198,163,74,.12)!important}
+.brand-mark,.sa-mark{display:flex!important;align-items:center!important;justify-content:center!important;background:#fff!important;border:2px solid rgba(198,163,74,.65)!important;border-radius:15px!important;overflow:hidden!important;padding:3px!important;flex-shrink:0;box-shadow:0 3px 12px rgba(0,0,0,.10)}
+.brand-mark img,.sa-mark img{display:block;width:100%;height:100%;object-fit:contain;border-radius:50%}
+.brand-title,.sa-title{letter-spacing:-.02em}
+.card,.ksp-card,.sa-card,.search-box,.table-box{border-color:var(--mks-line)!important;box-shadow:0 8px 26px rgba(11,48,40,.065)!important}
+.btn-primary,.btn-search,.ksp-btn-primary,.sa-btn-primary,.btn-add,.btn-success,.sa-btn-success{background:#14533e!important;color:white!important;border-color:#14533e!important}
+.btn-primary:hover,.ksp-btn-primary:hover,.sa-btn-primary:hover{background:#103d30!important}
+.btn-back,.sa-btn-light,.ksp-btn-light{color:#14533e!important;background:#eaf3eb!important;border-color:#c8decf!important}
+input:focus,select:focus,textarea:focus{border-color:#4c8b67!important;outline-color:#a4c5ad!important;box-shadow:0 0 0 3px rgba(20,83,62,.12)!important}
+a{accent-color:#14533e}a:not(.btn):not(.ksp-btn):not(.sa-btn){color:inherit}
+.sa-bottom button.active,.bottom-nav .active,.bottom-nav a.active,.nav-item.active,.bottom-menu .active{background:#e9f2e9!important;color:#14533e!important}
+.sa-badge.role{background:#e9f2e9!important;color:#14533e!important}
+.sa-service-status.checking{background:#e9f2e9!important;color:#14533e!important;border-color:#c8decf!important}
+.sa-stat,th{background:#f7f8f3!important}
+.sa-card h2,.sa-card h3,.card h2,.card h3{color:var(--mks-ink)}
+/* Credit/status indicators keep green/yellow/red meanings. Danger actions remain red. */
+.mks-login-logo{width:112px!important;height:112px!important;margin:0 auto 12px!important;border-radius:50%!important;box-shadow:0 7px 24px rgba(11,48,40,.15)!important}
+.mks-login-logo img{width:100%;height:100%;object-fit:contain}
+.mks-landing-logo{display:flex!important;align-items:center;justify-content:center;margin:0 auto 18px!important;width:150px!important;height:150px!important;border-radius:50%!important;background:white!important;box-shadow:0 12px 38px rgba(11,48,40,.24)!important;padding:5px!important}
+.mks-landing-logo img{width:100%;height:100%;object-fit:contain;border-radius:50%}
+.mks-gold-rule{width:64px;height:3px;border-radius:4px;background:var(--mks-gold);margin:12px 0}
+::selection{background:#e6d5a0;color:#103d30}
+
+/* Stage 27: shared five-item navigation geometry, same placement on every page. */
+@media(max-width:700px){
+  nav.ksp-bottom{
+    position:fixed!important;left:50%!important;right:auto!important;
+    bottom:max(10px,env(safe-area-inset-bottom))!important;
+    transform:translateX(-50%)!important;
+    width:min(900px,calc(100% - 20px))!important;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    grid-auto-flow:row!important;grid-auto-columns:auto!important;
+    padding:7px!important;gap:3px!important;align-items:stretch!important;
+    box-sizing:border-box!important;
+  }
+  nav.ksp-bottom>a{
+    min-width:0!important;min-height:62px!important;
+    padding:7px 2px!important;display:flex!important;flex-direction:column!important;
+    align-items:center!important;justify-content:center!important;
+    gap:4px!important;line-height:1.15!important;
+    text-align:center!important;font-size:11px!important;
+  }
+  nav.ksp-bottom>a>.ksp-nav-icon{display:block!important;font-size:19px!important;line-height:23px!important;height:23px!important;margin:0!important;}
+  nav.ksp-bottom>a>span:last-child:not(:first-child){display:block!important;line-height:15px!important;}
+  body:has(nav.ksp-bottom){padding-bottom:max(100px,calc(90px + env(safe-area-inset-bottom)))!important;}
+}
+/* Legacy Admin nasabah and detail headers now carry the real cooperative logo. */
+header.header:has(.mks-admin-header-logo){display:flex!important;align-items:center!important;gap:14px!important;}
+.mks-admin-header-logo{width:58px;height:58px;flex:0 0 58px;display:grid;place-items:center;padding:4px;background:white;border:2px solid rgba(198,163,74,.7);border-radius:16px;box-shadow:0 3px 12px rgba(0,0,0,.1);position:relative;z-index:1;}
+.mks-admin-header-logo img{display:block;width:100%;height:100%;object-fit:contain;border-radius:50%;}
+.mks-admin-header-text{position:relative;z-index:1;min-width:0;}
+.mks-admin-header-text h1{margin:0 0 5px!important;}
+.mks-admin-header-text p{margin:0!important;}

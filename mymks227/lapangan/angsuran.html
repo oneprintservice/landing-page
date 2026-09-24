@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/><title>Catat Angsuran - KSP Manager</title><link href="../assets/css/lapangan.css" rel="stylesheet"/><link href="../assets/css/mks-theme.css?v=27" rel="stylesheet"/><link href="../assets/img/favicon.png" rel="icon" type="image/png"/><meta content="#14533e" name="theme-color"/></head><body>
+<header class="app-header"><div class="header-inner"><div class="brand"><div class="brand-mark"><img alt="Logo KSP Maha Karya Saputra" src="../assets/img/maha-karya-saputra.webp"/></div><div><h1 class="brand-title">KSP Manager</h1><p class="brand-subtitle">Catat Angsuran</p></div></div></div></header>
+<main class="ksp-shell"><div class="ksp-actions"><a class="ksp-btn ksp-btn-light" href="dashboard.html">⌂ Dashboard</a><a class="ksp-btn ksp-btn-primary" href="ledger.html">📒 Ledger</a></div>
+<section class="ksp-card"><h3>Pinjaman Aktif</h3><div class="ksp-search"><input id="dateFilter" type="date"/><button class="ksp-btn ksp-btn-primary" id="dateButton">🔎 Tampilkan</button></div><p class="meta">Default menampilkan semua pinjaman aktif. Isi filter tanggal bila ingin menyaring berdasarkan tanggal jatuh tempo.</p></section>
+<section class="ksp-card"><h3>Cari Nasabah / Pinjaman</h3><div class="ksp-search"><input id="searchInput" placeholder="Nomor anggota, nama, atau NIK"/><button class="ksp-btn ksp-btn-primary" id="searchButton">🔎 Cari</button></div></section>
+<div id="result"></div></main><nav class="ksp-bottom"><a href="dashboard.html"><span class="ksp-nav-icon">⌂</span><span>Dashboard</span></a><a href="cari-nasabah.html"><span class="ksp-nav-icon">🔎</span><span>Cari</span></a><a href="pengajuan.html"><span class="ksp-nav-icon">📋</span><span>Pengajuan</span></a><a class="active" href="angsuran.html"><span class="ksp-nav-icon">💰</span><span>Angsuran</span></a><a href="ledger.html"><span class="ksp-nav-icon">📒</span><span>Ledger</span></a></nav>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../assets/js/supabase.js"></script>
+<script src="../assets/js/common.js"></script>
+<script src="angsuran.js"></script></body></html>

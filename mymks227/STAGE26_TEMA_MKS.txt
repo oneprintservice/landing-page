@@ -1,0 +1,9 @@
+KSP MAHA KARYA SAPUTRA — STAGE 26 (THEMING)
+Basis: Stage 25 Restore Fix yang sudah berhasil diuji pengguna.
+
+Perubahan hanya visual: logo resmi, warna hijau zamrud/emas/gading, favicon, header, tombol, menu, kartu, login, dan halaman utama di Admin/Lapangan/Superadmin.
+File JS, SQL, fungsi backup, reset, restore, dan hak akses tidak diubah.
+
+UPLOAD: Unggah seluruh isi folder mymks223 ke lokasi website yang sama dengan Stage 25; overwrite file lama, termasuk assets/css dan assets/img.
+Buka dengan refresh paksa / mode incognito bila CSS lama masih tersimpan di cache. Tidak perlu menjalankan SQL.
+UJI: login masing-masing role, menu, halaman nasabah, Superadmin Tools (lihat tampilannya saja), lalu pastikan backup/restore tetap ada. Jangan reset data produksi untuk mengetes tema.

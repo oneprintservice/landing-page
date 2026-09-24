@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/><title>Dashboard - KSP Manager</title><link href="../assets/css/lapangan.css" rel="stylesheet"/><link href="../assets/css/mks-theme.css?v=27" rel="stylesheet"/><link href="../assets/img/favicon.png" rel="icon" type="image/png"/><meta content="#14533e" name="theme-color"/></head><body>
+<header class="app-header"><div class="header-inner"><div class="brand"><div class="brand-mark"><img alt="Logo KSP Maha Karya Saputra" src="../assets/img/maha-karya-saputra.webp"/></div><div><h1 class="brand-title">KSP Manager</h1><p class="brand-subtitle">Administrator</p></div></div></div></header>
+<main class="ksp-shell"><div class="page-head"><div><div class="page-kicker">📊 Dashboard</div><h2 class="page-title">Ringkasan</h2><p class="page-desc">Pantau aktivitas sistem hari ini.</p></div></div>
+<section class="ksp-card"><div class="ksp-stat-grid"><div class="ksp-stat"><small>Nasabah</small><strong id="statNasabah">-</strong></div><div class="ksp-stat"><small>Pengajuan Pending</small><strong id="statPengajuan">-</strong><span class="ksp-score warn" id="badgePengajuan" style="margin-top:5px;display:none">0 pending</span></div><div class="ksp-stat"><small>Pinjaman Aktif</small><strong id="statPinjaman">-</strong></div><div class="ksp-stat"><small>Angsuran</small><strong id="statAngsuran">-</strong></div></div></section>
+<section class="ksp-card"><h3>Aksi Cepat</h3><div class="ksp-actions"><a class="ksp-btn ksp-btn-primary" href="nasabah.html">👥 Nasabah</a><a class="ksp-btn ksp-btn-primary" href="pengajuan.html">📋 Pengajuan</a><a class="ksp-btn ksp-btn-success" href="pinjaman.html">💰 Pinjaman</a><a class="ksp-btn ksp-btn-light" href="ledger.html">📒 Ledger</a></div></section>
+<div style="padding:8px 0 4px"><button class="ksp-btn ksp-btn-danger" id="logout" style="width:100%">🚪 Keluar dari Sistem</button></div></main>
+<nav class="ksp-bottom"><a class="active" href="dashboard.html"><span class="ksp-nav-icon">⌂</span><span>Dashboard</span></a><a href="nasabah.html"><span class="ksp-nav-icon">👥</span><span>Nasabah</span></a><a href="pengajuan.html"><span class="ksp-nav-icon">📋</span><span>Pengajuan</span></a><a href="pinjaman.html"><span class="ksp-nav-icon">💰</span><span>Pinjaman</span></a><a href="ledger.html"><span class="ksp-nav-icon">📒</span><span>Ledger</span></a></nav>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../assets/js/supabase.js"></script>
+<script src="../assets/js/common.js"></script>
+<script>const S=kspRequireRole(["admin","superadmin"]);if(S){kspStartSessionGuard();document.getElementById("logout").onclick=kspLogout;Promise.resolve(supabaseClient.rpc("ksp_sync_nasabah_status")).catch(()=>{});Promise.allSettled([
+supabaseClient.from("nasabah").select("id",{count:"exact",head:true}),
+supabaseClient.from("pengajuan_kredit").select("id",{count:"exact",head:true}).eq("status","pending"),
+supabaseClient.from("pinjaman").select("id",{count:"exact",head:true}).eq("status","aktif"),
+supabaseClient.from("angsuran").select("id",{count:"exact",head:true})
+]).then(results=>{
+  const countOf=(i)=>results[i].status==="fulfilled" ? (results[i].value.count??0) : 0;
+  document.getElementById("statNasabah").textContent=countOf(0);
+  const pending=countOf(1);
+  document.getElementById("statPengajuan").textContent=pending;
+  const b=document.getElementById("badgePengajuan");
+  if(pending>0){b.style.display="inline-flex";b.textContent=pending+" pending"}else{b.style.display="none";}
+  document.getElementById("statPinjaman").textContent=countOf(2);
+  document.getElementById("statAngsuran").textContent=countOf(3);
+});}</script></body></html>

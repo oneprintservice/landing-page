@@ -1,0 +1,1 @@
+Stage 27: 5-menu navigation consistent on all Admin/Lapangan pages (also when Superadmin uses Admin operational mode); logo added to Admin Nasabah and Detail Nasabah. Superadmin four-menu tools nav retained at its existing correct offset. No JS/SQL changes. Upload over Stage 26 and hard refresh.
