@@ -1,0 +1,39 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Login - KSP Manager</title>
+<link rel="stylesheet" href="assets/css/lapangan.css"><link rel="stylesheet" href="assets/css/mks-theme.css?v=26"><link rel="icon" type="image/png" href="assets/img/favicon.png"><meta name="theme-color" content="#14533e"></head><body>
+<main class="ksp-shell" style="min-height:100vh;display:grid;place-items:center">
+<section class="ksp-card" style="width:min(420px,100%);padding:22px">
+<div style="text-align:center;margin-bottom:18px"><div class="brand-mark mks-login-logo" style="margin:auto"><img src="assets/img/maha-karya-saputra.webp" alt="Logo KSP Maha Karya Saputra"></div><h1 style="margin:10px 0 3px">KSP Manager</h1><p style="color:#64748b;margin:0">Sistem Manajemen Koperasi</p></div>
+<form id="loginForm" class="ksp-grid"><div class="ksp-field full"><label>Email login</label><input id="email" type="email" required autocomplete="username"></div><div class="ksp-field full"><label>Password</label><input id="password" type="password" required autocomplete="current-password"></div><div class="ksp-field full"><button id="loginBtn" class="ksp-btn ksp-btn-primary" type="submit">Masuk</button></div></form>
+<p style="font-size:11px;color:#94a3b8;text-align:center;margin:14px 0 0">Role ditentukan otomatis dari akun. Session aplikasi berakhir pukul 05.00.</p></section></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/js/supabase.js"></script><script src="assets/js/common.js"></script><script>
+document.getElementById("loginForm").addEventListener("submit", async e=>{
+  e.preventDefault();
+  const email=document.getElementById("email").value.trim().toLowerCase();
+  const password=document.getElementById("password").value;
+  const btn=document.getElementById("loginBtn");
+  if(!email||!password){kspNotify("Email dan password wajib diisi.","warning");return}
+  btn.disabled=true;
+  btn.textContent="Memeriksa...";
+  try{
+    const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
+    if(error||!data?.user){kspNotify(error?.message||"Login gagal.","error","Login gagal");return}
+    const {data:profile,error:profileError}=await supabaseClient
+      .from("ksp_profiles")
+      .select("role,display_name,is_active")
+      .eq("user_id",data.user.id)
+      .maybeSingle();
+    if(profileError){await supabaseClient.auth.signOut();kspNotify("Profil akun tidak dapat diperiksa: "+profileError.message,"error","Login gagal");return}
+    if(!profile){await supabaseClient.auth.signOut();kspNotify("Akun belum memiliki profil KSP. Hubungi Superadmin.","error","Login ditolak");return}
+    if(profile.is_active!==true){await supabaseClient.auth.signOut();kspNotify("Akun ini sedang dinonaktifkan. Hubungi Superadmin.","error","Login ditolak");return}
+    if(!["admin","lapangan","superadmin"].includes(profile.role)){await supabaseClient.auth.signOut();kspNotify("Role akun tidak dikenali.","error","Login ditolak");return}
+    kspSession.save(profile.role,profile.display_name||email);
+    kspNotify("Login berhasil.","success","Selamat datang");
+    setTimeout(()=>location.href=profile.role==="superadmin"?"superadmin/dashboard.html":profile.role==="admin"?"admin/dashboard.html":"lapangan/dashboard.html",250);
+  }catch(err){
+    kspNotify(err?.message||"Terjadi kesalahan saat login.","error","Login gagal");
+  }finally{
+    btn.disabled=false;
+    btn.textContent="Masuk";
+  }
+});
+</script></body></html>
