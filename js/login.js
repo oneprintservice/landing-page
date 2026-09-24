@@ -1,31 +1,11 @@
-
-auth.onAuthStateChanged(user => {
-            if (user) {
-                window.location.href = 'dashboard.html';
-            }
-        });
-
-        document.getElementById('btn-login').addEventListener('click', () => {
-
-            const username = document.getElementById('login-user').value.trim();
-            const pass = document.getElementById('login-pass').value;
-
-            if (!username || !pass) return;
-
-            const emailFormat = username.includes('@')
-                ? username
-                : username + "@oneprint.com";
-
-            auth.signInWithEmailAndPassword(emailFormat, pass)
-            .catch(err => {
-                console.error(err);
-                document.getElementById('login-error')
-                .classList.remove('hidden');
-            });
-        });
-
-        document.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                document.getElementById('btn-login').click();
-            }
-        });
+import { auth } from "./core/firebase.js";
+const $=s=>document.querySelector(s);
+$("#login").addEventListener("submit",async e=>{
+  e.preventDefault(); $("#error").hidden=true;
+  const username=$("#username").value.trim(), pass=$("#password").value;
+  if(!username||!pass)return;
+  const email=username.includes("@")?username:`${username}@oneprint.com`;
+  try{await auth.signInWithEmailAndPassword(email,pass);location.href="app.html"}
+  catch(err){console.error(err);$("#error").hidden=false;$("#error").textContent="Username atau password salah."}
+});
+auth.onAuthStateChanged(user=>{if(user)location.href="app.html"});
