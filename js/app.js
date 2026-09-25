@@ -114,8 +114,28 @@ async function loadAll() {
   const tasks = await Promise.allSettled([listInventory(), listServices(), listRestocks(), listLedger()]);
   state.inventory = tasks[0].status === "fulfilled" ? tasks[0].value : [];
   state.services = tasks[1].status === "fulfilled" ? tasks[1].value : [];
-  state.restocks = tasks[2].status === "fulfilled" ? tasks[2].value : [];
-  state.ledger = tasks[3].status === "fulfilled" ? tasks[3].value : [];
+  // Preserve already-visible history if a Firebase read temporarily fails.
+  if (tasks[2].status === "fulfilled") state.restocks = tasks[2].value;
+  if (tasks[3].status === "fulfilled") state.ledger = tasks[3].value;
+
+  // Older restock entries may exist only in the expense ledger. Display them
+  // without writing anything back or double-counting accounting entries.
+  const knownRestockIds = new Set(state.restocks.map(x => String(x.key)));
+  const ledgerRestocks = state.ledger
+    .filter(x => String(x.sumber || x.kategori || "").toUpperCase() === "RESTOCK")
+    .filter(x => !knownRestockIds.has(String(x.referensi || x.key)))
+    .map(x => ({
+      key: x.referensi || x.key,
+      tanggal: x.tanggal,
+      nama: String(x.keterangan || "Restock").replace(/^Restock\\s*/i, "") || "Restock",
+      supplier: x.supplier || "",
+      qty: x.qty ?? "-",
+      satuan: x.qty == null ? "" : (x.satuan || "pcs"),
+      total: Number(x.jumlah || x.total || 0),
+      fromLedger: true
+    }));
+  state.restocks = [...state.restocks, ...ledgerRestocks]
+    .sort((a, b) => (Date.parse(b.tanggal) || 0) - (Date.parse(a.tanggal) || 0));
 
   if (tasks.some(x => x.status === "rejected")) {
     console.error("OnePrint: sebagian data gagal dimuat", tasks.filter(x => x.status === "rejected").map(x => x.reason));
@@ -1084,6 +1104,11 @@ function bind() {
       tanggal: $("#restock-date").value, catatan: $("#restock-note").value.trim()
     });
     $("#restock-qty").value = ""; $("#restock-price").value = ""; $("#restock-supplier").value = ""; $("#restock-note").value = "";
+    // The multi-path Firebase write has succeeded. Show its result immediately,
+    // even if the subsequent history read is delayed or temporarily unavailable.
+    state.restocks = [result, ...state.restocks.filter(x => x.key !== result.key)]
+      .sort((a, b) => (Date.parse(b.tanggal) || 0) - (Date.parse(a.tanggal) || 0));
+    renderRestock();
     await loadAll();
     view.toast(`Restock ${result.nama} berhasil. Stok sekarang ${result.stokBaru}.`, "success");
   });
